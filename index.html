@@ -9,8 +9,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&family=Raleway:wght@400;700&display=swap" rel="stylesheet">
 
     <script>
-        // *** כאן תדביק את הקישור שקיבלת מה-Deploy (עם הסיומת ?mode=api) ***
-        const API_URL = "https://script.google.com/macros/s/AKfycbwc9IwKv88Zx2zFd3nemoSDxwkgXO9cGRqRuy_LP-1u6-HcRwI5liyD5JSYfwBljdGs8Q/exec"; 
+        // *** וודא שהקישור הזה מעודכן לגרסה החדשה (New Version) שעשית בסקריפט ***
+        const API_URL = "YOUR_GOOGLE_SCRIPT_URL_HERE"; 
     </script>
 
     <style>
@@ -18,9 +18,7 @@
         html { font-size: 14px; }
         body { font-family: 'Heebo', sans-serif; background-color: #051c42; background-image: linear-gradient(180deg, #051c42 0%, #021029 100%); color: #ffffff; min-height: 100vh; overflow-x: hidden; margin: 0; padding: 0; display: flex; flex-direction: column; }
         
-        /* נעילת גלילה כשהמודאל פתוח */
         body.no-scroll { overflow: hidden !important; height: 100vh; }
-
         .gold-text { background: linear-gradient(45deg, #fbbf24, #d97706); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 900; text-shadow: 0px 0px 20px rgba(251, 191, 36, 0.3); }
         .a3-logo-img { display: none; } 
 
@@ -43,7 +41,6 @@
         .footer-login-btn { color: #1e293b; font-size: 1.2rem; cursor: pointer; transition: 0.3s; padding: 10px; }
         .whatsapp-float { position: fixed; bottom: 20px; right: 20px; z-index: 100; background: #25D366; color: white; padding: 12px; border-radius: 50%; font-size: 2rem; box-shadow: 0 4px 10px rgba(0,0,0,0.3); transition: 0.3s; display: flex; align-items: center; justify-content: center; width: 55px; height: 55px; }
 
-        /* המבורגר נקי (ללא רקע) */
         #loggedInMenuBtn { position: fixed; top: 20px; right: 20px; z-index: 99999; background: transparent; width: 45px; height: 45px; color: white; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; cursor: pointer; text-shadow: 0 2px 5px rgba(0,0,0,0.5); }
         
         #sideMenu { position: fixed; top: 0; right: -320px; width: 280px; height: 100%; background: #0f172a; z-index: 100000; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); border-left: 4px solid #fbbf24; padding: 2rem; padding-top: 80px; display: flex; flex-direction: column; gap: 1rem; box-shadow: -20px 0 50px rgba(0,0,0,0.9); }
@@ -134,12 +131,12 @@
         #siteFooter { background: #020617; padding: 20px; text-align: center; border-top: 1px solid #1e293b; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 10px; }
         .copyright { color: #64748b; font-size: 0.9rem; }
 
-        /* --- מודאלים (תוקן לגלילה תקינה) --- */
+        /* --- מודאלים --- */
         .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 50000; justify-content: center; align-items: center; backdrop-filter: blur(5px); padding: 10px; }
         .modal-content { 
             background: #0f172a; padding: 0; border-radius: 1.5rem; border: 1px solid #334155; 
             width: 95% !important; max-width: 600px; 
-            max-height: 90vh; overflow-y: auto; 
+            max-height: 85vh; overflow-y: auto; 
             overscroll-behavior: contain;
             position: relative; margin: auto;
             display: flex; flex-direction: column;
@@ -162,7 +159,7 @@
             .container { padding-left: 1rem; padding-right: 1rem; }
             .form-grid { grid-template-columns: 1fr; } 
             
-            /* גלריה - תמונות גדולות יותר (300x200) */
+            /* --- גלריה מוגדלת בנייד (V94) --- */
             .gallery-item {
                 width: 300px !important;
                 height: 200px !important;
@@ -279,11 +276,11 @@
             </div>
 
             <h1 class="text-4xl md:text-7xl font-black mb-6 leading-tight drop-shadow-2xl">
-                <span data-id="hero-h1-1" data-type="text">לחגוג בר מצווה</span><br>
+                <span data-id="hero-h1-1" data-type="text">לקבל עול מלכות שמיים</span><br>
                 <span class="text-amber-400" data-id="hero-h1-2" data-type="text">בשמחה ובהתרגשות</span>
             </h1>
             <p class="text-lg md:text-2xl mb-10 text-blue-100 max-w-2xl mx-auto font-light leading-relaxed drop-shadow-md" data-id="hero-desc" data-type="text">
-                אביב ויצמן בהפקה מוזיקלית לעלייה לתורה: שופרות, תופים, פיוטים וליווי מרגש לחתן בר המצווה.
+                אביב ויצמן בהפקה מוזיקלית לעלייה לתורה: שופרות, תופים, פיוטים ירושלמיים וליווי מרגש לחתן הבר מצווה.
             </p>
             <div class="flex flex-col md:flex-row gap-4 justify-center">
                 <a href="#calendar" class="bg-gradient-to-r from-amber-400 to-amber-600 hover:from-amber-500 hover:to-amber-700 text-blue-900 font-bold py-4 px-12 rounded-full transition duration-300 shadow-[0_0_30px_rgba(245,158,11,0.4)] text-lg">
@@ -581,7 +578,9 @@
     </div>
 
     <div id="eventEditor" class="modal-overlay"><div class="modal-content"><div class="modal-header"><h3 class="text-3xl font-black text-white">פרטי אירוע</h3><button onclick="closeModal('eventEditor')" class="text-slate-400 hover:text-white text-2xl"><i class="fas fa-times"></i></button></div><div class="modal-body"><form id="eventForm" class="form-grid"><input type="hidden" name="id">
+    
     <div class="input-group col-span-1 md:col-span-2"><label>שם האירוע (כותרת)</label><input type="text" name="eventName" placeholder="לדוגמה: בר מצווה - משפחת כהן"></div>
+    
     <div class="input-group"><label>תאריך לועזי</label><input type="date" name="date" required></div><div class="input-group"><label>תאריך עברי</label><input type="text" name="hebrewDate"></div><div class="input-group"><label>שם הלקוח</label><input type="text" name="clientName"></div><div class="input-group"><label>שם חתן הבר מצווה</label><input type="text" name="childName"></div><div class="input-group"><label>טלפון</label><input type="tel" name="phone"></div><div class="input-group"><label>מיקום האירוע</label><input type="text" name="location"></div><div class="input-group"><label>לינק ל-Waze</label><input type="text" name="wazeLink"></div><div class="input-group"><label>סוג חבילה</label><select name="packageType"><option>לימוד לבר מצווה</option><option>בסיס</option><option>חגיגית</option><option>הכל כלול</option><option>מותאמת אישית</option></select></div><div class="input-group"><label>שעת הזמנת אורחים</label><input type="time" name="guestTime"></div><div class="input-group"><label>שעת תחילת אירוע</label><input type="time" name="startTime"></div><div class="input-group"><label>מחיר סגירה</label><input type="text" name="price"></div><div class="input-group"><label>סטטוס</label><select name="status"><option value="תהליך">בתהליך סגירה</option><option value="סגור">סגור (מאושר)</option><option value="הסתיים">הסתיים</option></select></div><div class="checkbox-group col-span-2"><label class="flex items-center gap-2 text-white font-bold"><input type="checkbox" name="hasKeyboard"> כולל קלידן</label><label class="flex items-center gap-2 text-white font-bold"><input type="checkbox" name="hasDrummers"> כולל מתופפים</label><label class="flex items-center gap-2 text-white font-bold text-pink-400"><input type="checkbox" name="isStudent"> תלמיד של אביב</label></div><div class="input-group col-span-1 md:col-span-2"><label>לינק למדיה</label><input type="text" name="mediaLink"></div><div class="input-group col-span-1 md:col-span-2"><label>הערות לצוות</label><textarea name="notes" class="h-32 notes-area"></textarea></div></form><div class="mt-8 flex justify-between items-center border-t border-slate-700 pt-6"><button type="button" onclick="deleteEvent()" class="text-red-500 font-bold px-4">מחק אירוע</button><button type="button" onclick="saveEvent()" class="bg-green-600 hover:bg-green-500 text-white font-bold py-3 px-10 rounded-xl text-lg shadow-lg">שמור</button></div></div></div></div>
 
     <script>
@@ -861,7 +860,8 @@
                 for(let e of sortedList) { if(new Date(e.date).getTime() >= todayTime) { nextEventId = e.id; break; } }
 
                 sortedList.forEach(evt => {
-                    const dateObj = new Date(evt.date);
+                     // ... יצירת הכרטיסייה (זהה לקוד הקודם)
+                     const dateObj = new Date(evt.date);
                     const day = dateObj.getDate();
                     const month = dateObj.toLocaleString('he-IL', { month: 'short' });
                     let statusClass = evt.status === 'סגור' ? 'status-sagoor' : (evt.status === 'הסתיים' ? 'status-done' : 'status-process');
@@ -891,7 +891,7 @@
                                 <div class="info-bubble"><i class="far fa-clock"></i> ${evt.startTime || '--:--'} <span class="data-label">(הגעה: ${evt.guestTime || '--:--'})</span></div>
                                 <div class="comp-badges">${compBadges}</div>
                     `;
-
+                    // ... המשך הכרטיסייה כרגיל
                     if (currentUser && currentUser.role === 'manager') {
                         cardHtml += `
                                 <div class="info-bubble"><i class="fas fa-user"></i> ${evt.clientName}</div>
@@ -960,7 +960,8 @@
                 });
             }
 
-            window.openPaymentModal = (eventId) => {
+            // ... (שאר הפונקציות של payment modal ו-savePayment נשארות זהה)
+             window.openPaymentModal = (eventId) => {
                 const evt = events.find(e => e.id == eventId);
                 if(!evt) return;
                 if(!evt.payments) evt.payments = { client: { downPayment: false, fullPayment: false }, staff: { drummer: {paid:false}, keyboard: {paid:false}, sound: {paid:false}, manager: {paid:false} } };
@@ -1279,6 +1280,3 @@
     </script>
 </body>
 </html>
-
-
-
