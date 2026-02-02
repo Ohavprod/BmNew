@@ -22,6 +22,23 @@
         .gold-text { background: linear-gradient(45deg, #fbbf24, #d97706); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 900; text-shadow: 0px 0px 20px rgba(251, 191, 36, 0.3); }
         .a3-logo-img { display: none; } 
 
+        /* --- Loader (גלגל טעינה) --- */
+        #globalLoader {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.8); z-index: 9999999;
+            display: none; justify-content: center; align-items: center; flex-direction: column;
+            backdrop-filter: blur(5px);
+        }
+        .spinner {
+            border: 6px solid rgba(255, 255, 255, 0.3);
+            border-top: 6px solid #fbbf24; /* צבע זהב */
+            border-radius: 50%;
+            width: 60px; height: 60px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
         /* --- כרטיסיות --- */
         .glass-card { background: rgba(13, 49, 105, 0.4); backdrop-filter: blur(12px); border: 1px solid rgba(59, 130, 246, 0.2); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); border-radius: 1.5rem; padding: 1.5rem; text-align: center; display: flex; flex-direction: column; justify-content: flex-start; margin-bottom: 1rem; }
         .pkg-list { text-align: right; margin-top: 1rem; }
@@ -42,36 +59,12 @@
         .whatsapp-float { position: fixed; bottom: 20px; right: 20px; z-index: 100; background: #25D366; color: white; padding: 12px; border-radius: 50%; font-size: 2rem; box-shadow: 0 4px 10px rgba(0,0,0,0.3); transition: 0.3s; display: flex; align-items: center; justify-content: center; width: 55px; height: 55px; }
 
         #loggedInMenuBtn { position: fixed; top: 20px; right: 20px; z-index: 99999; background: transparent; width: 45px; height: 45px; color: white; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; cursor: pointer; text-shadow: 0 2px 5px rgba(0,0,0,0.5); }
+        
         #sideMenu { position: fixed; top: 0; right: -320px; width: 280px; height: 100%; background: #0f172a; z-index: 100000; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); border-left: 4px solid #fbbf24; padding: 2rem; padding-top: 80px; display: flex; flex-direction: column; gap: 1rem; box-shadow: -20px 0 50px rgba(0,0,0,0.9); }
         #sideMenu.open { right: 0; }
         .menu-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 99998; display: none; backdrop-filter: blur(8px); }
         .menu-overlay.show { display: block; }
         .menu-item { background: #1e293b; color: white; padding: 15px; border-radius: 12px; text-align: right; cursor: pointer; border: 1px solid #334155; display: flex; align-items: center; gap: 15px; font-weight: bold; font-size: 1.1rem; }
-
-        /* --- מודאלים --- */
-        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 50000; justify-content: center; align-items: center; backdrop-filter: blur(5px); padding: 10px; }
-        .modal-content { 
-            background: #0f172a; padding: 0; border-radius: 1.5rem; border: 1px solid #334155; 
-            width: 95% !important; max-width: 600px; 
-            max-height: 85vh; overflow-y: auto; 
-            overscroll-behavior: contain;
-            position: relative; margin: auto;
-            display: flex; flex-direction: column;
-        }
-        #paymentModal .modal-content { max-width: 800px; }
-        #proposalSetupModal .modal-content { max-width: 700px; }
-        #eventEditor .modal-content { max-width: 800px; }
-        
-        /* מודאל אישור קטן ומעוצב */
-        #confirmModal .modal-content { max-width: 400px; text-align: center; padding: 20px; border: 1px solid #fbbf24; background: #0f172a; }
-
-        .modal-header { background: #1e293b; padding: 1rem; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 10; flex-shrink: 0; }
-        .modal-body { padding: 1rem; overflow-y: auto; flex-grow: 1; }
-        .form-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
-        .input-group label { display: block; color: #94a3b8; margin-bottom: 3px; font-size: 0.85rem; }
-        .input-group input, .input-group select, .input-group textarea { width: 100%; background: #1e293b; border: 1px solid #475569; color: white; padding: 10px; border-radius: 8px; font-size: 1rem; outline: none; }
-        .checkbox-group { display: flex; gap: 15px; align-items: center; background: #1e293b; padding: 10px; border-radius: 8px; border: 1px solid #475569; flex-wrap: wrap; }
-        .checkbox-group input { width: 20px; height: 20px; accent-color: #fbbf24; }
 
         /* --- כרטיס אירוע --- */
         .event-card { 
@@ -155,13 +148,38 @@
         #siteFooter { background: #020617; padding: 20px; text-align: center; border-top: 1px solid #1e293b; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 10px; }
         .copyright { color: #64748b; font-size: 0.9rem; }
 
+        /* --- מודאלים (תוקן לגלילה תקינה) --- */
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 50000; justify-content: center; align-items: center; backdrop-filter: blur(5px); padding: 10px; }
+        .modal-content { 
+            background: #0f172a; padding: 0; border-radius: 1.5rem; border: 1px solid #334155; 
+            width: 95% !important; max-width: 600px; 
+            max-height: 85vh; overflow-y: auto; 
+            overscroll-behavior: contain;
+            position: relative; margin: auto;
+            display: flex; flex-direction: column;
+        }
+        #paymentModal .modal-content { max-width: 800px; }
+        #proposalSetupModal .modal-content { max-width: 700px; }
+        #eventEditor .modal-content { max-width: 800px; }
+        
+        /* מודאל אישור והודעות */
+        #confirmModal .modal-content, #alertModal .modal-content { max-width: 400px; text-align: center; padding: 20px; border: 1px solid #fbbf24; background: #0f172a; height: auto; }
+
+        .modal-header { background: #1e293b; padding: 1rem; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 10; flex-shrink: 0; }
+        .modal-body { padding: 1rem; overflow-y: auto; flex-grow: 1; }
+        .form-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+        .input-group label { display: block; color: #94a3b8; margin-bottom: 3px; font-size: 0.85rem; }
+        .input-group input, .input-group select, .input-group textarea { width: 100%; background: #1e293b; border: 1px solid #475569; color: white; padding: 10px; border-radius: 8px; font-size: 1rem; outline: none; }
+        .checkbox-group { display: flex; gap: 15px; align-items: center; background: #1e293b; padding: 10px; border-radius: 8px; border: 1px solid #475569; flex-wrap: wrap; }
+        .checkbox-group input { width: 20px; height: 20px; accent-color: #fbbf24; }
+
         /* ========= התאמות אגרסיביות לנייד ========= */
         @media (max-width: 768px) {
             html { font-size: 12px; }
             .container { padding-left: 1rem; padding-right: 1rem; }
             .form-grid { grid-template-columns: 1fr; } 
             
-            /* גלריה - תמונות גדולות יותר (300x200) */
+            /* --- גלריה מוגדלת בנייד (300x200) --- */
             .gallery-item {
                 width: 300px !important;
                 height: 200px !important;
@@ -196,13 +214,12 @@
              .form-grid { grid-template-columns: 1fr 1fr; }
         }
 
-        /* --- הדפסה A3 נקייה (V95) --- */
+        /* --- הדפסה A3 נקייה --- */
         @media print { 
             @page { size: A3 portrait; margin: 0; } 
             body * { visibility: hidden; } 
-            #adminPanel, .fixed, .sticky, #loggedInMenuBtn, .whatsapp-float, .sound-toggle-btn, #confirmModal { display: none !important; }
+            #adminPanel, .fixed, .sticky, #loggedInMenuBtn, .whatsapp-float, .sound-toggle-btn { display: none !important; }
 
-            /* שום דבר לא מוצג מלבד הצעת המחיר */
             #proposalPrintArea { 
                 display: block !important; 
                 position: absolute; 
@@ -213,12 +230,22 @@
                 z-index: 2147483647;
                 margin: 0; padding: 0;
             }
-            #proposalPrintArea * { visibility: visible !important; color: black !important; }
+
+            #proposalPrintArea * { 
+                visibility: visible !important;
+                color: black !important;
+            }
+            
             html, body { background-color: white !important; height: auto !important; overflow: visible !important; }
         }
     </style>
 </head>
 <body class="antialiased relative">
+
+    <div id="globalLoader">
+        <div class="spinner"></div>
+        <div class="text-white text-xl font-bold">מעבד נתונים...</div>
+    </div>
 
     <a href="https://wa.me/972559907076" class="whatsapp-float" title="צור קשר בוואטסאפ">
         <i class="fab fa-whatsapp"></i>
@@ -460,8 +487,17 @@
             <p id="confirmMsg" class="text-gray-300 mb-6"></p>
             <div class="flex gap-4 justify-center">
                 <button id="btnNo" class="bg-slate-700 text-white px-6 py-2 rounded-lg font-bold hover:bg-slate-600 transition">ביטול</button>
-                <button id="btnYes" class="bg-red-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-red-500 transition">כן, מחק</button>
+                <button id="btnYes" class="bg-red-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-red-500 transition">כן, המשך</button>
             </div>
+        </div>
+    </div>
+    
+    <div id="alertModal" class="modal-overlay" onclick="this.style.display='none'">
+        <div class="modal-content bg-slate-900 border border-green-500/50 p-6 rounded-2xl text-center max-w-sm" onclick="event.stopPropagation()">
+            <i class="fas fa-check-circle text-4xl text-green-400 mb-4"></i>
+            <h3 class="text-2xl font-bold text-white mb-2">הודעה</h3>
+            <p id="alertMsg" class="text-gray-300 mb-6"></p>
+            <button onclick="document.getElementById('alertModal').style.display='none'" class="bg-green-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-green-500 transition">אישור</button>
         </div>
     </div>
 
@@ -617,6 +653,23 @@
             };
 
             // Global functions
+            window.showLoader = () => { document.getElementById('globalLoader').style.display = 'flex'; }
+            window.hideLoader = () => { document.getElementById('globalLoader').style.display = 'none'; }
+
+            window.customAlert = (message) => {
+                document.getElementById('alertMsg').innerText = message;
+                document.getElementById('alertModal').style.display = 'flex';
+            }
+
+            window.customConfirm = (message) => {
+                return new Promise((resolve) => {
+                    document.getElementById('confirmMsg').innerText = message;
+                    document.getElementById('confirmModal').style.display = 'flex';
+                    document.getElementById('btnYes').onclick = () => { document.getElementById('confirmModal').style.display = 'none'; resolve(true); };
+                    document.getElementById('btnNo').onclick = () => { document.getElementById('confirmModal').style.display = 'none'; resolve(false); };
+                });
+            }
+
             window.openModal = (id) => { 
                 document.body.classList.add('no-scroll');
                 document.getElementById(id).style.display = 'flex'; 
@@ -639,71 +692,47 @@
                 document.getElementById('menuOverlay').classList.remove('show'); 
             }
             
-            // --- פונקציה חדשה: saveChanges (מונעת שגיאה) ---
             window.saveChanges = () => {
-                alert("כל הנתונים נשמרים אוטומטית בעת עדכון טפסים ספציפיים.");
+                customAlert("כל הנתונים נשמרים אוטומטית בעת עדכון טפסים ספציפיים.");
             }
             
-            // --- פונקציה חדשה: מודאל אישור מותאם (Promise) ---
-            window.customConfirm = (message) => {
-                return new Promise((resolve) => {
-                    document.getElementById('confirmMsg').innerText = message;
-                    document.getElementById('confirmModal').style.display = 'flex';
-                    
-                    document.getElementById('btnYes').onclick = () => {
-                        document.getElementById('confirmModal').style.display = 'none';
-                        resolve(true);
-                    };
-                    document.getElementById('btnNo').onclick = () => {
-                        document.getElementById('confirmModal').style.display = 'none';
-                        resolve(false);
-                    };
-                });
-            }
-
             window.deleteEvent = async () => {
                 const id = document.forms['eventForm'].id.value;
-                if(!id) return alert("אירוע חדש לא ניתן למחיקה לפני שנשמר");
+                if(!id) return customAlert("אירוע חדש לא ניתן למחיקה לפני שנשמר");
                 
-                // שימוש במודאל המעוצב החדש
                 if(!await customConfirm("האם אתה בטוח שברצונך למחוק את האירוע? פעולה זו אינה הפיכה.")) return;
                 
                 if(API_URL.includes("http")) {
+                    showLoader();
                     fetch(API_URL, {
                         method: 'POST',
                         body: JSON.stringify({ action: 'deleteEvent', id: id })
                     }).then(() => {
-                        alert("האירוע נמחק בהצלחה");
+                        hideLoader();
+                        customAlert("האירוע נמחק בהצלחה");
                         window.closeModal('eventEditor');
-                        loadData(); // טעינה מחדש של הנתונים מהשרת
+                        loadData(); 
                     });
                 } else {
-                    alert("מצב דמו - המחיקה לא נשמרה");
+                    customAlert("מצב דמו - המחיקה לא נשמרה");
                 }
             }
 
-            // --- פונקציה חדשה: עריכת קישורי רשתות חברתיות ---
             window.editLink = (key) => {
-                // אם המשתמש לא מנהל - תן לקישור לעבוד רגיל
                 if (!isAdmin) return true;
-                
-                // עצור את הקישור מלעבור לעמוד
                 event.preventDefault(); 
-                
                 const currentVal = siteConfig[key] || '';
                 const newVal = prompt("הכנס קישור חדש:", currentVal);
                 
                 if (newVal && newVal !== currentVal) {
-                    // עדכון מקומי מהיר
                     siteConfig[key] = newVal;
                     document.getElementById(`link-${key.split('-')[1]}`).href = newVal;
-                    
-                    // שמירה לשרת
                     if(API_URL.includes("http")) {
+                        showLoader();
                         fetch(API_URL, {
                             method: 'POST',
                             body: JSON.stringify({ action: 'updateConfig', key: key, value: newVal })
-                        }).then(() => alert("הקישור עודכן בהצלחה!"));
+                        }).then(() => { hideLoader(); customAlert("הקישור עודכן בהצלחה!"); });
                     }
                 }
             }
@@ -712,16 +741,15 @@
                 const u = document.getElementById('uName').value;
                 const p = document.getElementById('uPass').value;
                 
-                // בדיקה מול רשימת המשתמשים מהשרת
-                const user = users.find(usr => usr.username === u && usr.password == p); // השוואה רופפת למקרה שהסיסמה היא מספר
+                const user = users.find(usr => usr.username === u && usr.password == p); 
 
                 if (user) { 
                     currentUser = user; 
                     onLoginSuccess(); 
-                } else if (u === 'manager' && p === '1234') { // Fallback למנהל ברירת מחדל אם אין רשימה
+                } else if (u === 'manager' && p === '1234') { 
                     currentUser = { role: 'manager', name: 'מנהל' }; 
                     onLoginSuccess(); 
-                } else { alert('פרטים שגויים'); }
+                } else { customAlert('פרטים שגויים'); }
             }
 
             window.logout = () => { location.reload(); }
@@ -768,15 +796,12 @@
                 renderCalendar();
             }
 
-            // Scroll Helpers
             window.scrollToEvents = () => { document.getElementById('eventsBoardSection').scrollIntoView({ behavior: 'smooth' }); window.closeSideMenu(); }
             window.scrollToPayments = () => { document.getElementById('paymentsSection').scrollIntoView({ behavior: 'smooth' }); window.closeSideMenu(); }
 
-            // Video Toggle Logic
             window.toggleSound = () => {
                 const iframe = document.getElementById('promoIframe');
                 const btnIcon = document.getElementById('soundBtnIcon');
-                
                 if (iframe.src.includes('muted=1')) {
                     iframe.src = iframe.src.replace('muted=1', 'muted=0');
                     btnIcon.classList.remove('fa-volume-mute');
@@ -789,19 +814,17 @@
             }
 
             window.addNewVideo = () => {
-                const url = prompt("הכנס קישור ליוטיוב או Vimeo:");
+                const url = prompt("הכנס קישור ליוטיוב או Vimeo או קובץ MP4:");
                 if (!url) return;
                 
-                let type = 'video';
-                // אם זה Vimeo - נטפל בזה בצורה מיוחדת בשרת או נזהה כאן
-                
                 if(API_URL.includes("http")) {
+                    showLoader();
                     fetch(API_URL, {
                         method: 'POST',
                         body: JSON.stringify({ action: 'addToGallery', type: 'video', url: url })
-                    }).then(() => { alert("נוסף בהצלחה - טוען מחדש..."); loadData(); });
+                    }).then(() => { hideLoader(); customAlert("נוסף בהצלחה - טוען מחדש..."); loadData(); });
                 } else {
-                    alert("מצב דמו - לא נשמר");
+                    customAlert("מצב דמו - לא נשמר");
                 }
             }
 
@@ -809,10 +832,11 @@
                 const u = prompt("קישור לתמונה:"); 
                 if(u) { 
                     if(API_URL.includes("http")) {
+                        showLoader();
                         fetch(API_URL, {
                             method: 'POST',
                             body: JSON.stringify({ action: 'addToGallery', type: 'image', url: u })
-                        }).then(() => { alert("נוסף בהצלחה - טוען מחדש..."); loadData(); });
+                        }).then(() => { hideLoader(); customAlert("נוסף בהצלחה - טוען מחדש..."); loadData(); });
                     } else {
                         galleryImages.push(u); renderGallery(); 
                     }
@@ -822,18 +846,20 @@
             window.deleteImage = async (url) => { 
                 if(!await customConfirm("למחוק את התמונה/וידאו מהגלריה?")) return;
                 if(API_URL.includes("http")) {
+                    showLoader();
                     fetch(API_URL, {
                         method: 'POST',
                         body: JSON.stringify({ action: 'deleteFromGallery', url: url })
-                    }).then(() => { alert("נמחק - טוען מחדש..."); loadData(); });
+                    }).then(() => { hideLoader(); customAlert("נמחק - טוען מחדש..."); loadData(); });
                 }
             }
 
             window.editHeroMedia = () => {
                  const u = prompt("הכנס קישור לתמונת רקע חדשה:");
                  if(u && API_URL.includes("http")) {
-                     fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'updateConfig', key: 'heroImage', value: u }) });
-                     document.getElementById('heroBgImage').style.backgroundImage = `url('${u}')`;
+                     showLoader();
+                     fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'updateConfig', key: 'heroImage', value: u }) })
+                     .then(() => { hideLoader(); document.getElementById('heroBgImage').style.backgroundImage = `url('${u}')`; });
                  }
             }
 
@@ -864,12 +890,21 @@
 
                 videos.forEach(vid => {
                     let embedUrl = vid.url;
-                    
+                    let isDirectFile = false;
+
+                    // זיהוי קבצי MP4 או גוגל דרייב
+                    if (vid.url.match(/\.(mp4|webm|ogg)$/i) || vid.url.includes('drive.google.com/file')) {
+                        isDirectFile = true;
+                        // המרת קישור דרייב לצפייה ישירה
+                        if(vid.url.includes('drive.google.com/file')) {
+                            const fileId = vid.url.match(/d\/([a-zA-Z0-9_-]+)/)?.[1];
+                            if(fileId) embedUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
+                        }
+                    } 
                     // זיהוי Vimeo
-                    if (vid.url.includes('vimeo')) {
+                    else if (vid.url.includes('vimeo')) {
                         const vimeoId = vid.url.match(/vimeo\.com\/(?:.*#|.*\/videos\/)?([0-9]+)/);
                         if (vimeoId && vimeoId[1]) {
-                             // Clean Embed parameters for Gallery: no title, no byline, no portrait, transparent background
                              embedUrl = `https://player.vimeo.com/video/${vimeoId[1]}?title=0&byline=0&portrait=0&badge=0&autopause=0&player_id=0&app_id=58479`; 
                         }
                     } 
@@ -882,14 +917,22 @@
                     const div = document.createElement('div');
                     div.className = "rounded-2xl overflow-hidden border border-blue-800 relative group shadow-xl video-item";
                     let delBtn = isAdmin ? `<button onclick="deleteImage('${vid.url}')" class="admin-controls absolute top-2 right-2 bg-red-600/80 text-white p-2 rounded-full shadow-lg hover:bg-red-700 z-50"><i class="fas fa-trash"></i></button>` : '';
-                    div.innerHTML = `${delBtn}<div class="bg-black aspect-video relative"><iframe class="w-full h-full" src="${embedUrl}" frameborder="0" allowfullscreen allow="autoplay; fullscreen; picture-in-picture"></iframe></div>`;
+                    
+                    if (isDirectFile) {
+                        div.innerHTML = `${delBtn}<div class="bg-black aspect-video relative"><video src="${embedUrl}" class="w-full h-full" controls playsinline controlsList="nodownload"></video></div>`;
+                    } else {
+                        div.innerHTML = `${delBtn}<div class="bg-black aspect-video relative"><iframe class="w-full h-full" src="${embedUrl}" frameborder="0" allowfullscreen allow="autoplay; fullscreen; picture-in-picture"></iframe></div>`;
+                    }
                     v.appendChild(div);
                 });
             }
             window.openLightbox = (src) => { document.getElementById('lightboxImage').src=src; window.openModal('lightboxModal'); }
 
             let currentDate = new Date();
-            function renderCalendar() {
+            // ... (המשך הקוד נשאר ללא שינוי, renderCalendar, renderEventsBoard וכו' - הכל אותו דבר כמו בגרסאות הקודמות, רק החלפת ה-alert ב-customAlert)
+            
+            // לשם קיצור כאן אני מביא את ה-renderCalendar המתוקן עם customAlert
+             function renderCalendar() {
                 const g = document.getElementById('calendarGrid'); 
                 if(!g) return;
                 g.innerHTML = '';
@@ -916,10 +959,7 @@
                     d.onclick = () => {
                         if (isAdmin) {
                             if (!isBooked) { window.openQuickEventModal(dateString); } 
-                            else { 
-                                // גם כאן נשתמש ב-Custom Confirm בעתיד
-                                alert('התאריך תפוס. לניהול, כנס ללוח האירועים.'); 
-                            } 
+                            else { customAlert('התאריך תפוס. לניהול, כנס ללוח האירועים.'); } 
                         } else {
                             if (!isBooked) { window.open(`https://wa.me/972559907076?text=${encodeURIComponent('היי, התאריך ' + dateString + ' פנוי?')}`, '_blank'); }
                         }
@@ -961,7 +1001,6 @@
                 for(let e of sortedList) { if(new Date(e.date).getTime() >= todayTime) { nextEventId = e.id; break; } }
 
                 sortedList.forEach(evt => {
-                     // ... יצירת הכרטיסייה (זהה לקוד הקודם)
                      const dateObj = new Date(evt.date);
                     const day = dateObj.getDate();
                     const month = dateObj.toLocaleString('he-IL', { month: 'short' });
@@ -992,7 +1031,6 @@
                                 <div class="info-bubble"><i class="far fa-clock"></i> ${evt.startTime || '--:--'} <span class="data-label">(הגעה: ${evt.guestTime || '--:--'})</span></div>
                                 <div class="comp-badges">${compBadges}</div>
                     `;
-                    // ... המשך הכרטיסייה כרגיל
                     if (currentUser && currentUser.role === 'manager') {
                         cardHtml += `
                                 <div class="info-bubble"><i class="fas fa-user"></i> ${evt.clientName}</div>
@@ -1022,8 +1060,8 @@
                 });
             }
 
-            // ... (שאר הפונקציות של payment modal ו-savePayment נשארות זהה)
-             window.openPaymentModal = (eventId) => {
+            // ... (שאר הפונקציות זהות, רק החלפת alert ב-customAlert)
+            window.openPaymentModal = (eventId) => {
                 const evt = events.find(e => e.id == eventId);
                 if(!evt) return;
                 if(!evt.payments) evt.payments = { client: { downPayment: false, fullPayment: false }, staff: { drummer: {paid:false}, keyboard: {paid:false}, sound: {paid:false}, manager: {paid:false} } };
@@ -1073,18 +1111,20 @@
                 }
 
                 if(API_URL.includes("http")) {
+                    showLoader();
                     fetch(API_URL, {
                         method: 'POST',
                         body: JSON.stringify({ action: 'savePayment', id: eventId, client: evt.payments.client, staff: evt.payments.staff })
-                    });
+                    }).then(() => { hideLoader(); customAlert('הנתונים נשמרו!'); window.closeModal('paymentModal'); renderPaymentsBoard(); });
+                } else {
+                    customAlert('הנתונים נשמרו!');
+                    window.closeModal('paymentModal');
+                    renderPaymentsBoard();
                 }
-                alert('הנתונים נשמרו!');
-                window.closeModal('paymentModal');
-                renderPaymentsBoard();
             }
             
-            // ... (saveQuickEvent, openQuickEventModal, openEventEditor, saveEvent נשארים זהים, רק לוודא קריאה לשרת)
-            window.openQuickEventModal = (dateStr) => {
+            // ... (המשך זהה)
+             window.openQuickEventModal = (dateStr) => {
                 document.getElementById('qeDateDisplay').innerText = dateStr;
                 document.getElementById('qeDate').value = dateStr;
                 window.openModal('quickEventModal');
@@ -1093,7 +1133,7 @@
             window.saveQuickEvent = () => {
                 const date = document.getElementById('qeDate').value;
                 const name = document.getElementById('qeName').value;
-                if(!name) return alert("חובה להזין שם אירוע");
+                if(!name) return customAlert("חובה להזין שם אירוע");
 
                 const newEvent = {
                     action: 'createEvent', id: 'evt-' + Date.now(), date: date, eventName: name,
@@ -1106,8 +1146,12 @@
                 };
                 
                 events.push(newEvent); bookedDates.push(date); 
-                alert("האירוע נוצר והתאריך נתפס!"); window.closeModal('quickEventModal'); renderCalendar(); filterEvents();
-                if(API_URL.includes("http")) fetch(API_URL, { method: 'POST', body: JSON.stringify(newEvent) }).then(()=>loadData());
+                if(API_URL.includes("http")) {
+                    showLoader();
+                    fetch(API_URL, { method: 'POST', body: JSON.stringify(newEvent) }).then(()=> { hideLoader(); customAlert("האירוע נוצר והתאריך נתפס!"); window.closeModal('quickEventModal'); renderCalendar(); filterEvents(); loadData(); });
+                } else {
+                     customAlert("האירוע נוצר והתאריך נתפס!"); window.closeModal('quickEventModal'); renderCalendar(); filterEvents();
+                }
             }
 
             window.openEventEditor = (id) => {
@@ -1116,7 +1160,7 @@
                 if (id) {
                     const evt = events.find(e => e.id == id);
                     if(evt) {
-                        form.eventName.value = evt.eventName || ''; // טעינת שם האירוע
+                        form.eventName.value = evt.eventName || ''; 
                         for (let key in evt) { 
                             if(form.elements[key]) {
                                 if(form.elements[key].type === 'checkbox') form.elements[key].checked = evt[key];
@@ -1152,25 +1196,25 @@
                     notes: form.notes.value
                 };
 
-                // בדיקה אם זה אירוע חדש או קיים
                 if (id) {
                     eventData.action = 'saveEvent';
                     eventData.id = id;
                 } else {
-                    // יצירת אירוע חדש
                     eventData.action = 'createEvent';
                     eventData.id = 'evt-' + Date.now();
                 }
                 
                 if(API_URL.includes("http")) {
+                    showLoader();
                     fetch(API_URL, { method: 'POST', body: JSON.stringify(eventData) })
                     .then(() => {
-                        alert(id ? "האירוע עודכן!" : "האירוע נוצר בהצלחה!");
-                        loadData(); // טעינה מחדש של הנתונים מהשרת
+                        hideLoader();
+                        customAlert(id ? "האירוע עודכן!" : "האירוע נוצר בהצלחה!");
+                        loadData(); 
                         window.closeModal('eventEditor');
                     });
                 } else {
-                    alert("מצב דמו - נתונים לא יישמרו");
+                    customAlert("מצב דמו - נתונים לא יישמרו");
                     window.closeModal('eventEditor');
                 }
             }
@@ -1196,23 +1240,24 @@
                      priceBASIC: document.getElementById('priceBASIC').value,
                      priceSOLO: document.getElementById('priceSOLO').value
                  };
-                 // עדכון מקומי
                  Object.keys(newPrices).forEach(k => { if(newPrices[k]) siteConfig[k] = newPrices[k]; });
-                 updatePackagesFromConfig(); // קורא לפונקציה לעדכן את packagesData
+                 updatePackagesFromConfig(); 
 
-                 // שמירה לשרת (לולאה על כל מפתח)
                  if(API_URL.includes("http")) {
+                     showLoader();
                      Object.entries(newPrices).forEach(([key, val]) => {
                          fetch(API_URL, {
                             method: 'POST',
                             body: JSON.stringify({ action: 'updateConfig', key: key, value: val })
                          });
                      });
+                     setTimeout(() => { hideLoader(); customAlert('המחירים נשמרו והתעדכנו!'); }, 1000);
+                 } else {
+                     customAlert('המחירים נשמרו והתעדכנו!');
                  }
-                 alert('המחירים נשמרו והתעדכנו!');
                  window.closeModal('priceListEditorModal');
             }
-
+            
             function updatePackagesFromConfig() {
                 if(siteConfig.priceVIP) packagesData['VIP'].p = '₪' + siteConfig.priceVIP;
                 if(siteConfig.priceFESTIVE) packagesData['FESTIVE'].p = '₪' + siteConfig.priceFESTIVE;
@@ -1220,6 +1265,7 @@
                 if(siteConfig.priceSOLO) packagesData['SOLO'].p = '₪' + siteConfig.priceSOLO;
             }
 
+            // ... (generateProposal, generateCalendarLink, sendWaToClient unchanged)
             window.generateProposal = () => {
                  const name = document.getElementById('propName').value;
                 const child = document.getElementById('propChild').value;
@@ -1318,7 +1364,7 @@
 
             window.sendWaToClient = (phone) => {
                  const p = phone || document.getElementById('waPhone').value;
-                 if(!p) return alert('נא להזין מספר טלפון');
+                 if(!p) return customAlert('נא להזין מספר טלפון');
                  const msg = "היי :) שמחתי לשוחח, מצורף הצעת המחיר ופרטים נוספים...";
                  window.open(`https://wa.me/972${p.replace(/-/g,'').substring(1)}?text=${encodeURIComponent(msg)}`, '_blank');
             }
@@ -1326,6 +1372,7 @@
             // Init Load
             async function loadData() {
                 try {
+                    showLoader(); // מראה טעינה בטעינת האתר
                     if(!API_URL.includes("http")) throw new Error("No API");
                     const response = await fetch(API_URL);
                     const data = await response.json();
@@ -1347,8 +1394,10 @@
                     if (data.users) users = data.users;
                     
                     bookedDates = events.map(e => e.date);
+                    hideLoader(); // מסתיר
 
                 } catch (error) {
+                    hideLoader();
                     console.log("Demo Mode Active");
                 }
                 renderCalendar();
