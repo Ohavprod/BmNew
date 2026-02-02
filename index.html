@@ -1,4 +1,4 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
@@ -95,15 +95,17 @@
         .marquee-track { display: flex; width: max-content; gap: 0; animation: scroll-loop 60s linear infinite; }
         @keyframes scroll-loop { 0% { transform: translateX(-50%); } 100% { transform: translateX(0%); } }
         
-        /* גלריה - מחשב */
+        /* גלריה - ברירת מחדל (מחשב) */
         .gallery-img { height: 250px; width: auto; aspect-ratio: 3/2; object-fit: cover; border-radius: 16px; cursor: pointer; transition: 0.3s; border: 2px solid transparent; margin: 0 5px; }
+        .gallery-img:hover { border-color: #fbbf24; transform: scale(1.05); }
 
         .blue-card { background: rgba(13, 49, 105, 0.6); border: 1px solid rgba(59, 130, 246, 0.2); backdrop-filter: blur(10px); padding: 1.5rem; }
         .calendar-day { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; border-radius: 0.5rem; font-weight: bold; cursor: pointer; position: relative; font-size: 0.9rem; }
         .day-available { background-color: rgba(251, 191, 36, 0.1); border: 1px solid rgba(251, 191, 36, 0.3); color: #fbbf24; }
         .day-booked { background-color: rgba(220, 38, 38, 0.1); border: 1px solid #dc2626; color: #f87171; text-decoration: line-through; opacity: 0.7; }
+        body.admin-mode .calendar-day:hover { transform: scale(1.1); cursor: pointer; border-color: white; }
         
-        /* --- וידאו (מחשב) --- */
+        /* --- וידאו ורקע --- */
         .promo-video-container { 
             width: 98%; max-width: 1800px; 
             margin: 30px auto; 
@@ -117,7 +119,10 @@
         .promo-video-iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
         .sound-toggle-btn { position: absolute; bottom: 15px; left: 15px; background: rgba(0,0,0,0.6); color: white; border: 1px solid rgba(255,255,255,0.5); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 50; }
         
+        .video-background-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; z-index: 0; }
+        .video-background-iframe { position: absolute; top: 50%; left: 50%; width: 100vw; height: 100vh; transform: translate(-50%, -50%); pointer-events: none; }
         #heroOverlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #051c42; opacity: 0.6; z-index: 0; pointer-events: none; }
+        .site-logo { height: 80px; width: auto; object-fit: contain; filter: drop-shadow(0 0 10px rgba(255,255,255,0.2)); position: relative; z-index: 50; }
         #siteFooter { background: #020617; padding: 20px; text-align: center; border-top: 1px solid #1e293b; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 10px; }
         .copyright { color: #64748b; font-size: 0.9rem; }
 
@@ -128,6 +133,10 @@
             width: 95% !important; max-width: 600px; 
             max-height: 85vh; overflow-y: auto; position: relative; margin: auto;
         }
+        #paymentModal .modal-content { max-width: 800px; }
+        #proposalSetupModal .modal-content { max-width: 700px; }
+        #eventEditor .modal-content { max-width: 800px; }
+
         .modal-header { background: #1e293b; padding: 1rem; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 10; }
         .modal-body { padding: 1rem; }
         .form-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
@@ -140,19 +149,21 @@
         @media (max-width: 768px) {
             html { font-size: 12px; }
             .container { padding-left: 1rem; padding-right: 1rem; }
+            .form-grid { grid-template-columns: 1fr; } 
             
-            /* גלריה - תמונות נמוכות יותר !important */
+            /* תמונות גלריה קטנות יותר */
             .gallery-img { 
-                height: 120px !important; 
+                height: 85px !important; /* גובה נמוך משמעותית */
                 width: auto !important;
                 object-fit: cover !important;
+                border-radius: 8px !important;
             }
 
             /* וידאו - ריבוע גדול (1:1) */
             .promo-video-container {
                 width: 100% !important;
                 margin: 10px auto 20px auto !important;
-                aspect-ratio: 1 / 1 !important; /* ריבוע */
+                aspect-ratio: 1 / 1 !important;
                 border-radius: 0 !important;
                 border-left: none !important;
                 border-right: none !important;
@@ -261,7 +272,7 @@
         <div class="max-w-6xl relative z-10 w-full">
             
             <div class="promo-video-container mb-10">
-                <iframe id="promoIframe" class="promo-video-iframe" src="https://player.vimeo.com/video/1158001407?background=1&autoplay=1&loop=1&muted=0" frameborder="0" width="100%" height="100%" allow="autoplay; fullscreen; picture-in-picture"></iframe>
+                <iframe id="promoIframe" class="promo-video-iframe" src="https://player.vimeo.com/video/1158001407?background=1&autoplay=1&loop=1&muted=1" frameborder="0" width="100%" height="100%" allow="autoplay; fullscreen; picture-in-picture"></iframe>
                 <button onclick="toggleSound()" id="soundBtn" class="sound-toggle-btn" title="הפעל/השתק סאונד">
                     <i id="soundBtnIcon" class="fas fa-volume-mute"></i>
                 </button>
@@ -1164,4 +1175,3 @@
     </script>
 </body>
 </html>
-
