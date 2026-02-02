@@ -132,7 +132,9 @@
         .modal-content { 
             background: #0f172a; padding: 0; border-radius: 1.5rem; border: 1px solid #334155; 
             width: 95% !important; max-width: 600px; 
-            max-height: 85vh; overflow-y: auto; position: relative; margin: auto;
+            max-height: 85vh; /* גובה מקסימלי */
+            overflow-y: auto; /* גלילה פנימית */
+            position: relative; margin: auto;
         }
         #paymentModal .modal-content { max-width: 800px; }
         #proposalSetupModal .modal-content { max-width: 700px; }
@@ -188,154 +190,76 @@
              .form-grid { grid-template-columns: 1fr 1fr; }
         }
 
-        /* --- הדפסה A3 - תיקון V87 (ניתוח כירורגי) --- */
+        /* --- הדפסה A3 מתוקנת סופית (V89) --- */
         @media print { 
-            @page { size: A3 portrait; margin: 10mm; } 
+            @page { size: A3 portrait; margin: 0; } 
             
-            /* שלב 1: איפוס הרקע והטקסט של הדף */
-            body, html { 
-                background: white !important; 
-                color: black !important;
-                height: auto !important;
-                overflow: visible !important;
-                margin: 0; padding: 0;
-            }
+            /* הסתרת כל האלמנטים שלא קשורים להדפסה בצורה אגרסיבית */
+            body * { visibility: hidden; } 
+            #adminPanel, .fixed, .sticky, #loggedInMenuBtn, .whatsapp-float, .sound-toggle-btn { display: none !important; }
 
-            /* שלב 2: העלמת כל הרכיבים באתר שאינם ההצעה */
-            nav, header, section, footer, #adminPanel, #loggedInMenuBtn, 
-            .whatsapp-float, .modal-overlay, #sideMenu {
-                display: none !important;
-            }
-
-            /* שלב 3: חשיפת אזור ההדפסה ועיצובו */
+            /* החזרת אלמנט ההדפסה בלבד */
             #proposalPrintArea { 
                 display: block !important; 
-                visibility: visible !important;
                 position: absolute; 
-                top: 0; left: 0; 
+                left: 0; top: 0; 
                 width: 100%; 
                 background: white !important;
                 color: black !important;
-                z-index: 2147483647; /* הכי גבוה שאפשר */
+                z-index: 2147483647;
+                margin: 0; padding: 0;
             }
 
+            /* שחזור התצוגה הפנימית של ההדפסה */
             #proposalPrintArea * { 
                 visibility: visible !important;
                 color: black !important;
             }
+            
+            /* איפוס רקע כללי למניעת פסים כחולים */
+            html, body { background-color: white !important; height: auto !important; overflow: visible !important; }
+            #siteFooter { display: none !important; }
 
-            /* שלב 4: סידור הגריד והמבנה הפנימי */
+            /* שחזור פריסת GRID/FLEX בתוך ההדפסה */
             .a3-page { 
-                width: 100%; max-width: 297mm; 
-                margin: 0 auto; padding: 20px; 
-                box-sizing: border-box; 
-                display: block; /* או flex לפי הצורך */
+                width: 90%; margin: 0 auto; padding: 40px; box-sizing: border-box; 
+                display: flex !important; flex-direction: column; min-height: 98vh; 
+                justify-content: space-between;
             }
+            .a3-grid { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 30px; }
+            .a3-header { display: flex !important; justify-content: space-between; align-items: flex-end; border-bottom: 4px solid #0056b3 !important; padding-bottom: 15px; margin-bottom: 20px; }
+            .a3-total-area { display: flex !important; justify-content: space-between; align-items: center; }
 
-            .a3-header { 
-                display: flex !important; 
-                justify-content: space-between; 
-                align-items: flex-end; 
-                border-bottom: 4px solid #0056b3 !important; 
-                padding-bottom: 15px; 
-                margin-bottom: 20px; 
-            }
+            .a3-logo-img { display: block !important; height: 80px !important; width: auto !important; }
 
-            .a3-logo-img { 
-                display: block !important; 
-                height: 80px !important; 
-                width: auto !important; 
-            }
-
-            .a3-grid { 
-                display: grid !important; 
-                grid-template-columns: 1fr 1fr !important; 
-                gap: 40px; 
-                margin-bottom: 30px; 
-            }
-
-            .a3-section { 
-                border: 1px solid #ddd; 
-                padding: 15px; 
-                border-radius: 8px; 
-                background-color: #f9fafb !important; 
-                -webkit-print-color-adjust: exact; 
-                print-color-adjust: exact;
-            }
-            
-            .a3-section h4 {
-                 border-bottom: 2px solid #fbbf24 !important;
-                 margin-bottom: 10px;
-                 padding-bottom: 5px;
-            }
-
-            .a3-row { 
-                display: flex !important; 
-                justify-content: space-between; 
-                margin-bottom: 8px; 
-                border-bottom: 1px dashed #eee; 
-            }
-
-            /* שלב 5: המחיר הירוק והרקע הכחול */
+            /* תיקון צבע מחיר (לבן על כחול) */
             .a3-total-area { 
-                display: flex !important; 
-                justify-content: space-between; 
-                align-items: center;
                 background-color: #051c42 !important; 
-                color: white !important;
-                padding: 20px;
                 border-radius: 12px;
-                margin-top: 30px;
+                padding: 20px;
                 -webkit-print-color-adjust: exact; 
                 print-color-adjust: exact;
             }
-
-            .a3-total-label { color: #ffffff !important; font-size: 24px; font-weight: bold; } 
-            
+            .a3-total-label { color: #ffffff !important; } 
             .a3-total-price { 
-                color: #86efac !important; /* ירוק בהיר */
+                color: #ffffff !important; /* לבן */
                 font-weight: 900 !important;
                 font-size: 40px;
                 text-shadow: none !important;
             } 
 
-            /* שלב 6: הפוטר והמשפט */
-            .a3-footer { 
-                margin-top: 50px; 
-                text-align: center; 
-                width: 100%; 
-                page-break-inside: avoid;
-            }
-            
+            /* תיקון פונט משפט תחתון */
             .a3-quote { 
                 font-family: 'Heebo', sans-serif !important; 
                 font-weight: 900 !important; 
                 font-size: 24px;
                 color: #051c42 !important; 
-                margin-bottom: 15px; 
-                display: block;
+                margin-bottom: 10px; 
+                text-decoration: none;
             }
+
+            .a3-footer { margin-top: 50px; page-break-inside: avoid; text-align: center; }
         }
-        
-        #proposalPrintArea { display: none; background: white; color: black; font-family: 'Heebo', sans-serif; }
-        .a3-container { width: 100%; max-width: 900px; margin: 0 auto; background: white; min-height: 100vh; position: relative; }
-        .a3-header { border-bottom: 5px solid #0056b3; padding-bottom: 10px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: flex-end; }
-        .a3-bsd { position: absolute; top: 20px; right: 20px; font-size: 14px; font-weight: bold; }
-        .a3-logo-img { height: 100px; width: auto; }
-        .a3-business-details { text-align: left; font-size: 14px; color: #333; line-height: 1.5; }
-        .a3-title-main { font-size: 40px; font-weight: 900; text-align: center; margin: 20px 0; color: #051c42; text-decoration: underline; }
-        .a3-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px; }
-        .a3-section { background: #f8f9fa; border: 1px solid #ddd; padding: 15px; border-radius: 8px; }
-        .a3-section h4 { font-size: 20px; font-weight: bold; border-bottom: 2px solid #fbbf24; padding-bottom: 5px; margin-bottom: 15px; color: #051c42; }
-        .a3-row { display: flex; justify-content: space-between; font-size: 18px; margin-bottom: 10px; border-bottom: 1px dashed #eee; }
-        .a3-pkg-section { background: #eff6ff; border: 1px solid #bfdbfe; padding: 20px; border-radius: 12px; margin-top: 20px; }
-        .a3-pkg-title { font-size: 24px; font-weight: bold; color: #1e40af; margin-bottom: 10px; border-bottom: 1px solid #93c5fd; padding-bottom: 5px; }
-        .a3-pkg-desc { font-size: 18px; line-height: 1.6; white-space: pre-line; }
-        .a3-total-area { margin-top: 30px; padding: 15px; background: #051c42; color: white; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; }
-        .a3-total-label { font-size: 24px; font-weight: bold; }
-        .a3-total-price { font-size: 40px; font-weight: 900; color: white; text-shadow: 0 0 10px rgba(0,0,0,0.5); }
-        .a3-footer { margin-top: auto; padding-top: 20px; text-align: center; color: #666; border-top: 1px solid #ddd; font-size: 14px; }
-        .a3-quote { font-family: cursive; font-size: 22px; color: #051c42; margin-bottom: 10px; font-weight: bold; }
     </style>
 </head>
 <body class="antialiased relative">
