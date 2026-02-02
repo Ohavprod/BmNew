@@ -188,39 +188,44 @@
              .form-grid { grid-template-columns: 1fr 1fr; }
         }
 
-        /* --- הדפסה A3 מתוקנת (V85) --- */
+        /* --- הדפסה A3 מתוקנת סופית (V86) --- */
         @media print { 
             @page { size: A3 portrait; margin: 0; } 
             
-            /* הסתרת הכל */
-            body * { visibility: hidden; } 
-            
-            /* הסתרת אלמנטים צפים ומפריעים */
-            #adminPanel, .next-event-label, #loggedInMenuBtn, 
-            .whatsapp-float, .sound-toggle-btn, #sideMenu, .modal-overlay { 
-                display: none !important; 
-            }
+            /* הסתרת כל האלמנטים שלא קשורים להדפסה בצורה אגרסיבית */
+            body > * { display: none !important; }
 
-            /* הצגת אזור ההדפסה בלבד עם דריסה חזקה */
-            #proposalPrintArea, #proposalPrintArea * { 
-                visibility: visible !important;
-                color: black !important; 
-            }
-
+            /* החזרת אלמנט ההדפסה בלבד */
             #proposalPrintArea { 
+                display: block !important; 
                 position: absolute; 
                 left: 0; top: 0; 
                 width: 100%; 
-                display: block !important; 
                 background: white !important;
                 color: black !important;
-                z-index: 9999999;
+                z-index: 999999;
+                margin: 0; padding: 0;
             }
 
-            .a3-page { width: 90%; margin: 0 auto; padding: 40px; box-sizing: border-box; display: flex; flex-direction: column; min-height: 98vh; justify-content: space-between; }
+            /* שחזור התצוגה הפנימית של ההדפסה */
+            #proposalPrintArea * { 
+                visibility: visible !important;
+                color: black !important;
+            }
+            
+            /* שחזור פריסת GRID/FLEX בתוך ההדפסה */
+            .a3-page { 
+                width: 90%; margin: 0 auto; padding: 40px; box-sizing: border-box; 
+                display: flex !important; flex-direction: column; min-height: 98vh; 
+                justify-content: space-between;
+            }
+            .a3-grid { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 30px; }
+            .a3-header { display: flex !important; justify-content: space-between; align-items: flex-end; }
+            .a3-total-area { display: flex !important; justify-content: space-between; align-items: center; }
+
             .a3-logo-img { display: block !important; }
 
-            /* מחיר */
+            /* תיקון צבע מחיר בהיר */
             .a3-total-area { 
                 background-color: #051c42 !important; 
                 border-radius: 12px;
@@ -235,7 +240,7 @@
                 text-shadow: none !important;
             } 
 
-            /* פונט משפט תחתון */
+            /* תיקון פונט משפט תחתון */
             .a3-quote { 
                 font-family: 'Heebo', sans-serif !important; 
                 font-weight: 900 !important; 
