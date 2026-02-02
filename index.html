@@ -95,8 +95,11 @@
         .marquee-track { display: flex; width: max-content; gap: 0; animation: scroll-loop 60s linear infinite; }
         @keyframes scroll-loop { 0% { transform: translateX(-50%); } 100% { transform: translateX(0%); } }
         
-        /* גלריה - ברירת מחדל (מחשב) */
-        .gallery-img { height: 250px; width: auto; aspect-ratio: 3/2; object-fit: cover; border-radius: 16px; cursor: pointer; transition: 0.3s; border: 2px solid transparent; margin: 0 5px; }
+        /* גלריה - מחשב */
+        .gallery-item {
+             margin: 0 5px; /* מרווח בין תמונות */
+        }
+        .gallery-img { height: 250px; width: auto; aspect-ratio: 3/2; object-fit: cover; border-radius: 16px; cursor: pointer; transition: 0.3s; border: 2px solid transparent; }
         .gallery-img:hover { border-color: #fbbf24; transform: scale(1.05); }
 
         .blue-card { background: rgba(13, 49, 105, 0.6); border: 1px solid rgba(59, 130, 246, 0.2); backdrop-filter: blur(10px); padding: 1.5rem; }
@@ -145,19 +148,27 @@
         .checkbox-group { display: flex; gap: 15px; align-items: center; background: #1e293b; padding: 10px; border-radius: 8px; border: 1px solid #475569; flex-wrap: wrap; }
         .checkbox-group input { width: 20px; height: 20px; accent-color: #fbbf24; }
 
-        /* ========= התאמות אגרסיביות לנייד ========= */
+        /* ========= התאמות אגרסיביות לנייד (V80) ========= */
         @media (max-width: 768px) {
             html { font-size: 12px; }
             .container { padding-left: 1rem; padding-right: 1rem; }
             .form-grid { grid-template-columns: 1fr; } 
             
-            /* תמונות גלריה קטנות יותר */
+            /* --- תיקון גלריה: קוביות מלבניות קטנות --- */
+            .gallery-item {
+                /* קובע את הקופסה של התמונה */
+                width: 160px !important;
+                height: 90px !important;
+                flex-shrink: 0;
+                margin: 0 5px;
+            }
             .gallery-img { 
-                height: 85px !important; /* גובה נמוך משמעותית */
-                width: auto !important;
+                height: 100% !important; 
+                width: 100% !important;
                 object-fit: cover !important;
                 border-radius: 8px !important;
             }
+            /* --------------------------------------- */
 
             /* וידאו - ריבוע גדול (1:1) */
             .promo-video-container {
@@ -169,7 +180,6 @@
                 border-right: none !important;
             }
             
-            /* מודאלים בנייד */
             .modal-content {
                 width: 95vw !important;
                 margin: 0 auto !important;
