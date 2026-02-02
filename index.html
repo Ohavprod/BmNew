@@ -429,7 +429,7 @@
     <section id="gallery" class="py-24 bg-[#021029] relative overflow-hidden">
         <div class="container mx-auto px-6 relative z-10">
             <div class="text-center mb-12">
-                 <h2 class="text-3xl md:text-5xl font-bold text-white" data-id="gallery-title" data-type="text">רגעים של קדושה ושמחה</h2>
+                 <h2 class="text-3xl md:text-5xl font-bold text-white" data-id="gallery-title" data-type="text">דוגמאות מאירועים</h2>
             </div>
             <div class="text-center mb-8 admin-controls">
                 <button onclick="addNewVideo()" class="bg-green-600 hover:bg-green-500 text-white px-6 py-3 rounded-full font-bold shadow-lg transition items-center flex mx-auto">
@@ -442,7 +442,7 @@
 
      <section class="py-12 bg-[#051c42] border-t border-blue-900 relative overflow-hidden">
         <div class="container mx-auto px-6 mb-8 flex justify-between items-center relative z-10">
-             <h3 class="text-2xl font-bold text-blue-200"><i class="fas fa-camera-retro ml-2 text-amber-400"></i>תמונות מהשטח</h3>
+             <h3 class="text-2xl font-bold text-blue-200"><i class="fas fa-camera-retro ml-2 text-amber-400"></i>תמונות מאירועים</h3>
              <button onclick="addNewImage()" class="admin-controls bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded-full font-bold shadow-lg transition text-sm items-center">
                 <i class="fas fa-plus ml-1"></i> הוסף תמונה
             </button>
@@ -944,7 +944,7 @@
                                 // ללא הודעה, רק מעבר ללוח אירועים אם צריך
                             } 
                         } else {
-                            if (!isBooked) { window.open(`https://wa.me/972559907076?text=${encodeURIComponent('היי, התאריך ' + dateString + ' פנוי?')}`, '_blank'); }
+                            if (!isBooked) { window.open(`https://wa.me/972559907076?text=${encodeURIComponent('היי, היינו מעוניינים לסגור תאריך לבר מצווה, האם התאריך ' + dateString + ' פנוי?')}`, '_blank'); }
                         }
                     };
                     g.appendChild(d);
@@ -1427,4 +1427,5 @@
     </script>
 </body>
 </html>
+
 
