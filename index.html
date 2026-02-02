@@ -9,6 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&family=Raleway:wght@400;700&display=swap" rel="stylesheet">
 
     <script>
+        // *** כאן תדביק את הקישור שקיבלת מה-Deploy (עם הסיומת ?mode=api) ***
         const API_URL = "YOUR_GOOGLE_SCRIPT_URL_HERE"; 
     </script>
 
@@ -42,8 +43,8 @@
         .footer-login-btn { color: #1e293b; font-size: 1.2rem; cursor: pointer; transition: 0.3s; padding: 10px; }
         .whatsapp-float { position: fixed; bottom: 20px; right: 20px; z-index: 100; background: #25D366; color: white; padding: 12px; border-radius: 50%; font-size: 2rem; box-shadow: 0 4px 10px rgba(0,0,0,0.3); transition: 0.3s; display: flex; align-items: center; justify-content: center; width: 55px; height: 55px; }
 
-        /* אייקון המבורגר נקי (ללא רקע שחור) */
-        #loggedInMenuBtn { position: fixed; top: 20px; right: 20px; z-index: 99999; background: transparent; width: 45px; height: 45px; color: white; display: flex; align-items: center; justify-content: center; font-size: 2rem; cursor: pointer; }
+        /* המבורגר נקי (ללא רקע) */
+        #loggedInMenuBtn { position: fixed; top: 20px; right: 20px; z-index: 99999; background: transparent; width: 45px; height: 45px; color: white; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; cursor: pointer; text-shadow: 0 2px 5px rgba(0,0,0,0.5); }
         
         #sideMenu { position: fixed; top: 0; right: -320px; width: 280px; height: 100%; background: #0f172a; z-index: 100000; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); border-left: 4px solid #fbbf24; padding: 2rem; padding-top: 80px; display: flex; flex-direction: column; gap: 1rem; box-shadow: -20px 0 50px rgba(0,0,0,0.9); }
         #sideMenu.open { right: 0; }
@@ -133,12 +134,12 @@
         #siteFooter { background: #020617; padding: 20px; text-align: center; border-top: 1px solid #1e293b; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 10px; }
         .copyright { color: #64748b; font-size: 0.9rem; }
 
-        /* --- מודאלים --- */
+        /* --- מודאלים (תוקן לגלילה תקינה) --- */
         .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 50000; justify-content: center; align-items: center; backdrop-filter: blur(5px); padding: 10px; }
         .modal-content { 
             background: #0f172a; padding: 0; border-radius: 1.5rem; border: 1px solid #334155; 
             width: 95% !important; max-width: 600px; 
-            max-height: 85vh; overflow-y: auto; 
+            max-height: 90vh; overflow-y: auto; 
             overscroll-behavior: contain;
             position: relative; margin: auto;
             display: flex; flex-direction: column;
@@ -161,7 +162,7 @@
             .container { padding-left: 1rem; padding-right: 1rem; }
             .form-grid { grid-template-columns: 1fr; } 
             
-            /* --- גלריה מתוקנת לנייד (300x200) --- */
+            /* גלריה - תמונות גדולות יותר (300x200) */
             .gallery-item {
                 width: 300px !important;
                 height: 200px !important;
@@ -196,12 +197,13 @@
              .form-grid { grid-template-columns: 1fr 1fr; }
         }
 
-        /* --- הדפסה A3 נקייה --- */
+        /* --- הדפסה A3 נקייה (V95) --- */
         @media print { 
             @page { size: A3 portrait; margin: 0; } 
             body * { visibility: hidden; } 
             #adminPanel, .fixed, .sticky, #loggedInMenuBtn, .whatsapp-float, .sound-toggle-btn { display: none !important; }
 
+            /* שום דבר לא מוצג מלבד הצעת המחיר */
             #proposalPrintArea { 
                 display: block !important; 
                 position: absolute; 
@@ -212,12 +214,7 @@
                 z-index: 2147483647;
                 margin: 0; padding: 0;
             }
-
-            #proposalPrintArea * { 
-                visibility: visible !important;
-                color: black !important;
-            }
-            
+            #proposalPrintArea * { visibility: visible !important; color: black !important; }
             html, body { background-color: white !important; height: auto !important; overflow: visible !important; }
         }
     </style>
@@ -527,10 +524,10 @@
                     <div class="flex gap-2">
                         <input type="time" id="qeStart" class="w-full p-3 bg-slate-800 border border-slate-600 rounded text-white">
                         <select id="qeType" class="w-full p-3 bg-slate-800 border border-slate-600 rounded text-white">
+                            <option value="לימוד לבר מצווה">לימוד לבר מצווה</option>
+                            <option value="בסיס">בסיס</option>
                             <option value="חגיגית">חגיגית</option>
                             <option value="הכל כלול">הכל כלול</option>
-                            <option value="בסיס">בסיס</option>
-                            <option value="לימוד לבר מצווה">לימוד לבר מצווה</option>
                         </select>
                     </div>
                     <textarea id="qeNotes" placeholder="הערות..." class="w-full p-3 bg-slate-800 border border-slate-600 rounded text-white h-24"></textarea>
@@ -584,22 +581,18 @@
     </div>
 
     <div id="eventEditor" class="modal-overlay"><div class="modal-content"><div class="modal-header"><h3 class="text-3xl font-black text-white">פרטי אירוע</h3><button onclick="closeModal('eventEditor')" class="text-slate-400 hover:text-white text-2xl"><i class="fas fa-times"></i></button></div><div class="modal-body"><form id="eventForm" class="form-grid"><input type="hidden" name="id">
-    
     <div class="input-group col-span-1 md:col-span-2"><label>שם האירוע (כותרת)</label><input type="text" name="eventName" placeholder="לדוגמה: בר מצווה - משפחת כהן"></div>
-    
-    <div class="input-group"><label>תאריך לועזי</label><input type="date" name="date" required></div><div class="input-group"><label>תאריך עברי</label><input type="text" name="hebrewDate"></div><div class="input-group"><label>שם הלקוח</label><input type="text" name="clientName"></div><div class="input-group"><label>שם חתן הבר מצווה</label><input type="text" name="childName"></div><div class="input-group"><label>טלפון</label><input type="tel" name="phone"></div><div class="input-group"><label>מיקום האירוע</label><input type="text" name="location"></div><div class="input-group"><label>לינק ל-Waze</label><input type="text" name="wazeLink"></div><div class="input-group"><label>סוג חבילה</label><select name="packageType"><option>בסיס</option><option>חגיגית</option><option>הכל כלול</option><option>לימוד לבר מצווה</option><option>מותאמת אישית</option></select></div><div class="input-group"><label>שעת הזמנת אורחים</label><input type="time" name="guestTime"></div><div class="input-group"><label>שעת תחילת אירוע</label><input type="time" name="startTime"></div><div class="input-group"><label>מחיר סגירה</label><input type="text" name="price"></div><div class="input-group"><label>סטטוס</label><select name="status"><option value="תהליך">בתהליך סגירה</option><option value="סגור">סגור (מאושר)</option><option value="הסתיים">הסתיים</option></select></div><div class="checkbox-group col-span-2"><label class="flex items-center gap-2 text-white font-bold"><input type="checkbox" name="hasKeyboard"> כולל קלידן</label><label class="flex items-center gap-2 text-white font-bold"><input type="checkbox" name="hasDrummers"> כולל מתופפים</label><label class="flex items-center gap-2 text-white font-bold text-pink-400"><input type="checkbox" name="isStudent"> תלמיד של אביב</label></div><div class="input-group col-span-1 md:col-span-2"><label>לינק למדיה</label><input type="text" name="mediaLink"></div><div class="input-group col-span-1 md:col-span-2"><label>הערות לצוות</label><textarea name="notes" class="h-32 notes-area"></textarea></div></form><div class="mt-8 flex justify-between items-center border-t border-slate-700 pt-6"><button type="button" onclick="deleteEvent()" class="text-red-500 font-bold px-4">מחק אירוע</button><button type="button" onclick="saveEvent()" class="bg-green-600 hover:bg-green-500 text-white font-bold py-3 px-10 rounded-xl text-lg shadow-lg">שמור</button></div></div></div></div>
+    <div class="input-group"><label>תאריך לועזי</label><input type="date" name="date" required></div><div class="input-group"><label>תאריך עברי</label><input type="text" name="hebrewDate"></div><div class="input-group"><label>שם הלקוח</label><input type="text" name="clientName"></div><div class="input-group"><label>שם חתן הבר מצווה</label><input type="text" name="childName"></div><div class="input-group"><label>טלפון</label><input type="tel" name="phone"></div><div class="input-group"><label>מיקום האירוע</label><input type="text" name="location"></div><div class="input-group"><label>לינק ל-Waze</label><input type="text" name="wazeLink"></div><div class="input-group"><label>סוג חבילה</label><select name="packageType"><option>לימוד לבר מצווה</option><option>בסיס</option><option>חגיגית</option><option>הכל כלול</option><option>מותאמת אישית</option></select></div><div class="input-group"><label>שעת הזמנת אורחים</label><input type="time" name="guestTime"></div><div class="input-group"><label>שעת תחילת אירוע</label><input type="time" name="startTime"></div><div class="input-group"><label>מחיר סגירה</label><input type="text" name="price"></div><div class="input-group"><label>סטטוס</label><select name="status"><option value="תהליך">בתהליך סגירה</option><option value="סגור">סגור (מאושר)</option><option value="הסתיים">הסתיים</option></select></div><div class="checkbox-group col-span-2"><label class="flex items-center gap-2 text-white font-bold"><input type="checkbox" name="hasKeyboard"> כולל קלידן</label><label class="flex items-center gap-2 text-white font-bold"><input type="checkbox" name="hasDrummers"> כולל מתופפים</label><label class="flex items-center gap-2 text-white font-bold text-pink-400"><input type="checkbox" name="isStudent"> תלמיד של אביב</label></div><div class="input-group col-span-1 md:col-span-2"><label>לינק למדיה</label><input type="text" name="mediaLink"></div><div class="input-group col-span-1 md:col-span-2"><label>הערות לצוות</label><textarea name="notes" class="h-32 notes-area"></textarea></div></form><div class="mt-8 flex justify-between items-center border-t border-slate-700 pt-6"><button type="button" onclick="deleteEvent()" class="text-red-500 font-bold px-4">מחק אירוע</button><button type="button" onclick="saveEvent()" class="bg-green-600 hover:bg-green-500 text-white font-bold py-3 px-10 rounded-xl text-lg shadow-lg">שמור</button></div></div></div></div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             let isAdmin = false;
             let currentUser = null;
             let bookedDates = [];
-            let events = [
-                { id: '1', date: new Date(Date.now() + 86400000).toISOString().split('T')[0], eventName: 'בר מצווה - משפחת כהן', status: 'סגור', packageType: 'VIP', payments: { client: {downPayment:true}, staff: {drummer:{}, keyboard:{}, sound:{}, manager:{}} } },
-                { id: '2', date: new Date(Date.now() - 604800000).toISOString().split('T')[0], eventName: 'אירוע עבר - משפחת לוי', status: 'הסתיים', packageType: 'FESTIVE', payments: { client: {downPayment:true, fullPayment: false}, staff: {drummer:{paid:true, amount: 400}, keyboard:{}, sound:{}, manager:{}} } },
-                { id: '3', date: new Date(Date.now() + 1209600000).toISOString().split('T')[0], eventName: 'חתונה - משפחת ישראלי', status: 'תהליך', packageType: 'BASIC', payments: { client: {downPayment:false}, staff: {drummer:{}, keyboard:{}, sound:{}, manager:{}} } }
-            ];
-            let galleryImages = ["https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?w=600", "https://images.unsplash.com/photo-1516280440614-6697288d5d38?w=600"];
+            let events = []; // ייטען מהשרת
+            let galleryImages = []; // ייטען מהשרת
+            let siteConfig = {}; 
+            let users = []; // רשימת משתמשים
 
             const packagesData = {
                 'VIP': { t: 'חבילת הכל כלול VIP', p: '₪5,500', d: 'ליווי תפילה ופיוטים\nחזנות\nהגברה מקצועית\nקלידן\nזוג מתופפים\nכניסה מיוחדת עם חופה ושופרות\nליווי שירים בסעודה (אביב + קלידן)\nלימוד הפרשה (במידת הצורך)' },
@@ -635,11 +628,15 @@
             window.login = () => {
                 const u = document.getElementById('uName').value;
                 const p = document.getElementById('uPass').value;
-                if (u === 'manager' && p === '1234') { 
-                    currentUser = { role: 'manager', name: 'מנהל' }; 
+                
+                // בדיקה מול רשימת המשתמשים מהשרת
+                const user = users.find(usr => usr.username === u && usr.password == p); // השוואה רופפת למקרה שהסיסמה היא מספר
+
+                if (user) { 
+                    currentUser = user; 
                     onLoginSuccess(); 
-                } else if (u === 'staff' && p === '1234') { 
-                    currentUser = { role: 'staff', name: 'נגן' }; 
+                } else if (u === 'manager' && p === '1234') { // Fallback למנהל ברירת מחדל אם אין רשימה
+                    currentUser = { role: 'manager', name: 'מנהל' }; 
                     onLoginSuccess(); 
                 } else { alert('פרטים שגויים'); }
             }
@@ -667,7 +664,7 @@
                         <div class="menu-item" onclick="scrollToPayments()"><i class="fas fa-shekel-sign text-amber-400 text-2xl"></i> תשלומים</div>
                         <div class="menu-item" onclick="openWhatsAppTool()"><i class="fab fa-whatsapp text-green-500 text-2xl"></i> שליחת טפסים</div>
                         <div class="menu-item" onclick="openProposalTool()"><i class="fas fa-file-invoice text-amber-400 text-2xl"></i> הצעת מחיר A3</div>
-                        <div class="menu-item" onclick="openPriceListEditor()"><i class="fas fa-tags text-purple-400 text-2xl"></i> מחירון מלא</div>
+                        <div class="menu-item" onclick="openPriceListEditor()"><i class="fas fa-tags text-purple-400 text-2xl"></i> מחירון והגדרות</div>
                     `;
                 } else {
                     links.innerHTML = `<div class="menu-item" onclick="scrollToEvents()"><i class="fas fa-th-large text-blue-400 text-2xl"></i> לוח אירועים</div>`;
@@ -711,39 +708,86 @@
             window.addNewVideo = () => {
                 const url = prompt("הכנס קישור ליוטיוב:");
                 if (!url) return;
-                let embedUrl = url;
-                if (url.includes('youtu')) {
-                    let vid = url.includes('v=') ? url.split('v=')[1].split('&')[0] : url.split('youtu.be/')[1].split('?')[0];
-                    embedUrl = `https://www.youtube.com/embed/${vid}`;
+                
+                if(API_URL.includes("http")) {
+                    fetch(API_URL, {
+                        method: 'POST',
+                        body: JSON.stringify({ action: 'addToGallery', type: 'video', url: url })
+                    }).then(() => { alert("נוסף בהצלחה - טוען מחדש..."); loadData(); });
+                } else {
+                    alert("מצב דמו - לא נשמר");
                 }
-                const container = document.getElementById('videoContainer');
-                const div = document.createElement('div');
-                div.className = "rounded-2xl overflow-hidden border border-blue-800 relative group shadow-xl video-item";
-                div.innerHTML = `<button onclick="deleteItem(this.parentElement)" class="admin-controls absolute top-2 right-2 bg-red-600 text-white p-2 rounded-full shadow-lg hover:bg-red-700 z-50"><i class="fas fa-trash"></i></button><div class="bg-black aspect-video relative"><iframe class="w-full h-full" src="${embedUrl}" frameborder="0" allowfullscreen></iframe></div><div class="p-6 bg-[#0b2554]"><h3 class="text-xl font-bold text-amber-400 editable-active" contenteditable="true">כותרת</h3><p class="text-blue-200 editable-active" contenteditable="true">תיאור...</p></div>`;
-                container.appendChild(div);
-                toggleEditMode(); // Re-apply edit classes
             }
 
-            window.addNewImage = () => { const u = prompt("קישור:"); if(u) { galleryImages.push(u); renderGallery(); } }
-            window.deleteImage = (i) => { galleryImages.splice(i,1); renderGallery(); }
-            window.deleteItem = (el) => { if(confirm("למחוק?")) el.remove(); }
-            window.editHeroMedia = () => { const u=prompt("לינק:"); if(u) document.getElementById('heroBgImage').style.backgroundImage=`url('${u}')`; }
-            window.editOverlayOpacity = () => { const o=prompt("שקיפות (0-1):"); if(o) document.getElementById('heroOverlay').style.opacity=o; }
-            window.saveChanges = () => { alert('שינויי אתר נשמרו (דמו)'); }
+            window.addNewImage = () => { 
+                const u = prompt("קישור לתמונה:"); 
+                if(u) { 
+                    if(API_URL.includes("http")) {
+                        fetch(API_URL, {
+                            method: 'POST',
+                            body: JSON.stringify({ action: 'addToGallery', type: 'image', url: u })
+                        }).then(() => { alert("נוסף בהצלחה - טוען מחדש..."); loadData(); });
+                    } else {
+                        galleryImages.push(u); renderGallery(); 
+                    }
+                } 
+            }
+
+            window.deleteImage = (url) => { 
+                if(!confirm("למחוק את התמונה/וידאו?")) return;
+                if(API_URL.includes("http")) {
+                    fetch(API_URL, {
+                        method: 'POST',
+                        body: JSON.stringify({ action: 'deleteFromGallery', url: url })
+                    }).then(() => { alert("נמחק - טוען מחדש..."); loadData(); });
+                }
+            }
+
+            window.editHeroMedia = () => {
+                 const u = prompt("הכנס קישור לתמונת רקע חדשה:");
+                 if(u && API_URL.includes("http")) {
+                     fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'updateConfig', key: 'heroImage', value: u }) });
+                     document.getElementById('heroBgImage').style.backgroundImage = `url('${u}')`;
+                 }
+            }
 
             function renderGallery() {
                 const c = document.getElementById('imageMarquee'); 
-                if(!c) return;
+                const v = document.getElementById('videoContainer');
+                if(!c || !v) return;
+                
                 c.innerHTML = '';
+                v.innerHTML = '';
+
+                const images = galleryImages.filter(item => typeof item === 'string' || item.type === 'image');
+                const videos = galleryImages.filter(item => item.type === 'video');
+
+                const imgUrls = images.map(i => (typeof i === 'string' ? i : i.url));
                 const createSet = (clone) => {
                     const w = document.createElement('div'); w.className = clone ? 'clone-set flex' : 'flex';
-                    galleryImages.forEach((src,i) => {
-                        let btns = isAdmin && !clone ? `<button class="admin-controls absolute top-2 right-2 bg-red-600 text-white p-1 rounded-full" onclick="deleteImage(${i})"><i class="fas fa-trash"></i></button>` : '';
-                        w.innerHTML += `<div class="gallery-item relative"><img src="${src}" class="gallery-img-thumb" onclick="openLightbox('${src}')">${btns}</div>`;
+                    imgUrls.forEach((src) => {
+                        let btns = isAdmin && !clone ? `<button class="admin-controls absolute top-2 right-2 bg-red-600/80 text-white p-2 rounded-full z-50" onclick="deleteImage('${src}')"><i class="fas fa-trash"></i></button>` : '';
+                        w.innerHTML += `<div class="gallery-item relative">${btns}<img src="${src}" class="gallery-img" onclick="openLightbox('${src}')"></div>`;
                     });
                     return w;
                 };
-                c.appendChild(createSet(false)); c.appendChild(createSet(true));
+                if(imgUrls.length > 0) {
+                    c.appendChild(createSet(false)); 
+                    c.appendChild(createSet(true));
+                }
+
+                videos.forEach(vid => {
+                    let embedUrl = vid.url;
+                    if (vid.url.includes('youtu')) {
+                        let id = vid.url.includes('v=') ? vid.url.split('v=')[1].split('&')[0] : vid.url.split('youtu.be/')[1].split('?')[0];
+                        embedUrl = `https://www.youtube.com/embed/${id}`;
+                    }
+                    const div = document.createElement('div');
+                    div.className = "rounded-2xl overflow-hidden border border-blue-800 relative group shadow-xl video-item";
+                    let delBtn = isAdmin ? `<button onclick="deleteImage('${vid.url}')" class="admin-controls absolute top-2 right-2 bg-red-600/80 text-white p-2 rounded-full shadow-lg hover:bg-red-700 z-50"><i class="fas fa-trash"></i></button>` : '';
+                    div.innerHTML = `${delBtn}<div class="bg-black aspect-video relative"><iframe class="w-full h-full" src="${embedUrl}" frameborder="0" allowfullscreen></iframe></div>`;
+                    v.appendChild(div);
+                });
             }
             window.openLightbox = (src) => { document.getElementById('lightboxImage').src=src; window.openModal('lightboxModal'); }
 
@@ -763,7 +807,6 @@
                     const d = document.createElement('div'); 
                     d.innerText = i; 
                     d.className = 'calendar-day';
-                    
                     const year = currentDate.getFullYear();
                     const month = String(currentDate.getMonth() + 1).padStart(2, '0');
                     const day = String(i).padStart(2, '0');
@@ -776,9 +819,9 @@
                     d.onclick = () => {
                         if (isAdmin) {
                             if (!isBooked) { window.openQuickEventModal(dateString); } 
-                            else { if(confirm("לבטל נעילה לתאריך זה?")) { bookedDates = bookedDates.filter(bd => bd !== dateString); renderCalendar(); } }
+                            else { if(confirm("לבטל נעילה לתאריך זה?")) { /* כאן צריך לוגיקת מחיקה אמיתית בעתיד */ alert('יש למחוק את האירוע מלוח האירועים'); } }
                         } else {
-                            if (!isBooked) { window.open(`https://wa.me/972559907076?text=${encodeURIComponent('היי, אנחנו מעוניינים לסגור תאריך עבור בר מצווה, נשמח לדעת האם התאריך פנוי. תודה :) ' + dateString + ' פנוי?')}`, '_blank'); }
+                            if (!isBooked) { window.open(`https://wa.me/972559907076?text=${encodeURIComponent('היי, התאריך ' + dateString + ' פנוי?')}`, '_blank'); }
                         }
                     };
                     g.appendChild(d);
@@ -806,7 +849,7 @@
                 });
                 renderEventsBoard(filtered);
             }
-
+            
             function renderEventsBoard(dataToRender) {
                 const board = document.getElementById('eventsBoard');
                 if(!board) return;
@@ -877,9 +920,8 @@
                     board.innerHTML += cardHtml;
                 });
             }
-
-            // --- Payments ---
-            function renderPaymentsBoard() {
+            
+             function renderPaymentsBoard() {
                 const board = document.getElementById('paymentsBoard');
                 if(!board) return;
                 board.innerHTML = '';
@@ -887,7 +929,6 @@
                 events.forEach(evt => {
                     const isFinished = evt.status === 'הסתיים';
                     let isFullyPaid = false;
-                    
                     if (!isFinished) {
                         isFullyPaid = evt.payments?.client?.downPayment; 
                     } else {
@@ -899,7 +940,6 @@
                         });
                         isFullyPaid = clientOK && staffOK;
                     }
-
                     const borderClass = isFullyPaid ? 'payment-ok' : 'payment-bad';
                     const depositIcon = evt.payments?.client?.downPayment ? '<i class="fas fa-check text-green-500"></i>' : '<i class="fas fa-times text-red-500"></i>';
 
@@ -936,25 +976,12 @@
                     fullPayContainer.classList.remove('hidden');
                     staffContainer.classList.remove('hidden');
                     document.getElementById('payClientFull').checked = evt.payments.client.fullPayment;
-                    
                     const tbody = document.getElementById('staffPaymentsTableBody');
                     tbody.innerHTML = '';
-                    const roles = [
-                        { key: 'drummer', label: 'מתופפים' },
-                        { key: 'keyboard', label: 'קלידן' },
-                        { key: 'sound', label: 'סאונד' },
-                        { key: 'manager', label: 'מנהלת' }
-                    ];
+                    const roles = [ { key: 'drummer', label: 'מתופפים' }, { key: 'keyboard', label: 'קלידן' }, { key: 'sound', label: 'סאונד' }, { key: 'manager', label: 'מנהלת' } ];
                     roles.forEach(role => {
                         const data = evt.payments.staff[role.key] || { paid: false, amount: 0, date: '' };
-                        tbody.innerHTML += `
-                            <tr>
-                                <td>${role.label}</td>
-                                <td><input type="checkbox" class="w-5 h-5 accent-green-500" id="pay_${role.key}_check" ${data.paid ? 'checked' : ''}></td>
-                                <td><input type="number" class="bg-slate-700 text-white w-20 p-1 rounded" id="pay_${role.key}_amount" value="${data.amount || 0}"></td>
-                                <td><input type="date" class="bg-slate-700 text-white w-32 p-1 rounded" id="pay_${role.key}_date" value="${data.date || ''}"></td>
-                            </tr>
-                        `;
+                        tbody.innerHTML += `<tr><td>${role.label}</td><td><input type="checkbox" class="w-5 h-5 accent-green-500" id="pay_${role.key}_check" ${data.paid ? 'checked' : ''}></td><td><input type="number" class="bg-slate-700 text-white w-20 p-1 rounded" id="pay_${role.key}_amount" value="${data.amount || 0}"></td><td><input type="date" class="bg-slate-700 text-white w-32 p-1 rounded" id="pay_${role.key}_date" value="${data.date || ''}"></td></tr>`;
                     });
                 } else {
                     fullPayContainer.classList.add('hidden');
@@ -992,8 +1019,8 @@
                 window.closeModal('paymentModal');
                 renderPaymentsBoard();
             }
-
-            // Quick Event & Edit Event
+            
+            // ... (saveQuickEvent, openQuickEventModal, openEventEditor, saveEvent נשארים זהים, רק לוודא קריאה לשרת)
             window.openQuickEventModal = (dateStr) => {
                 document.getElementById('qeDateDisplay').innerText = dateStr;
                 document.getElementById('qeDate').value = dateStr;
@@ -1026,7 +1053,7 @@
                 if (id) {
                     const evt = events.find(e => e.id == id);
                     if(evt) {
-                        form.eventName.value = evt.eventName || '';
+                        form.eventName.value = evt.eventName || ''; // טעינת שם האירוע
                         for (let key in evt) { 
                             if(form.elements[key]) {
                                 if(form.elements[key].type === 'checkbox') form.elements[key].checked = evt[key];
@@ -1044,7 +1071,7 @@
                 const id = form.id.value;
                 let evt = events.find(e => e.id == id);
                 if (evt) {
-                    evt.eventName = form.eventName.value;
+                    evt.eventName = form.eventName.value; // שמירת שם האירוע
                     evt.date = form.date.value;
                     evt.hebrewDate = form.hebrewDate.value;
                     evt.clientName = form.clientName.value;
@@ -1060,6 +1087,10 @@
                     evt.mediaLink = form.mediaLink.value;
                     evt.notes = form.notes.value;
                     
+                    if(API_URL.includes("http")) {
+                        fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'saveEvent', ...evt }) });
+                    }
+                    
                     alert("האירוע עודכן בהצלחה!");
                     window.closeModal('eventEditor');
                     filterEvents(); 
@@ -1067,8 +1098,9 @@
                 }
             }
 
-            // Tools
-            window.openWhatsAppTool = () => { window.closeSideMenu(); window.openModal('whatsappModal'); }
+
+            // ... (שאר כפתורי הכלים)
+             window.openWhatsAppTool = () => { window.closeSideMenu(); window.openModal('whatsappModal'); }
             window.openProposalTool = () => { window.closeSideMenu(); window.openModal('proposalSetupModal'); }
             window.openPriceListEditor = () => { window.closeSideMenu(); window.openModal('priceListEditorModal'); }
 
@@ -1080,8 +1112,39 @@
                 if (pkg) { detailsArea.value = pkg.d; priceInput.value = pkg.p; }
             }
 
+            window.savePrices = () => {
+                 const newPrices = {
+                     priceVIP: document.getElementById('priceVIP').value,
+                     priceFESTIVE: document.getElementById('priceFESTIVE').value,
+                     priceBASIC: document.getElementById('priceBASIC').value,
+                     priceSOLO: document.getElementById('priceSOLO').value
+                 };
+                 // עדכון מקומי
+                 Object.keys(newPrices).forEach(k => { if(newPrices[k]) siteConfig[k] = newPrices[k]; });
+                 updatePackagesFromConfig(); // קורא לפונקציה לעדכן את packagesData
+
+                 // שמירה לשרת (לולאה על כל מפתח)
+                 if(API_URL.includes("http")) {
+                     Object.entries(newPrices).forEach(([key, val]) => {
+                         fetch(API_URL, {
+                            method: 'POST',
+                            body: JSON.stringify({ action: 'updateConfig', key: key, value: val })
+                         });
+                     });
+                 }
+                 alert('המחירים נשמרו והתעדכנו!');
+                 window.closeModal('priceListEditorModal');
+            }
+
+            function updatePackagesFromConfig() {
+                if(siteConfig.priceVIP) packagesData['VIP'].p = '₪' + siteConfig.priceVIP;
+                if(siteConfig.priceFESTIVE) packagesData['FESTIVE'].p = '₪' + siteConfig.priceFESTIVE;
+                if(siteConfig.priceBASIC) packagesData['BASIC'].p = '₪' + siteConfig.priceBASIC;
+                if(siteConfig.priceSOLO) packagesData['SOLO'].p = '₪' + siteConfig.priceSOLO;
+            }
+
             window.generateProposal = () => {
-                const name = document.getElementById('propName').value;
+                 const name = document.getElementById('propName').value;
                 const child = document.getElementById('propChild').value;
                 const date = document.getElementById('propDate').value;
                 const hebDate = document.getElementById('propHebDate').value;
@@ -1099,45 +1162,24 @@
                         <style>
                             @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&display=swap');
                             body { font-family: 'Heebo', sans-serif; padding: 40px; max-width: 800px; margin: 0 auto; direction: rtl; color: black; }
-                            
                             .header { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 4px solid #0056b3; padding-bottom: 15px; margin-bottom: 30px; }
-                            .logo { height: 100px; width: auto; display: block; }
+                            .logo { height: 100px; width: auto; display: block; } 
                             .business-details { text-align: left; line-height: 1.6; color: #333; font-size: 14px; }
                             .bsd { position: absolute; top: 20px; right: 20px; font-weight: bold; font-size: 14px; }
-                            
                             h1 { text-align: center; font-size: 36px; font-weight: 900; text-decoration: underline; color: #051c42; margin-bottom: 30px; }
-                            
                             .grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-bottom: 30px; }
                             .section { background: #f9fafb; border: 1px solid #e5e7eb; padding: 20px; border-radius: 12px; }
                             .section h3 { border-bottom: 2px solid #fbbf24; padding-bottom: 8px; margin-bottom: 15px; color: #051c42; font-size: 20px; font-weight: bold; }
-                            
                             .row { display: flex; justify-content: space-between; margin-bottom: 10px; border-bottom: 1px dashed #e5e7eb; padding-bottom: 5px; font-size: 16px; }
-                            
                             .pkg-box { background: #eff6ff; border: 1px solid #bfdbfe; padding: 25px; border-radius: 12px; margin-bottom: 30px; }
                             .pkg-title { font-size: 22px; font-weight: bold; color: #1e40af; border-bottom: 1px solid #93c5fd; padding-bottom: 10px; margin-bottom: 15px; }
                             .pkg-desc { font-size: 18px; line-height: 1.6; white-space: pre-line; }
-                            
-                            .total-box { 
-                                background-color: #051c42; 
-                                color: white; 
-                                padding: 25px; 
-                                border-radius: 12px; 
-                                display: flex; 
-                                justify-content: space-between; 
-                                align-items: center; 
-                                margin-top: 20px; 
-                                -webkit-print-color-adjust: exact; 
-                                print-color-adjust: exact; 
-                            }
+                            .total-box { background-color: #051c42; color: white; padding: 25px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; margin-top: 20px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
                             .total-label { font-size: 24px; font-weight: bold; color: #ffffff; }
-                            .total-price { font-size: 40px; font-weight: 900; color: #86efac; text-shadow: none; }
-                            
+                            .total-price { font-size: 40px; font-weight: 900; color: #ffffff; text-shadow: 0 0 10px rgba(0,0,0,0.5); }
                             .footer { margin-top: 60px; text-align: center; border-top: 1px solid #e5e7eb; padding-top: 20px; color: #666; font-size: 14px; }
                             .quote { font-family: 'Heebo', sans-serif; font-size: 24px; font-weight: 900; color: #051c42; margin-bottom: 10px; display: block; }
-                            
-                            @media print {
-                                body { -webkit-print-color-adjust: exact; }
-                            }
+                            @media print { body { -webkit-print-color-adjust: exact; } }
                         </style>
                     </head>
                     <body>
@@ -1190,20 +1232,13 @@
                     </body>
                     </html>
                 `);
-                
                 printWindow.document.close();
             }
             
-            window.generateCalendarLink = (evt) => {
+             window.generateCalendarLink = (evt) => {
                  return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(evt.eventName || 'אירוע')}&dates=${evt.date.replace(/-/g,'')}T120000/`;
             }
 
-            window.savePrices = () => {
-                 // Logic to save prices
-                 alert('המחירים נשמרו בהצלחה!');
-                 window.closeModal('priceListEditorModal');
-            }
-            
             window.sendWaToClient = (phone) => {
                  const p = phone || document.getElementById('waPhone').value;
                  if(!p) return alert('נא להזין מספר טלפון');
@@ -1217,8 +1252,19 @@
                     if(!API_URL.includes("http")) throw new Error("No API");
                     const response = await fetch(API_URL);
                     const data = await response.json();
+                    
                     if (data.events) events = data.events;
-                    if (data.bookedDates) bookedDates = data.bookedDates;
+                    if (data.config) {
+                        siteConfig = data.config;
+                        if(siteConfig.heroVideo) document.getElementById('promoIframe').src = siteConfig.heroVideo;
+                        if(siteConfig.heroImage) document.getElementById('heroBgImage').style.backgroundImage = `url('${siteConfig.heroImage}')`;
+                        updatePackagesFromConfig();
+                    }
+                    if (data.gallery) galleryImages = data.gallery;
+                    if (data.users) users = data.users;
+                    
+                    bookedDates = events.map(e => e.date);
+
                 } catch (error) {
                     console.log("Demo Mode Active");
                 }
