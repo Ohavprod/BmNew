@@ -132,9 +132,7 @@
         .modal-content { 
             background: #0f172a; padding: 0; border-radius: 1.5rem; border: 1px solid #334155; 
             width: 95% !important; max-width: 600px; 
-            max-height: 85vh; /* גובה מקסימלי */
-            overflow-y: auto; /* גלילה פנימית */
-            position: relative; margin: auto;
+            max-height: 85vh; overflow-y: auto; position: relative; margin: auto;
         }
         #paymentModal .modal-content { max-width: 800px; }
         #proposalSetupModal .modal-content { max-width: 700px; }
@@ -154,10 +152,10 @@
             .container { padding-left: 1rem; padding-right: 1rem; }
             .form-grid { grid-template-columns: 1fr; } 
             
-            /* גלריה - תמונות נמוכות יותר !important */
+            /* גלריה - תמונות נמוכות יותר (פס פילם) */
             .gallery-item {
                 width: 160px !important;
-                height: 90px !important;
+                height: 85px !important;
                 flex-shrink: 0;
                 margin: 0 5px;
             }
@@ -184,81 +182,9 @@
                 max-width: none !important;
             }
         }
-        /* ========================================== */
 
         @media (min-width: 769px) {
              .form-grid { grid-template-columns: 1fr 1fr; }
-        }
-
-        /* --- הדפסה A3 מתוקנת סופית (V89) --- */
-        @media print { 
-            @page { size: A3 portrait; margin: 0; } 
-            
-            /* הסתרת כל האלמנטים שלא קשורים להדפסה בצורה אגרסיבית */
-            body * { visibility: hidden; } 
-            #adminPanel, .fixed, .sticky, #loggedInMenuBtn, .whatsapp-float, .sound-toggle-btn { display: none !important; }
-
-            /* החזרת אלמנט ההדפסה בלבד */
-            #proposalPrintArea { 
-                display: block !important; 
-                position: absolute; 
-                left: 0; top: 0; 
-                width: 100%; 
-                background: white !important;
-                color: black !important;
-                z-index: 2147483647;
-                margin: 0; padding: 0;
-            }
-
-            /* שחזור התצוגה הפנימית של ההדפסה */
-            #proposalPrintArea * { 
-                visibility: visible !important;
-                color: black !important;
-            }
-            
-            /* איפוס רקע כללי למניעת פסים כחולים */
-            html, body { background-color: white !important; height: auto !important; overflow: visible !important; }
-            #siteFooter { display: none !important; }
-
-            /* שחזור פריסת GRID/FLEX בתוך ההדפסה */
-            .a3-page { 
-                width: 90%; margin: 0 auto; padding: 40px; box-sizing: border-box; 
-                display: flex !important; flex-direction: column; min-height: 98vh; 
-                justify-content: space-between;
-            }
-            .a3-grid { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 30px; }
-            .a3-header { display: flex !important; justify-content: space-between; align-items: flex-end; border-bottom: 4px solid #0056b3 !important; padding-bottom: 15px; margin-bottom: 20px; }
-            .a3-total-area { display: flex !important; justify-content: space-between; align-items: center; }
-
-            .a3-logo-img { display: block !important; height: 80px !important; width: auto !important; }
-
-            /* תיקון צבע מחיר (לבן על כחול) */
-            .a3-total-area { 
-                background-color: #051c42 !important; 
-                border-radius: 12px;
-                padding: 20px;
-                -webkit-print-color-adjust: exact; 
-                print-color-adjust: exact;
-            }
-            .a3-total-label { color: #ffffff !important; } 
-            .a3-total-price { 
-                color: #ffffff !important; /* לבן */
-                font-weight: 900 !important;
-                font-size: 40px;
-                text-shadow: none !important;
-            } 
-
-            /* תיקון פונט משפט תחתון */
-            .a3-quote { 
-                font-family: 'Heebo', sans-serif !important; 
-                font-weight: 900 !important; 
-                font-size: 24px;
-                color: #051c42 !important; 
-                margin-bottom: 10px; 
-                text-decoration: none;
-            }
-
-            .a3-footer { margin-top: 50px; page-break-inside: avoid; text-align: center; }
         }
     </style>
 </head>
@@ -467,7 +393,7 @@
     </section>
 
     <section id="contact" class="py-20 bg-black text-center border-t border-blue-900 relative z-10">
-        <h2 class="text-3xl font-bold mb-8 text-white" data-id="contact-title" data-type="text">צרו קשר</h2>
+        <h2 class="text-3xl font-bold mb-8 text-white" data-id="contact-title" data-type="text">בואו נדבר</h2>
         <div class="flex flex-col items-center gap-6">
             <a href="tel:0559907076" id="phoneLink" class="flex items-center gap-3 bg-blue-900/50 hover:bg-blue-900 border border-blue-800 px-8 py-4 rounded-2xl text-2xl text-white font-bold transition group">
                 <i class="fas fa-phone-alt text-amber-500 group-hover:rotate-12 transition"></i>
@@ -621,55 +547,7 @@
         </div>
     </div>
 
-    <div id="proposalPrintArea" class="hidden">
-        <div class="a3-page">
-            <div class="a3-bsd">בס"ד</div>
-            <div class="a3-header">
-                <img src="https://i.postimg.cc/CMcRF8Nm/Logo.gif" class="a3-logo-img" alt="Logo">
-                <div class="a3-business-details">
-                    <div><strong>אביב ויצמן - פייטן לבר מצווה</strong></div>
-                    <div>עוסק פטור: 315660746</div>
-                    <div>avivshows@gmail.com</div>
-                    <div>055-9907076</div>
-                </div>
-            </div>
-            
-            <h2 class="a3-title-main">הצעת מחיר</h2>
-            
-            <div class="a3-grid">
-                <div class="a3-section">
-                    <h4>פרטי הלקוח</h4>
-                    <div class="a3-row"><strong>שם:</strong> <span id="printClientName"></span></div>
-                    <div class="a3-row"><strong>שם הילד:</strong> <span id="printChildName"></span></div>
-                </div>
-                <div class="a3-section">
-                    <h4>פרטי האירוע</h4>
-                    <div class="a3-row"><strong>תאריך:</strong> <span id="printEventDate"></span></div>
-                    <div class="a3-row"><strong>תאריך שבת:</strong> <span id="printHebDate"></span></div>
-                    <div class="a3-row"><strong>מיקום:</strong> <span id="printLocation"></span></div>
-                </div>
-            </div>
-
-            <div class="a3-pkg-section">
-                <div class="a3-pkg-title">שירותים נבחרים:</div>
-                <div id="printPkgDesc" class="a3-pkg-desc"></div>
-            </div>
-
-            <div class="a3-total-area">
-                <span class="a3-total-label">סה"כ לתשלום:</span>
-                <span id="printTotal" class="a3-total-price"></span>
-            </div>
-
-            <div class="a3-footer">
-                <div class="a3-quote">"בשם השם נעשה ונצליח!"</div>
-                <p>ההצעה בתוקף ל-30 יום מתאריך ההפקה</p>
-                <p>אפשרויות תשלום: ביט / פייבוקס / העברה בנקאית / צ'ק</p>
-            </div>
-        </div>
-    </div>
-
     <div id="eventEditor" class="modal-overlay"><div class="modal-content"><div class="modal-header"><h3 class="text-3xl font-black text-white">פרטי אירוע</h3><button onclick="closeModal('eventEditor')" class="text-slate-400 hover:text-white text-2xl"><i class="fas fa-times"></i></button></div><div class="modal-body"><form id="eventForm" class="form-grid"><input type="hidden" name="id"><div class="input-group"><label>תאריך לועזי</label><input type="date" name="date" required></div><div class="input-group"><label>תאריך עברי</label><input type="text" name="hebrewDate"></div><div class="input-group"><label>שם הלקוח</label><input type="text" name="clientName"></div><div class="input-group"><label>שם חתן הבר מצווה</label><input type="text" name="childName"></div><div class="input-group"><label>טלפון</label><input type="tel" name="phone"></div><div class="input-group"><label>מיקום האירוע</label><input type="text" name="location"></div><div class="input-group"><label>לינק ל-Waze</label><input type="text" name="wazeLink"></div><div class="input-group"><label>סוג חבילה</label><select name="packageType"><option>בסיס</option><option>חגיגית</option><option>הכל כלול</option><option>ליווי וחזנות</option><option>מותאמת אישית</option></select></div><div class="input-group"><label>שעת הזמנת אורחים</label><input type="time" name="guestTime"></div><div class="input-group"><label>שעת תחילת אירוע</label><input type="time" name="startTime"></div><div class="input-group"><label>מחיר סגירה</label><input type="text" name="price"></div><div class="input-group"><label>סטטוס</label><select name="status"><option value="תהליך">בתהליך סגירה</option><option value="סגור">סגור (מאושר)</option><option value="הסתיים">הסתיים</option></select></div><div class="checkbox-group col-span-2"><label class="flex items-center gap-2 text-white font-bold"><input type="checkbox" name="hasKeyboard"> כולל קלידן</label><label class="flex items-center gap-2 text-white font-bold"><input type="checkbox" name="hasDrummers"> כולל מתופפים</label><label class="flex items-center gap-2 text-white font-bold text-pink-400"><input type="checkbox" name="isStudent"> תלמיד של אביב</label></div><div class="input-group col-span-1 md:col-span-2"><label>לינק למדיה</label><input type="text" name="mediaLink"></div><div class="input-group col-span-1 md:col-span-2"><label>הערות לצוות</label><textarea name="notes" class="h-32 notes-area"></textarea></div></form><div class="mt-8 flex justify-between items-center border-t border-slate-700 pt-6"><button type="button" onclick="deleteEvent()" class="text-red-500 font-bold px-4">מחק אירוע</button><button type="button" onclick="saveEvent()" class="bg-green-600 hover:bg-green-500 text-white font-bold py-3 px-10 rounded-xl text-lg shadow-lg">שמור</button></div></div></div></div>
-
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -687,11 +565,11 @@
                 'VIP': { t: 'חבילת הכל כלול VIP', p: '₪5,500', d: 'ליווי תפילה ופיוטים\nחזנות\nהגברה מקצועית\nקלידן\nזוג מתופפים\nכניסה מיוחדת עם חופה ושופרות\nליווי שירים בסעודה (אביב + קלידן)\nלימוד הפרשה (במידת הצורך)' },
                 'FESTIVE': { t: 'חבילה חגיגית', p: '₪4,800', d: 'ליווי תפילה ופיוטים\nחזנות\nהגברה מקצועית\nקלידן\nזוג מתופפים\nכניסה מיוחדת עם חופה ושופרות\nלימוד הפרשה (במידת הצורך)' },
                 'BASIC': { t: 'חבילה בסיסית', p: '₪3,800', d: 'ליווי תפילה ופיוטים\nחזנות מקצועית\nהגברה מקצועית\nקלידן\nלימוד הפרשה (במידת הצורך)' },
-                'SOLO': { t: 'חבילת ליווי וחזנות', p: '₪3,500', d: 'ליווי תפילה ופיוטים\nחזנות מקצועית\nהגברה מקצועית\nללא קלידן\nלימוד הפרשה (במידת הצורך)' },
+                'SOLO': { t: 'חבילת לימוד לבר מצווה', p: '₪3,500', d: 'ליווי תפילה ופיוטים\nחזנות מקצועית\nהגברה מקצועית\nללא קלידן\nלימוד הפרשה (במידת הצורך)' },
                 'CUSTOM': { t: 'התאמה אישית', p: '', d: '' }
             };
 
-            // Global functions attached to window
+            // Global functions
             window.openModal = (id) => { document.getElementById(id).style.display = 'flex'; }
             window.closeModal = (id) => { document.getElementById(id).style.display = 'none'; }
             window.openLoginModal = () => { window.openModal('loginModal'); }
@@ -1163,17 +1041,87 @@
                 const details = document.getElementById('propCustomDetails').value;
                 const price = document.getElementById('propCustomPrice').value;
 
-                document.getElementById('printClientName').innerText = name;
-                document.getElementById('printChildName').innerText = child;
-                document.getElementById('printEventDate').innerText = date;
-                document.getElementById('printHebDate').innerText = hebDate;
-                document.getElementById('printLocation').innerText = loc;
-                document.getElementById('printPkgDesc').innerHTML = details.replace(/\n/g, '<br>');
-                document.getElementById('printTotal').innerText = price;
+                // יצירת חלון חדש ונקי להדפסה
+                const printWindow = window.open('', '_blank');
+                
+                printWindow.document.write(`
+                    <html lang="he" dir="rtl">
+                    <head>
+                        <title>הצעת מחיר - אביב ויצמן</title>
+                        <style>
+                            @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&display=swap');
+                            body { font-family: 'Heebo', sans-serif; padding: 40px; max-width: 800px; margin: 0 auto; direction: rtl; }
+                            .header { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 4px solid #0056b3; padding-bottom: 15px; margin-bottom: 30px; }
+                            .logo { height: 80px; }
+                            .business-details { text-align: left; line-height: 1.6; color: #333; font-size: 14px; }
+                            .bsd { position: absolute; top: 20px; right: 20px; font-weight: bold; font-size: 14px; }
+                            h1 { text-align: center; font-size: 36px; font-weight: 900; text-decoration: underline; color: #051c42; margin-bottom: 30px; }
+                            .grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-bottom: 30px; }
+                            .section { background: #f9fafb; border: 1px solid #e5e7eb; padding: 20px; border-radius: 12px; }
+                            .section h3 { border-bottom: 2px solid #fbbf24; padding-bottom: 8px; margin-bottom: 15px; color: #051c42; font-size: 20px; font-weight: bold; }
+                            .row { display: flex; justify-content: space-between; margin-bottom: 10px; border-bottom: 1px dashed #e5e7eb; padding-bottom: 5px; font-size: 16px; }
+                            .pkg-box { background: #eff6ff; border: 1px solid #bfdbfe; padding: 25px; border-radius: 12px; margin-bottom: 30px; }
+                            .pkg-title { font-size: 22px; font-weight: bold; color: #1e40af; border-bottom: 1px solid #93c5fd; padding-bottom: 10px; margin-bottom: 15px; }
+                            .pkg-desc { font-size: 18px; line-height: 1.6; white-space: pre-line; }
+                            .total-box { background-color: #051c42; color: white; padding: 25px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; margin-top: 20px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+                            .total-label { font-size: 24px; font-weight: bold; }
+                            .total-price { font-size: 40px; font-weight: 900; color: #ffffff; text-shadow: 0 0 10px rgba(0,0,0,0.5); }
+                            .footer { margin-top: 60px; text-align: center; border-top: 1px solid #e5e7eb; padding-top: 20px; color: #666; font-size: 14px; }
+                            .quote { font-family: cursive; font-size: 24px; font-weight: bold; color: #051c42; margin-bottom: 10px; display: block; }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="bsd">בס"ד</div>
+                        <div class="header">
+                            <img src="https://i.postimg.cc/CMcRF8Nm/Logo.gif" class="logo" alt="Logo">
+                            <div class="business-details">
+                                <div><strong>אביב ויצמן - פייטן לבר מצווה</strong></div>
+                                <div>עוסק פטור: 315660746</div>
+                                <div>avivshows@gmail.com</div>
+                                <div>055-9907076</div>
+                            </div>
+                        </div>
 
-                document.getElementById('proposalPrintArea').classList.add('show');
-                window.print();
-                setTimeout(() => document.getElementById('proposalPrintArea').classList.remove('show'), 1000);
+                        <h1>הצעת מחיר</h1>
+
+                        <div class="grid-container">
+                            <div class="section">
+                                <h3>פרטי הלקוח</h3>
+                                <div class="row"><strong>שם:</strong> <span>${name}</span></div>
+                                <div class="row"><strong>שם הילד:</strong> <span>${child}</span></div>
+                            </div>
+                            <div class="section">
+                                <h3>פרטי האירוע</h3>
+                                <div class="row"><strong>תאריך:</strong> <span>${date}</span></div>
+                                <div class="row"><strong>תאריך שבת:</strong> <span>${hebDate}</span></div>
+                                <div class="row"><strong>מיקום:</strong> <span>${loc}</span></div>
+                            </div>
+                        </div>
+
+                        <div class="pkg-box">
+                            <div class="pkg-title">שירותים נבחרים:</div>
+                            <div class="pkg-desc">${details.replace(/\n/g, '<br>')}</div>
+                        </div>
+
+                        <div class="total-box">
+                            <span class="total-label">סה"כ לתשלום:</span>
+                            <span class="total-price">${price}</span>
+                        </div>
+
+                        <div class="footer">
+                            <span class="quote">"בשם השם נעשה ונצליח!"</span>
+                            <p>ההצעה בתוקף ל-30 יום מתאריך ההפקה</p>
+                            <p>אפשרויות תשלום: ביט / פייבוקס / העברה בנקאית / צ'ק</p>
+                        </div>
+
+                        <script>
+                            window.onload = function() { window.print(); }
+                        <\/script>
+                    </body>
+                    </html>
+                `);
+                
+                printWindow.document.close();
             }
             
             window.generateCalendarLink = (evt) => {
