@@ -131,21 +131,36 @@
         #siteFooter { background: #020617; padding: 20px; text-align: center; border-top: 1px solid #1e293b; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 10px; }
         .copyright { color: #64748b; font-size: 0.9rem; }
 
-        /* --- מודאלים --- */
+        /* --- מודאלים (תוקן לגלילה תקינה) --- */
         .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 50000; justify-content: center; align-items: center; backdrop-filter: blur(5px); padding: 10px; }
         .modal-content { 
             background: #0f172a; padding: 0; border-radius: 1.5rem; border: 1px solid #334155; 
             width: 95% !important; max-width: 600px; 
-            max-height: 85vh; overflow-y: auto; /* גלילה פנימית תקינה */
-            overscroll-behavior: contain; /* מניעת גלילת הרקע */
+            /* תיקון גלילה קריטי */
+            max-height: 90vh; /* מגביל גובה */
+            display: flex; flex-direction: column; /* מאפשר לחלקים הפנימיים לזוז */
             position: relative; margin: auto;
         }
         #paymentModal .modal-content { max-width: 800px; }
         #proposalSetupModal .modal-content { max-width: 700px; }
         #eventEditor .modal-content { max-width: 800px; }
 
-        .modal-header { background: #1e293b; padding: 1rem; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 10; }
-        .modal-body { padding: 1rem; }
+        /* כותרת מודאל קבועה */
+        .modal-header { 
+            background: #1e293b; padding: 1rem; border-bottom: 1px solid #334155; 
+            display: flex; justify-content: space-between; align-items: center; 
+            flex-shrink: 0; /* לא מתכווץ */
+            border-top-left-radius: 1.5rem; border-top-right-radius: 1.5rem;
+        }
+        
+        /* גוף מודאל נגלל */
+        .modal-body { 
+            padding: 1rem; 
+            overflow-y: auto; /* כאן קורה הקסם */
+            flex-grow: 1;
+            -webkit-overflow-scrolling: touch; 
+        }
+
         .form-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
         .input-group label { display: block; color: #94a3b8; margin-bottom: 3px; font-size: 0.85rem; }
         .input-group input, .input-group select, .input-group textarea { width: 100%; background: #1e293b; border: 1px solid #475569; color: white; padding: 10px; border-radius: 8px; font-size: 1rem; outline: none; }
@@ -182,10 +197,12 @@
                 border-right: none !important;
             }
             
+            /* התאמת מודאל למובייל */
             .modal-content {
                 width: 95vw !important;
                 margin: 0 auto !important;
                 max-width: none !important;
+                max-height: 85vh; /* קצת פחות ממסך מלא כדי להשאיר מקום לאצבע */
             }
         }
 
@@ -193,7 +210,7 @@
              .form-grid { grid-template-columns: 1fr 1fr; }
         }
 
-        /* --- הדפסה A3 נקייה (V92) --- */
+        /* --- הדפסה A3 נקייה (V93) --- */
         @media print { 
             @page { size: A3 portrait; margin: 0; } 
             
@@ -546,32 +563,34 @@
 
     <div id="proposalSetupModal" class="modal-overlay">
         <div class="modal-content !w-[600px] text-center bg-white text-black p-0 overflow-hidden">
-            <div class="bg-slate-900 p-4 text-white flex justify-between items-center"><h3 class="text-2xl font-bold">הפקת הצעת מחיר</h3><button onclick="closeModal('proposalSetupModal')"><i class="fas fa-times"></i></button></div>
-            <div class="p-8 grid gap-4 text-right">
-                <div><label class="text-xs font-bold text-gray-500">שם הלקוח</label><input type="text" id="propName" class="w-full bg-gray-100 p-3 rounded border border-gray-300"></div>
-                <div><label class="text-xs font-bold text-gray-500">שם הילד</label><input type="text" id="propChild" class="w-full bg-gray-100 p-3 rounded border border-gray-300"></div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div><label class="text-xs font-bold text-gray-500">תאריך לועזי</label><input type="text" id="propDate" class="w-full bg-gray-100 p-3 rounded border border-gray-300"></div>
-                    <div><label class="text-xs font-bold text-gray-500">תאריך שבת</label><input type="text" id="propHebDate" class="w-full bg-gray-100 p-3 rounded border border-gray-300"></div>
+            <div class="modal-header"><h3 class="text-2xl font-bold text-white">הפקת הצעת מחיר</h3><button onclick="closeModal('proposalSetupModal')" class="text-white"><i class="fas fa-times"></i></button></div>
+            <div class="modal-body">
+                <div class="grid gap-4 text-right">
+                    <div><label class="text-xs font-bold text-gray-500">שם הלקוח</label><input type="text" id="propName" class="w-full bg-gray-100 p-3 rounded border border-gray-300 text-black"></div>
+                    <div><label class="text-xs font-bold text-gray-500">שם הילד</label><input type="text" id="propChild" class="w-full bg-gray-100 p-3 rounded border border-gray-300 text-black"></div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div><label class="text-xs font-bold text-gray-500">תאריך לועזי</label><input type="text" id="propDate" class="w-full bg-gray-100 p-3 rounded border border-gray-300 text-black"></div>
+                        <div><label class="text-xs font-bold text-gray-500">תאריך שבת</label><input type="text" id="propHebDate" class="w-full bg-gray-100 p-3 rounded border border-gray-300 text-black"></div>
+                    </div>
+                    <div><label class="text-xs font-bold text-gray-500">מיקום האירוע</label><input type="text" id="propLocation" class="w-full bg-gray-100 p-3 rounded border border-gray-300 text-black"></div>
+                    <div><label class="text-xs font-bold text-gray-500">חבילה נבחרת</label>
+                        <select id="propType" onchange="updateProposalFields()" class="w-full bg-gray-100 p-3 rounded border border-gray-300 text-black">
+                            <option value="VIP">הכל כלול VIP</option>
+                            <option value="FESTIVE">חבילה חגיגית</option>
+                            <option value="BASIC">חבילה בסיסית</option>
+                            <option value="SOLO">חבילת לימוד לבר מצווה</option>
+                            <option value="CUSTOM">התאמה אישית</option>
+                        </select>
+                    </div>
+                    <div id="proposalEditArea" class="border p-4 rounded bg-gray-50 mt-2">
+                        <label class="text-xs font-bold text-gray-500">פירוט השירותים (ניתן לעריכה חופשית)</label>
+                        <textarea id="propCustomDetails" class="w-full bg-white p-2 rounded border border-gray-300 h-32 mb-2 text-black"></textarea>
+                        <label class="text-xs font-bold text-gray-500">מחיר כולל</label>
+                        <input type="text" id="propCustomPrice" class="w-full bg-white p-2 rounded border border-gray-300 font-bold text-lg text-green-600">
+                    </div>
+                    
+                    <button onclick="generateProposal()" class="bg-blue-600 text-white font-bold py-4 rounded-xl text-lg shadow hover:bg-blue-700 mt-4 w-full">הפק מסמך להדפסה</button>
                 </div>
-                <div><label class="text-xs font-bold text-gray-500">מיקום האירוע</label><input type="text" id="propLocation" class="w-full bg-gray-100 p-3 rounded border border-gray-300"></div>
-                <div><label class="text-xs font-bold text-gray-500">חבילה נבחרת</label>
-                    <select id="propType" onchange="updateProposalFields()" class="w-full bg-gray-100 p-3 rounded border border-gray-300">
-                        <option value="VIP">הכל כלול VIP</option>
-                        <option value="FESTIVE">חבילה חגיגית</option>
-                        <option value="BASIC">חבילה בסיסית</option>
-                        <option value="SOLO">חבילת לימוד לבר מצווה</option>
-                        <option value="CUSTOM">התאמה אישית</option>
-                    </select>
-                </div>
-                <div id="proposalEditArea" class="border p-4 rounded bg-gray-50 mt-2">
-                    <label class="text-xs font-bold text-gray-500">פירוט השירותים (ניתן לעריכה חופשית)</label>
-                    <textarea id="propCustomDetails" class="w-full bg-white p-2 rounded border border-gray-300 h-32 mb-2"></textarea>
-                    <label class="text-xs font-bold text-gray-500">מחיר כולל</label>
-                    <input type="text" id="propCustomPrice" class="w-full bg-white p-2 rounded border border-gray-300 font-bold text-lg text-green-600">
-                </div>
-                
-                <button onclick="generateProposal()" class="bg-blue-600 text-white font-bold py-4 rounded-xl text-lg shadow hover:bg-blue-700 mt-4">הפק מסמך להדפסה</button>
             </div>
         </div>
     </div>
@@ -584,7 +603,6 @@
     </div>
 
     <div id="eventEditor" class="modal-overlay"><div class="modal-content"><div class="modal-header"><h3 class="text-3xl font-black text-white">פרטי אירוע</h3><button onclick="closeModal('eventEditor')" class="text-slate-400 hover:text-white text-2xl"><i class="fas fa-times"></i></button></div><div class="modal-body"><form id="eventForm" class="form-grid"><input type="hidden" name="id"><div class="input-group"><label>תאריך לועזי</label><input type="date" name="date" required></div><div class="input-group"><label>תאריך עברי</label><input type="text" name="hebrewDate"></div><div class="input-group"><label>שם הלקוח</label><input type="text" name="clientName"></div><div class="input-group"><label>שם חתן הבר מצווה</label><input type="text" name="childName"></div><div class="input-group"><label>טלפון</label><input type="tel" name="phone"></div><div class="input-group"><label>מיקום האירוע</label><input type="text" name="location"></div><div class="input-group"><label>לינק ל-Waze</label><input type="text" name="wazeLink"></div><div class="input-group"><label>סוג חבילה</label><select name="packageType"><option>בסיס</option><option>חגיגית</option><option>הכל כלול</option><option>ליווי וחזנות</option><option>מותאמת אישית</option></select></div><div class="input-group"><label>שעת הזמנת אורחים</label><input type="time" name="guestTime"></div><div class="input-group"><label>שעת תחילת אירוע</label><input type="time" name="startTime"></div><div class="input-group"><label>מחיר סגירה</label><input type="text" name="price"></div><div class="input-group"><label>סטטוס</label><select name="status"><option value="תהליך">בתהליך סגירה</option><option value="סגור">סגור (מאושר)</option><option value="הסתיים">הסתיים</option></select></div><div class="checkbox-group col-span-2"><label class="flex items-center gap-2 text-white font-bold"><input type="checkbox" name="hasKeyboard"> כולל קלידן</label><label class="flex items-center gap-2 text-white font-bold"><input type="checkbox" name="hasDrummers"> כולל מתופפים</label><label class="flex items-center gap-2 text-white font-bold text-pink-400"><input type="checkbox" name="isStudent"> תלמיד של אביב</label></div><div class="input-group col-span-1 md:col-span-2"><label>לינק למדיה</label><input type="text" name="mediaLink"></div><div class="input-group col-span-1 md:col-span-2"><label>הערות לצוות</label><textarea name="notes" class="h-32 notes-area"></textarea></div></form><div class="mt-8 flex justify-between items-center border-t border-slate-700 pt-6"><button type="button" onclick="deleteEvent()" class="text-red-500 font-bold px-4">מחק אירוע</button><button type="button" onclick="saveEvent()" class="bg-green-600 hover:bg-green-500 text-white font-bold py-3 px-10 rounded-xl text-lg shadow-lg">שמור</button></div></div></div></div>
-
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -1180,6 +1198,7 @@
                         </div>
 
                         <script>
+                            // המתנה לטעינת הלוגו לפני ההדפסה
                             window.onload = function() { window.print(); }
                         <\/script>
                     </body>
