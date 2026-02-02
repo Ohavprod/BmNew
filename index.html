@@ -9,8 +9,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&family=Raleway:wght@400;700&display=swap" rel="stylesheet">
 
     <script>
-        // *** וודא שהקישור הזה תקין ומעודכן לגרסה האחרונה ***
-        const API_URL = "https://script.google.com/macros/s/AKfycbzsgu9wpsviWv2lA29jHSnBN5aBh0otUbJ0TCjTAcCXuYwJJyYv6tXn74msUD7zmG4grA/exec?mode=api"; 
+        // הקישור הקבוע שלך
+        const API_URL = "https://script.google.com/macros/s/AKfycby0ETBWgSQRmV014veRcJvthH6_y9NyJZ_auyBf82HJFxhIwnoN-BR55S-mj_IglcrUQQ/exec?mode=api"; 
     </script>
 
     <style>
@@ -18,7 +18,9 @@
         html { font-size: 14px; }
         body { font-family: 'Heebo', sans-serif; background-color: #051c42; background-image: linear-gradient(180deg, #051c42 0%, #021029 100%); color: #ffffff; min-height: 100vh; overflow-x: hidden; margin: 0; padding: 0; display: flex; flex-direction: column; }
         
+        /* נעילת גלילה כשהמודאל פתוח */
         body.no-scroll { overflow: hidden !important; height: 100vh; }
+
         .gold-text { background: linear-gradient(45deg, #fbbf24, #d97706); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 900; text-shadow: 0px 0px 20px rgba(251, 191, 36, 0.3); }
         .a3-logo-img { display: none; } 
 
@@ -41,7 +43,7 @@
         .footer-login-btn { color: #1e293b; font-size: 1.2rem; cursor: pointer; transition: 0.3s; padding: 10px; }
         .whatsapp-float { position: fixed; bottom: 20px; right: 20px; z-index: 100; background: #25D366; color: white; padding: 12px; border-radius: 50%; font-size: 2rem; box-shadow: 0 4px 10px rgba(0,0,0,0.3); transition: 0.3s; display: flex; align-items: center; justify-content: center; width: 55px; height: 55px; }
 
-        /* המבורגר נקי */
+        /* המבורגר נקי (ללא רקע) */
         #loggedInMenuBtn { position: fixed; top: 20px; right: 20px; z-index: 99999; background: transparent; width: 45px; height: 45px; color: white; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; cursor: pointer; text-shadow: 0 2px 5px rgba(0,0,0,0.5); }
         
         #sideMenu { position: fixed; top: 0; right: -320px; width: 280px; height: 100%; background: #0f172a; z-index: 100000; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); border-left: 4px solid #fbbf24; padding: 2rem; padding-top: 80px; display: flex; flex-direction: column; gap: 1rem; box-shadow: -20px 0 50px rgba(0,0,0,0.9); }
@@ -132,7 +134,7 @@
         #siteFooter { background: #020617; padding: 20px; text-align: center; border-top: 1px solid #1e293b; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 10px; }
         .copyright { color: #64748b; font-size: 0.9rem; }
 
-        /* --- מודאלים --- */
+        /* --- מודאלים (תוקן לגלילה תקינה) --- */
         .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 50000; justify-content: center; align-items: center; backdrop-filter: blur(5px); padding: 10px; }
         .modal-content { 
             background: #0f172a; padding: 0; border-radius: 1.5rem; border: 1px solid #334155; 
@@ -630,6 +632,26 @@
             window.saveChanges = () => {
                 alert("כל הנתונים נשמרים אוטומטית בעת עדכון טפסים ספציפיים.");
             }
+            
+            window.deleteEvent = () => {
+                const id = document.forms['eventForm'].id.value;
+                if(!id) return alert("אירוע חדש לא ניתן למחיקה לפני שנשמר");
+                
+                if(!confirm("האם אתה בטוח שברצונך למחוק את האירוע? פעולה זו אינה הפיכה.")) return;
+                
+                if(API_URL.includes("http")) {
+                    fetch(API_URL, {
+                        method: 'POST',
+                        body: JSON.stringify({ action: 'deleteEvent', id: id })
+                    }).then(() => {
+                        alert("האירוע נמחק בהצלחה");
+                        window.closeModal('eventEditor');
+                        loadData(); // טעינה מחדש של הנתונים מהשרת
+                    });
+                } else {
+                    alert("מצב דמו - המחיקה לא נשמרה");
+                }
+            }
 
             // --- פונקציה חדשה: עריכת קישורי רשתות חברתיות ---
             window.editLink = (key) => {
@@ -1123,12 +1145,12 @@
                     notes: form.notes.value
                 };
 
+                // בדיקה אם זה אירוע חדש או קיים
                 if (id) {
-                    // Update existing
                     eventData.action = 'saveEvent';
                     eventData.id = id;
                 } else {
-                    // Create new
+                    // יצירת אירוע חדש
                     eventData.action = 'createEvent';
                     eventData.id = 'evt-' + Date.now();
                 }
@@ -1145,7 +1167,6 @@
                     window.closeModal('eventEditor');
                 }
             }
-
 
             // ... (שאר כפתורי הכלים)
              window.openWhatsAppTool = () => { window.closeSideMenu(); window.openModal('whatsappModal'); }
