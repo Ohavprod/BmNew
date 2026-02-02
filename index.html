@@ -16,6 +16,10 @@
         /* --- בסיס --- */
         html { font-size: 14px; }
         body { font-family: 'Heebo', sans-serif; background-color: #051c42; background-image: linear-gradient(180deg, #051c42 0%, #021029 100%); color: #ffffff; min-height: 100vh; overflow-x: hidden; margin: 0; padding: 0; display: flex; flex-direction: column; }
+        
+        /* נעילת גלילה כשהמודאל פתוח */
+        body.no-scroll { overflow: hidden !important; height: 100vh; }
+
         .gold-text { background: linear-gradient(45deg, #fbbf24, #d97706); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 900; text-shadow: 0px 0px 20px rgba(251, 191, 36, 0.3); }
         .a3-logo-img { display: none; } 
 
@@ -132,7 +136,9 @@
         .modal-content { 
             background: #0f172a; padding: 0; border-radius: 1.5rem; border: 1px solid #334155; 
             width: 95% !important; max-width: 600px; 
-            max-height: 85vh; overflow-y: auto; position: relative; margin: auto;
+            max-height: 85vh; overflow-y: auto; /* גלילה פנימית תקינה */
+            overscroll-behavior: contain; /* מניעת גלילת הרקע */
+            position: relative; margin: auto;
         }
         #paymentModal .modal-content { max-width: 800px; }
         #proposalSetupModal .modal-content { max-width: 700px; }
@@ -185,6 +191,36 @@
 
         @media (min-width: 769px) {
              .form-grid { grid-template-columns: 1fr 1fr; }
+        }
+
+        /* --- הדפסה A3 נקייה (V92) --- */
+        @media print { 
+            @page { size: A3 portrait; margin: 0; } 
+            
+            /* הסתרת כל האלמנטים של האתר */
+            body * { visibility: hidden; } 
+            #adminPanel, .fixed, .sticky, #loggedInMenuBtn, .whatsapp-float, .sound-toggle-btn { display: none !important; }
+
+            /* אזור הדפסה נקי */
+            #proposalPrintArea { 
+                display: block !important; 
+                position: absolute; 
+                left: 0; top: 0; 
+                width: 100%; 
+                background: white !important;
+                color: black !important;
+                z-index: 2147483647;
+                margin: 0; padding: 0;
+            }
+
+            /* רק לזה מותר להיראות */
+            #proposalPrintArea * { 
+                visibility: visible !important;
+                color: black !important;
+            }
+            
+            /* איפוס רקע */
+            html, body { background-color: white !important; height: auto !important; overflow: visible !important; }
         }
     </style>
 </head>
@@ -496,7 +532,7 @@
                             <option value="חגיגית">חגיגית</option>
                             <option value="הכל כלול">הכל כלול</option>
                             <option value="בסיס">בסיס</option>
-                            <option value="ליווי וחזנות">ליווי וחזנות</option>
+                            <option value="לימוד לבר מצווה">לימוד לבר מצווה</option>
                         </select>
                     </div>
                     <textarea id="qeNotes" placeholder="הערות..." class="w-full p-3 bg-slate-800 border border-slate-600 rounded text-white h-24"></textarea>
@@ -506,7 +542,7 @@
         </div>
     </div>
     
-    <div id="priceListEditorModal" class="modal-overlay"><div class="modal-content"><div class="modal-header"><h3 class="text-2xl font-bold text-white">מחירון (למנהל בלבד)</h3><button onclick="closeModal('priceListEditorModal')" class="text-white text-2xl"><i class="fas fa-times"></i></button></div><div class="modal-body"><div class="grid gap-6"><div class="bg-slate-800 p-6 rounded-xl border border-slate-600"><h3 class="text-xl font-bold text-amber-400 border-b border-slate-700 pb-2 mb-2">חבילת הכל כלול</h3><ul class="text-slate-300 text-sm list-disc pr-4 mb-4"><li>ליווי תפילה ופיוטים</li><li>חזנות מקצועית + הגברה</li><li>זוג מתופפים</li><li>חופה ושופרות</li><li>קלידן מקצועי</li><li>ליווי בארוחה (אביב+קלידן)</li></ul><input type="text" id="priceVIP" value="5500" class="w-full bg-slate-700 p-2 rounded text-white mt-2 editable-active text-center font-bold"></div><div class="bg-slate-800 p-6 rounded-xl border border-slate-600"><h3 class="text-xl font-bold text-white border-b border-slate-700 pb-2 mb-2">חבילה חגיגית</h3><ul class="text-slate-300 text-sm list-disc pr-4 mb-4"><li>ליווי תפילה ופיוטים</li><li>חזנות מקצועית + הגברה</li><li>זוג מתופפים</li><li>קלידן</li><li>חופה ושופרות</li></ul><input type="text" id="priceFESTIVE" value="4800" class="w-full bg-slate-700 p-2 rounded text-white mt-2 editable-active text-center font-bold"></div><div class="bg-slate-800 p-6 rounded-xl border border-slate-600"><h3 class="text-xl font-bold text-white border-b border-slate-700 pb-2 mb-2">חבילת בסיס</h3><ul class="text-slate-300 text-sm list-disc pr-4 mb-4"><li>ליווי תפילה ופיוטים</li><li>חזנות מקצועית + הגברה</li><li>קלידן</li></ul><input type="text" id="priceBASIC" value="3800" class="w-full bg-slate-700 p-2 rounded text-white mt-2 editable-active text-center font-bold"></div><div class="bg-slate-800 p-6 rounded-xl border border-slate-600"><h3 class="text-xl font-bold text-white border-b border-slate-700 pb-2 mb-2">חבילת ליווי וחזנות</h3><ul class="text-slate-300 text-sm list-disc pr-4 mb-4"><li>ליווי תפילה ופיוטים</li><li>חזנות מקצועית + הגברה</li><li>ללא קלידן</li></ul><input type="text" id="priceSOLO" value="3500" class="w-full bg-slate-700 p-2 rounded text-white mt-2 editable-active text-center font-bold"></div></div><div class="mt-6 text-center"><button onclick="savePrices()" class="bg-green-600 hover:bg-green-500 text-white font-bold py-2 px-6 rounded">שמור מחירים</button></div></div></div></div>
+    <div id="priceListEditorModal" class="modal-overlay"><div class="modal-content"><div class="modal-header"><h3 class="text-2xl font-bold text-white">מחירון (למנהל בלבד)</h3><button onclick="closeModal('priceListEditorModal')" class="text-white text-2xl"><i class="fas fa-times"></i></button></div><div class="modal-body"><div class="grid gap-6"><div class="bg-slate-800 p-6 rounded-xl border border-slate-600"><h3 class="text-xl font-bold text-amber-400 border-b border-slate-700 pb-2 mb-2">חבילת הכל כלול</h3><ul class="text-slate-300 text-sm list-disc pr-4 mb-4"><li>ליווי תפילה ופיוטים</li><li>חזנות מקצועית + הגברה</li><li>זוג מתופפים</li><li>חופה ושופרות</li><li>קלידן מקצועי</li><li>ליווי בארוחה (אביב+קלידן)</li></ul><input type="text" id="priceVIP" value="5500" class="w-full bg-slate-700 p-2 rounded text-white mt-2 editable-active text-center font-bold"></div><div class="bg-slate-800 p-6 rounded-xl border border-slate-600"><h3 class="text-xl font-bold text-white border-b border-slate-700 pb-2 mb-2">חבילה חגיגית</h3><ul class="text-slate-300 text-sm list-disc pr-4 mb-4"><li>ליווי תפילה ופיוטים</li><li>חזנות מקצועית + הגברה</li><li>זוג מתופפים</li><li>קלידן</li><li>חופה ושופרות</li></ul><input type="text" id="priceFESTIVE" value="4800" class="w-full bg-slate-700 p-2 rounded text-white mt-2 editable-active text-center font-bold"></div><div class="bg-slate-800 p-6 rounded-xl border border-slate-600"><h3 class="text-xl font-bold text-white border-b border-slate-700 pb-2 mb-2">חבילת בסיס</h3><ul class="text-slate-300 text-sm list-disc pr-4 mb-4"><li>ליווי תפילה ופיוטים</li><li>חזנות מקצועית + הגברה</li><li>קלידן</li></ul><input type="text" id="priceBASIC" value="3800" class="w-full bg-slate-700 p-2 rounded text-white mt-2 editable-active text-center font-bold"></div><div class="bg-slate-800 p-6 rounded-xl border border-slate-600"><h3 class="text-xl font-bold text-white border-b border-slate-700 pb-2 mb-2">חבילת לימוד לבר מצווה</h3><ul class="text-slate-300 text-sm list-disc pr-4 mb-4"><li>לימוד יסודי של קריאת התורה</li><li>ליווי אישי צמוד</li></ul><input type="text" id="priceSOLO" value="1500" class="w-full bg-slate-700 p-2 rounded text-white mt-2 editable-active text-center font-bold"></div></div><div class="mt-6 text-center"><button onclick="savePrices()" class="bg-green-600 hover:bg-green-500 text-white font-bold py-2 px-6 rounded">שמור מחירים</button></div></div></div></div>
 
     <div id="proposalSetupModal" class="modal-overlay">
         <div class="modal-content !w-[600px] text-center bg-white text-black p-0 overflow-hidden">
@@ -566,13 +602,19 @@
                 'VIP': { t: 'חבילת הכל כלול VIP', p: '₪5,500', d: 'ליווי תפילה ופיוטים\nחזנות\nהגברה מקצועית\nקלידן\nזוג מתופפים\nכניסה מיוחדת עם חופה ושופרות\nליווי שירים בסעודה (אביב + קלידן)\nלימוד הפרשה (במידת הצורך)' },
                 'FESTIVE': { t: 'חבילה חגיגית', p: '₪4,800', d: 'ליווי תפילה ופיוטים\nחזנות\nהגברה מקצועית\nקלידן\nזוג מתופפים\nכניסה מיוחדת עם חופה ושופרות\nלימוד הפרשה (במידת הצורך)' },
                 'BASIC': { t: 'חבילה בסיסית', p: '₪3,800', d: 'ליווי תפילה ופיוטים\nחזנות מקצועית\nהגברה מקצועית\nקלידן\nלימוד הפרשה (במידת הצורך)' },
-                'SOLO': { t: 'חבילת לימוד לבר מצווה', p: '₪3,500', d: 'ליווי תפילה ופיוטים\nחזנות מקצועית\nהגברה מקצועית\nללא קלידן\nלימוד הפרשה (במידת הצורך)' },
+                'SOLO': { t: 'חבילת לימוד לבר מצווה', p: '₪1,500', d: 'לימוד יסודי של קריאת התורה בטעמי המקרא\nליווי אישי צמוד' },
                 'CUSTOM': { t: 'התאמה אישית', p: '', d: '' }
             };
 
             // Global functions
-            window.openModal = (id) => { document.getElementById(id).style.display = 'flex'; }
-            window.closeModal = (id) => { document.getElementById(id).style.display = 'none'; }
+            window.openModal = (id) => { 
+                document.body.classList.add('no-scroll');
+                document.getElementById(id).style.display = 'flex'; 
+            }
+            window.closeModal = (id) => { 
+                document.body.classList.remove('no-scroll');
+                document.getElementById(id).style.display = 'none'; 
+            }
             window.openLoginModal = () => { window.openModal('loginModal'); }
             
             window.toggleSideMenu = () => { 
@@ -1083,7 +1125,7 @@
                                 print-color-adjust: exact; 
                             }
                             .total-label { font-size: 24px; font-weight: bold; color: #ffffff; }
-                            .total-price { font-size: 40px; font-weight: 900; color: #86efac; text-shadow: none; } /* מחיר ירוק בהיר */
+                            .total-price { font-size: 40px; font-weight: 900; color: #ffffff; text-shadow: 0 0 10px rgba(0,0,0,0.5); }
                             
                             .footer { margin-top: 60px; text-align: center; border-top: 1px solid #e5e7eb; padding-top: 20px; color: #666; font-size: 14px; }
                             .quote { font-family: 'Heebo', sans-serif; font-size: 24px; font-weight: 900; color: #051c42; margin-bottom: 10px; display: block; }
@@ -1138,7 +1180,6 @@
                         </div>
 
                         <script>
-                            // המתנה לטעינת הלוגו לפני ההדפסה
                             window.onload = function() { window.print(); }
                         <\/script>
                     </body>
