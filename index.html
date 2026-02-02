@@ -9,7 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&family=Raleway:wght@400;700&display=swap" rel="stylesheet">
 
     <script>
-        // *** וודא שהקישור הזה הוא הקישור העדכני של ה-Web App שלך ***
+        // *** וודא שהקישור הזה תקין ומעודכן לגרסה האחרונה ***
         const API_URL = "https://script.google.com/macros/s/AKfycbzsgu9wpsviWv2lA29jHSnBN5aBh0otUbJ0TCjTAcCXuYwJJyYv6tXn74msUD7zmG4grA/exec?mode=api"; 
     </script>
 
@@ -160,7 +160,7 @@
             .container { padding-left: 1rem; padding-right: 1rem; }
             .form-grid { grid-template-columns: 1fr; } 
             
-            /* גלריה מוגדלת בנייד (300x200) */
+            /* גלריה - תמונות גדולות יותר (300x200) */
             .gallery-item {
                 width: 300px !important;
                 height: 200px !important;
@@ -277,12 +277,13 @@
             </div>
 
             <h1 class="text-4xl md:text-7xl font-black mb-6 leading-tight drop-shadow-2xl">
-                <span data-id="hero-h1-1" data-type="text">לקבל עול מלכות שמיים</span><br>
+                <span data-id="hero-h1-1" data-type="text">לחגוג בר מצווה</span><br>
                 <span class="text-amber-400" data-id="hero-h1-2" data-type="text">בשמחה ובהתרגשות</span>
             </h1>
             <p class="text-lg md:text-2xl mb-10 text-blue-100 max-w-2xl mx-auto font-light leading-relaxed drop-shadow-md" data-id="hero-desc" data-type="text">
-                אביב ויצמן בהפקה מוזיקלית לעלייה לתורה: שופרות, תופים, פיוטים ירושלמיים וליווי מרגש לחתן הבר מצווה.
+                אביב ויצמן בהפקה מוזיקלית לעלייה לתורה: שופרות, תופים, פיוטים וליווי מרגש לחתן בר המצווה.
             </p>
+            
             <div class="flex flex-col md:flex-row gap-4 justify-center">
                 <a href="#calendar" class="bg-gradient-to-r from-amber-400 to-amber-600 hover:from-amber-500 hover:to-amber-700 text-blue-900 font-bold py-4 px-12 rounded-full transition duration-300 shadow-[0_0_30px_rgba(245,158,11,0.4)] text-lg">
                     <span data-id="btn-cta-1" data-type="text">בדיקת תאריך פנוי</span>
@@ -1103,31 +1104,45 @@
                 const form = document.getElementById('eventForm');
                 const id = form.id.value;
                 let evt = events.find(e => e.id == id);
-                if (evt) {
-                    evt.eventName = form.eventName.value; // שמירת שם האירוע
-                    evt.date = form.date.value;
-                    evt.hebrewDate = form.hebrewDate.value;
-                    evt.clientName = form.clientName.value;
-                    evt.childName = form.childName.value;
-                    evt.phone = form.phone.value;
-                    evt.location = form.location.value;
-                    evt.wazeLink = form.wazeLink.value;
-                    evt.packageType = form.packageType.value;
-                    evt.guestTime = form.guestTime.value;
-                    evt.startTime = form.startTime.value;
-                    evt.price = form.price.value;
-                    evt.status = form.status.value;
-                    evt.mediaLink = form.mediaLink.value;
-                    evt.notes = form.notes.value;
-                    
-                    if(API_URL.includes("http")) {
-                        fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'saveEvent', ...evt }) });
-                    }
-                    
-                    alert("האירוע עודכן בהצלחה!");
+                
+                const eventData = {
+                    eventName: form.eventName.value, 
+                    date: form.date.value,
+                    hebrewDate: form.hebrewDate.value,
+                    clientName: form.clientName.value,
+                    childName: form.childName.value,
+                    phone: form.phone.value,
+                    location: form.location.value,
+                    wazeLink: form.wazeLink.value,
+                    packageType: form.packageType.value,
+                    guestTime: form.guestTime.value,
+                    startTime: form.startTime.value,
+                    price: form.price.value,
+                    status: form.status.value,
+                    mediaLink: form.mediaLink.value,
+                    notes: form.notes.value
+                };
+
+                if (id) {
+                    // Update existing
+                    eventData.action = 'saveEvent';
+                    eventData.id = id;
+                } else {
+                    // Create new
+                    eventData.action = 'createEvent';
+                    eventData.id = 'evt-' + Date.now();
+                }
+                
+                if(API_URL.includes("http")) {
+                    fetch(API_URL, { method: 'POST', body: JSON.stringify(eventData) })
+                    .then(() => {
+                        alert(id ? "האירוע עודכן!" : "האירוע נוצר בהצלחה!");
+                        loadData(); // טעינה מחדש של הנתונים מהשרת
+                        window.closeModal('eventEditor');
+                    });
+                } else {
+                    alert("מצב דמו - נתונים לא יישמרו");
                     window.closeModal('eventEditor');
-                    filterEvents(); 
-                    renderPaymentsBoard(); 
                 }
             }
 
@@ -1291,6 +1306,12 @@
                         siteConfig = data.config;
                         if(siteConfig.heroVideo) document.getElementById('promoIframe').src = siteConfig.heroVideo;
                         if(siteConfig.heroImage) document.getElementById('heroBgImage').style.backgroundImage = `url('${siteConfig.heroImage}')`;
+                        
+                        // עדכון הקישורים החברתיים (כפי שביקשת)
+                        if(siteConfig['social-fb']) document.getElementById('link-fb').href = siteConfig['social-fb'];
+                        if(siteConfig['social-yt']) document.getElementById('link-yt').href = siteConfig['social-yt'];
+                        if(siteConfig['social-ig']) document.getElementById('link-ig').href = siteConfig['social-ig'];
+                        
                         updatePackagesFromConfig();
                     }
                     if (data.gallery) galleryImages = data.gallery;
