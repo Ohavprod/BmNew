@@ -393,7 +393,7 @@
     </section>
 
     <section id="contact" class="py-20 bg-black text-center border-t border-blue-900 relative z-10">
-        <h2 class="text-3xl font-bold mb-8 text-white" data-id="contact-title" data-type="text">בואו נדבר</h2>
+        <h2 class="text-3xl font-bold mb-8 text-white" data-id="contact-title" data-type="text">צרו קשר</h2>
         <div class="flex flex-col items-center gap-6">
             <a href="tel:0559907076" id="phoneLink" class="flex items-center gap-3 bg-blue-900/50 hover:bg-blue-900 border border-blue-800 px-8 py-4 rounded-2xl text-2xl text-white font-bold transition group">
                 <i class="fas fa-phone-alt text-amber-500 group-hover:rotate-12 transition"></i>
@@ -548,6 +548,7 @@
     </div>
 
     <div id="eventEditor" class="modal-overlay"><div class="modal-content"><div class="modal-header"><h3 class="text-3xl font-black text-white">פרטי אירוע</h3><button onclick="closeModal('eventEditor')" class="text-slate-400 hover:text-white text-2xl"><i class="fas fa-times"></i></button></div><div class="modal-body"><form id="eventForm" class="form-grid"><input type="hidden" name="id"><div class="input-group"><label>תאריך לועזי</label><input type="date" name="date" required></div><div class="input-group"><label>תאריך עברי</label><input type="text" name="hebrewDate"></div><div class="input-group"><label>שם הלקוח</label><input type="text" name="clientName"></div><div class="input-group"><label>שם חתן הבר מצווה</label><input type="text" name="childName"></div><div class="input-group"><label>טלפון</label><input type="tel" name="phone"></div><div class="input-group"><label>מיקום האירוע</label><input type="text" name="location"></div><div class="input-group"><label>לינק ל-Waze</label><input type="text" name="wazeLink"></div><div class="input-group"><label>סוג חבילה</label><select name="packageType"><option>בסיס</option><option>חגיגית</option><option>הכל כלול</option><option>ליווי וחזנות</option><option>מותאמת אישית</option></select></div><div class="input-group"><label>שעת הזמנת אורחים</label><input type="time" name="guestTime"></div><div class="input-group"><label>שעת תחילת אירוע</label><input type="time" name="startTime"></div><div class="input-group"><label>מחיר סגירה</label><input type="text" name="price"></div><div class="input-group"><label>סטטוס</label><select name="status"><option value="תהליך">בתהליך סגירה</option><option value="סגור">סגור (מאושר)</option><option value="הסתיים">הסתיים</option></select></div><div class="checkbox-group col-span-2"><label class="flex items-center gap-2 text-white font-bold"><input type="checkbox" name="hasKeyboard"> כולל קלידן</label><label class="flex items-center gap-2 text-white font-bold"><input type="checkbox" name="hasDrummers"> כולל מתופפים</label><label class="flex items-center gap-2 text-white font-bold text-pink-400"><input type="checkbox" name="isStudent"> תלמיד של אביב</label></div><div class="input-group col-span-1 md:col-span-2"><label>לינק למדיה</label><input type="text" name="mediaLink"></div><div class="input-group col-span-1 md:col-span-2"><label>הערות לצוות</label><textarea name="notes" class="h-32 notes-area"></textarea></div></form><div class="mt-8 flex justify-between items-center border-t border-slate-700 pt-6"><button type="button" onclick="deleteEvent()" class="text-red-500 font-bold px-4">מחק אירוע</button><button type="button" onclick="saveEvent()" class="bg-green-600 hover:bg-green-500 text-white font-bold py-3 px-10 rounded-xl text-lg shadow-lg">שמור</button></div></div></div></div>
+
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -1041,7 +1042,7 @@
                 const details = document.getElementById('propCustomDetails').value;
                 const price = document.getElementById('propCustomPrice').value;
 
-                // יצירת חלון חדש ונקי להדפסה
+                // --- יצירת דף הדפסה חדש ונקי ---
                 const printWindow = window.open('', '_blank');
                 
                 printWindow.document.write(`
@@ -1050,24 +1051,46 @@
                         <title>הצעת מחיר - אביב ויצמן</title>
                         <style>
                             @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&display=swap');
-                            body { font-family: 'Heebo', sans-serif; padding: 40px; max-width: 800px; margin: 0 auto; direction: rtl; }
+                            body { font-family: 'Heebo', sans-serif; padding: 40px; max-width: 800px; margin: 0 auto; direction: rtl; color: black; }
+                            
                             .header { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 4px solid #0056b3; padding-bottom: 15px; margin-bottom: 30px; }
-                            .logo { height: 80px; }
+                            .logo { height: 100px; width: auto; display: block; } /* לוגו מוגבל בגובה */
                             .business-details { text-align: left; line-height: 1.6; color: #333; font-size: 14px; }
                             .bsd { position: absolute; top: 20px; right: 20px; font-weight: bold; font-size: 14px; }
+                            
                             h1 { text-align: center; font-size: 36px; font-weight: 900; text-decoration: underline; color: #051c42; margin-bottom: 30px; }
+                            
                             .grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-bottom: 30px; }
                             .section { background: #f9fafb; border: 1px solid #e5e7eb; padding: 20px; border-radius: 12px; }
                             .section h3 { border-bottom: 2px solid #fbbf24; padding-bottom: 8px; margin-bottom: 15px; color: #051c42; font-size: 20px; font-weight: bold; }
+                            
                             .row { display: flex; justify-content: space-between; margin-bottom: 10px; border-bottom: 1px dashed #e5e7eb; padding-bottom: 5px; font-size: 16px; }
+                            
                             .pkg-box { background: #eff6ff; border: 1px solid #bfdbfe; padding: 25px; border-radius: 12px; margin-bottom: 30px; }
                             .pkg-title { font-size: 22px; font-weight: bold; color: #1e40af; border-bottom: 1px solid #93c5fd; padding-bottom: 10px; margin-bottom: 15px; }
                             .pkg-desc { font-size: 18px; line-height: 1.6; white-space: pre-line; }
-                            .total-box { background-color: #051c42; color: white; padding: 25px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; margin-top: 20px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-                            .total-label { font-size: 24px; font-weight: bold; }
-                            .total-price { font-size: 40px; font-weight: 900; color: #ffffff; text-shadow: 0 0 10px rgba(0,0,0,0.5); }
+                            
+                            .total-box { 
+                                background-color: #051c42; 
+                                color: white; 
+                                padding: 25px; 
+                                border-radius: 12px; 
+                                display: flex; 
+                                justify-content: space-between; 
+                                align-items: center; 
+                                margin-top: 20px; 
+                                -webkit-print-color-adjust: exact; 
+                                print-color-adjust: exact; 
+                            }
+                            .total-label { font-size: 24px; font-weight: bold; color: #ffffff; }
+                            .total-price { font-size: 40px; font-weight: 900; color: #86efac; text-shadow: none; } /* מחיר ירוק בהיר */
+                            
                             .footer { margin-top: 60px; text-align: center; border-top: 1px solid #e5e7eb; padding-top: 20px; color: #666; font-size: 14px; }
-                            .quote { font-family: Heebo; font-size: 24px; font-weight: bold; color: #051c42; margin-bottom: 10px; display: block; }
+                            .quote { font-family: 'Heebo', sans-serif; font-size: 24px; font-weight: 900; color: #051c42; margin-bottom: 10px; display: block; }
+                            
+                            @media print {
+                                body { -webkit-print-color-adjust: exact; }
+                            }
                         </style>
                     </head>
                     <body>
@@ -1115,6 +1138,7 @@
                         </div>
 
                         <script>
+                            // המתנה לטעינת הלוגו לפני ההדפסה
                             window.onload = function() { window.print(); }
                         <\/script>
                     </body>
@@ -1163,4 +1187,3 @@
     </script>
 </body>
 </html>
-
