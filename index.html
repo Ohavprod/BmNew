@@ -31,7 +31,7 @@
         }
         .spinner {
             border: 6px solid rgba(255, 255, 255, 0.3);
-            border-top: 6px solid #fbbf24; /* צבע זהב */
+            border-top: 6px solid #fbbf24;
             border-radius: 50%;
             width: 60px; height: 60px;
             animation: spin 1s linear infinite;
@@ -58,6 +58,7 @@
         .footer-login-btn { color: #1e293b; font-size: 1.2rem; cursor: pointer; transition: 0.3s; padding: 10px; }
         .whatsapp-float { position: fixed; bottom: 20px; right: 20px; z-index: 100; background: #25D366; color: white; padding: 12px; border-radius: 50%; font-size: 2rem; box-shadow: 0 4px 10px rgba(0,0,0,0.3); transition: 0.3s; display: flex; align-items: center; justify-content: center; width: 55px; height: 55px; }
 
+        /* המבורגר נקי */
         #loggedInMenuBtn { position: fixed; top: 20px; right: 20px; z-index: 99999; background: transparent; width: 45px; height: 45px; color: white; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; cursor: pointer; text-shadow: 0 2px 5px rgba(0,0,0,0.5); }
         
         #sideMenu { position: fixed; top: 0; right: -320px; width: 280px; height: 100%; background: #0f172a; z-index: 100000; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); border-left: 4px solid #fbbf24; padding: 2rem; padding-top: 80px; display: flex; flex-direction: column; gap: 1rem; box-shadow: -20px 0 50px rgba(0,0,0,0.9); }
@@ -113,7 +114,13 @@
         
         /* --- גלריה ויומן --- */
         .marquee-wrapper { overflow: hidden; width: 100%; position: relative; direction: ltr; }
-        .marquee-track { display: flex; width: max-content; gap: 0; animation: scroll-loop 60s linear infinite; }
+        
+        /* מהירות גלריה - 160 שניות (V103) */
+        .marquee-track { 
+            display: flex; width: max-content; gap: 0; 
+            animation: scroll-loop 160s linear infinite; 
+        }
+        .marquee-track:hover { animation-play-state: paused; }
         @keyframes scroll-loop { 0% { transform: translateX(-50%); } 100% { transform: translateX(0%); } }
         
         /* גלריה - מחשב */
@@ -148,7 +155,7 @@
         #siteFooter { background: #020617; padding: 20px; text-align: center; border-top: 1px solid #1e293b; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 10px; }
         .copyright { color: #64748b; font-size: 0.9rem; }
 
-        /* --- מודאלים (תוקן לגלילה תקינה) --- */
+        /* --- מודאלים --- */
         .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 50000; justify-content: center; align-items: center; backdrop-filter: blur(5px); padding: 10px; }
         .modal-content { 
             background: #0f172a; padding: 0; border-radius: 1.5rem; border: 1px solid #334155; 
@@ -162,8 +169,8 @@
         #proposalSetupModal .modal-content { max-width: 700px; }
         #eventEditor .modal-content { max-width: 800px; }
         
-        /* מודאל אישור והודעות */
-        #confirmModal .modal-content, #alertModal .modal-content { max-width: 400px; text-align: center; padding: 20px; border: 1px solid #fbbf24; background: #0f172a; height: auto; }
+        /* מודאל אישור */
+        #confirmModal .modal-content { max-width: 400px; text-align: center; padding: 20px; border: 1px solid #fbbf24; background: #0f172a; height: auto; }
 
         .modal-header { background: #1e293b; padding: 1rem; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 10; flex-shrink: 0; }
         .modal-body { padding: 1rem; overflow-y: auto; flex-grow: 1; }
@@ -179,7 +186,7 @@
             .container { padding-left: 1rem; padding-right: 1rem; }
             .form-grid { grid-template-columns: 1fr; } 
             
-            /* --- גלריה מוגדלת בנייד (300x200) --- */
+            /* גלריה - תמונות גדולות יותר (300x200) */
             .gallery-item {
                 width: 300px !important;
                 height: 200px !important;
@@ -218,7 +225,7 @@
         @media print { 
             @page { size: A3 portrait; margin: 0; } 
             body * { visibility: hidden; } 
-            #adminPanel, .fixed, .sticky, #loggedInMenuBtn, .whatsapp-float, .sound-toggle-btn { display: none !important; }
+            #adminPanel, .fixed, .sticky, #loggedInMenuBtn, .whatsapp-float, .sound-toggle-btn, #confirmModal, #globalLoader { display: none !important; }
 
             #proposalPrintArea { 
                 display: block !important; 
@@ -230,12 +237,7 @@
                 z-index: 2147483647;
                 margin: 0; padding: 0;
             }
-
-            #proposalPrintArea * { 
-                visibility: visible !important;
-                color: black !important;
-            }
-            
+            #proposalPrintArea * { visibility: visible !important; color: black !important; }
             html, body { background-color: white !important; height: auto !important; overflow: visible !important; }
         }
     </style>
@@ -487,17 +489,8 @@
             <p id="confirmMsg" class="text-gray-300 mb-6"></p>
             <div class="flex gap-4 justify-center">
                 <button id="btnNo" class="bg-slate-700 text-white px-6 py-2 rounded-lg font-bold hover:bg-slate-600 transition">ביטול</button>
-                <button id="btnYes" class="bg-red-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-red-500 transition">כן, המשך</button>
+                <button id="btnYes" class="bg-red-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-red-500 transition">כן, בצע</button>
             </div>
-        </div>
-    </div>
-    
-    <div id="alertModal" class="modal-overlay" onclick="this.style.display='none'">
-        <div class="modal-content bg-slate-900 border border-green-500/50 p-6 rounded-2xl text-center max-w-sm" onclick="event.stopPropagation()">
-            <i class="fas fa-check-circle text-4xl text-green-400 mb-4"></i>
-            <h3 class="text-2xl font-bold text-white mb-2">הודעה</h3>
-            <p id="alertMsg" class="text-gray-300 mb-6"></p>
-            <button onclick="document.getElementById('alertModal').style.display='none'" class="bg-green-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-green-500 transition">אישור</button>
         </div>
     </div>
 
@@ -656,11 +649,6 @@
             window.showLoader = () => { document.getElementById('globalLoader').style.display = 'flex'; }
             window.hideLoader = () => { document.getElementById('globalLoader').style.display = 'none'; }
 
-            window.customAlert = (message) => {
-                document.getElementById('alertMsg').innerText = message;
-                document.getElementById('alertModal').style.display = 'flex';
-            }
-
             window.customConfirm = (message) => {
                 return new Promise((resolve) => {
                     document.getElementById('confirmMsg').innerText = message;
@@ -693,14 +681,15 @@
             }
             
             window.saveChanges = () => {
-                customAlert("כל הנתונים נשמרים אוטומטית בעת עדכון טפסים ספציפיים.");
+                // רק הודעה נעלמת אוטומטית או לא עושים כלום כי המשתמש רואה את הנתונים מתעדכנים
+                // customAlert("כל הנתונים נשמרים אוטומטית בעת עדכון טפסים ספציפיים."); 
             }
             
             window.deleteEvent = async () => {
                 const id = document.forms['eventForm'].id.value;
-                if(!id) return customAlert("אירוע חדש לא ניתן למחיקה לפני שנשמר");
+                if(!id) return; // לא קופץ כלום
                 
-                if(!await customConfirm("האם אתה בטוח שברצונך למחוק את האירוע? פעולה זו אינה הפיכה.")) return;
+                if(!await customConfirm("האם אתה בטוח שברצונך למחוק את האירוע?")) return;
                 
                 if(API_URL.includes("http")) {
                     showLoader();
@@ -708,13 +697,9 @@
                         method: 'POST',
                         body: JSON.stringify({ action: 'deleteEvent', id: id })
                     }).then(() => {
-                        hideLoader();
-                        customAlert("האירוע נמחק בהצלחה");
                         window.closeModal('eventEditor');
-                        loadData(); 
+                        loadData(); // Loader ייעלם בתוך loadData
                     });
-                } else {
-                    customAlert("מצב דמו - המחיקה לא נשמרה");
                 }
             }
 
@@ -732,7 +717,7 @@
                         fetch(API_URL, {
                             method: 'POST',
                             body: JSON.stringify({ action: 'updateConfig', key: key, value: newVal })
-                        }).then(() => { hideLoader(); customAlert("הקישור עודכן בהצלחה!"); });
+                        }).then(() => { loadData(); }); // Loader ייעלם בתוך loadData
                     }
                 }
             }
@@ -749,7 +734,7 @@
                 } else if (u === 'manager' && p === '1234') { 
                     currentUser = { role: 'manager', name: 'מנהל' }; 
                     onLoginSuccess(); 
-                } else { customAlert('פרטים שגויים'); }
+                } else { alert('פרטים שגויים'); }
             }
 
             window.logout = () => { location.reload(); }
@@ -822,9 +807,7 @@
                     fetch(API_URL, {
                         method: 'POST',
                         body: JSON.stringify({ action: 'addToGallery', type: 'video', url: url })
-                    }).then(() => { hideLoader(); customAlert("נוסף בהצלחה - טוען מחדש..."); loadData(); });
-                } else {
-                    customAlert("מצב דמו - לא נשמר");
+                    }).then(() => { loadData(); }); // Loader ייעלם בתוך loadData
                 }
             }
 
@@ -836,7 +819,7 @@
                         fetch(API_URL, {
                             method: 'POST',
                             body: JSON.stringify({ action: 'addToGallery', type: 'image', url: u })
-                        }).then(() => { hideLoader(); customAlert("נוסף בהצלחה - טוען מחדש..."); loadData(); });
+                        }).then(() => { loadData(); }); // Loader ייעלם בתוך loadData
                     } else {
                         galleryImages.push(u); renderGallery(); 
                     }
@@ -850,7 +833,7 @@
                     fetch(API_URL, {
                         method: 'POST',
                         body: JSON.stringify({ action: 'deleteFromGallery', url: url })
-                    }).then(() => { hideLoader(); customAlert("נמחק - טוען מחדש..."); loadData(); });
+                    }).then(() => { loadData(); }); // Loader ייעלם בתוך loadData
                 }
             }
 
@@ -892,23 +875,19 @@
                     let embedUrl = vid.url;
                     let isDirectFile = false;
 
-                    // זיהוי קבצי MP4 או גוגל דרייב
                     if (vid.url.match(/\.(mp4|webm|ogg)$/i) || vid.url.includes('drive.google.com/file')) {
                         isDirectFile = true;
-                        // המרת קישור דרייב לצפייה ישירה
                         if(vid.url.includes('drive.google.com/file')) {
                             const fileId = vid.url.match(/d\/([a-zA-Z0-9_-]+)/)?.[1];
                             if(fileId) embedUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
                         }
                     } 
-                    // זיהוי Vimeo
                     else if (vid.url.includes('vimeo')) {
                         const vimeoId = vid.url.match(/vimeo\.com\/(?:.*#|.*\/videos\/)?([0-9]+)/);
                         if (vimeoId && vimeoId[1]) {
                              embedUrl = `https://player.vimeo.com/video/${vimeoId[1]}?title=0&byline=0&portrait=0&badge=0&autopause=0&player_id=0&app_id=58479`; 
                         }
                     } 
-                    // זיהוי YouTube
                     else if (vid.url.includes('youtu')) {
                         let id = vid.url.includes('v=') ? vid.url.split('v=')[1].split('&')[0] : vid.url.split('youtu.be/')[1].split('?')[0];
                         embedUrl = `https://www.youtube.com/embed/${id}`;
@@ -929,9 +908,11 @@
             window.openLightbox = (src) => { document.getElementById('lightboxImage').src=src; window.openModal('lightboxModal'); }
 
             let currentDate = new Date();
-            // ... (המשך הקוד נשאר ללא שינוי, renderCalendar, renderEventsBoard וכו' - הכל אותו דבר כמו בגרסאות הקודמות, רק החלפת ה-alert ב-customAlert)
+            // ... (המשך זהה ל-V102, כל הפונקציות האחרות נשארות)
+            // ... (Render functions omitted for brevity as they are unchanged)
             
-            // לשם קיצור כאן אני מביא את ה-renderCalendar המתוקן עם customAlert
+            // Render Payments Board, Calendar, etc... (Same as V102)
+            
              function renderCalendar() {
                 const g = document.getElementById('calendarGrid'); 
                 if(!g) return;
@@ -959,7 +940,9 @@
                     d.onclick = () => {
                         if (isAdmin) {
                             if (!isBooked) { window.openQuickEventModal(dateString); } 
-                            else { customAlert('התאריך תפוס. לניהול, כנס ללוח האירועים.'); } 
+                            else { 
+                                // ללא הודעה, רק מעבר ללוח אירועים אם צריך
+                            } 
                         } else {
                             if (!isBooked) { window.open(`https://wa.me/972559907076?text=${encodeURIComponent('היי, התאריך ' + dateString + ' פנוי?')}`, '_blank'); }
                         }
@@ -1001,6 +984,7 @@
                 for(let e of sortedList) { if(new Date(e.date).getTime() >= todayTime) { nextEventId = e.id; break; } }
 
                 sortedList.forEach(evt => {
+                     // ... יצירת הכרטיסייה (זהה לקוד הקודם)
                      const dateObj = new Date(evt.date);
                     const day = dateObj.getDate();
                     const month = dateObj.toLocaleString('he-IL', { month: 'short' });
@@ -1059,9 +1043,48 @@
                     board.innerHTML += cardHtml;
                 });
             }
+            
+             function renderPaymentsBoard() {
+                const board = document.getElementById('paymentsBoard');
+                if(!board) return;
+                board.innerHTML = '';
+                
+                events.forEach(evt => {
+                    const isFinished = evt.status === 'הסתיים';
+                    let isFullyPaid = false;
+                    if (!isFinished) {
+                        isFullyPaid = evt.payments?.client?.downPayment; 
+                    } else {
+                        const clientOK = evt.payments?.client?.fullPayment;
+                        const staff = evt.payments?.staff || {};
+                        const staffOK = Object.values(staff).every(s => {
+                            if (s.amount && s.amount > 0) return s.paid;
+                            return true; 
+                        });
+                        isFullyPaid = clientOK && staffOK;
+                    }
+                    const borderClass = isFullyPaid ? 'payment-ok' : 'payment-bad';
+                    const depositIcon = evt.payments?.client?.downPayment ? '<i class="fas fa-check text-green-500"></i>' : '<i class="fas fa-times text-red-500"></i>';
 
-            // ... (שאר הפונקציות זהות, רק החלפת alert ב-customAlert)
-            window.openPaymentModal = (eventId) => {
+                    let cardHtml = `
+                        <div class="payment-card ${borderClass}">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-xl font-bold text-white">${evt.eventName || 'אירוע'}</h3>
+                                <span class="text-sm text-gray-400">${evt.date}</span>
+                            </div>
+                            <div class="mb-4 text-right text-gray-300">
+                                 <div>מקדמה: ${depositIcon}</div>
+                                 ${isFinished ? `<div>גמר חשבון: ${evt.payments?.client?.fullPayment ? '<i class="fas fa-check text-green-500"></i>' : '<i class="fas fa-times text-red-500"></i>'}</div>` : ''}
+                            </div>
+                            <button onclick="openPaymentModal('${evt.id}')" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 rounded">ניהול תשלומים</button>
+                        </div>
+                    `;
+                    board.innerHTML += cardHtml;
+                });
+            }
+
+            // ... (שאר הפונקציות של payment modal ו-savePayment נשארות זהה)
+             window.openPaymentModal = (eventId) => {
                 const evt = events.find(e => e.id == eventId);
                 if(!evt) return;
                 if(!evt.payments) evt.payments = { client: { downPayment: false, fullPayment: false }, staff: { drummer: {paid:false}, keyboard: {paid:false}, sound: {paid:false}, manager: {paid:false} } };
@@ -1115,16 +1138,15 @@
                     fetch(API_URL, {
                         method: 'POST',
                         body: JSON.stringify({ action: 'savePayment', id: eventId, client: evt.payments.client, staff: evt.payments.staff })
-                    }).then(() => { hideLoader(); customAlert('הנתונים נשמרו!'); window.closeModal('paymentModal'); renderPaymentsBoard(); });
+                    }).then(() => { hideLoader(); window.closeModal('paymentModal'); renderPaymentsBoard(); });
                 } else {
-                    customAlert('הנתונים נשמרו!');
                     window.closeModal('paymentModal');
                     renderPaymentsBoard();
                 }
             }
             
-            // ... (המשך זהה)
-             window.openQuickEventModal = (dateStr) => {
+            // ... (saveQuickEvent, openQuickEventModal, openEventEditor, saveEvent נשארים זהים, רק לוודא קריאה לשרת)
+            window.openQuickEventModal = (dateStr) => {
                 document.getElementById('qeDateDisplay').innerText = dateStr;
                 document.getElementById('qeDate').value = dateStr;
                 window.openModal('quickEventModal');
@@ -1133,7 +1155,7 @@
             window.saveQuickEvent = () => {
                 const date = document.getElementById('qeDate').value;
                 const name = document.getElementById('qeName').value;
-                if(!name) return customAlert("חובה להזין שם אירוע");
+                if(!name) return; // לא קופץ כלום אם אין שם
 
                 const newEvent = {
                     action: 'createEvent', id: 'evt-' + Date.now(), date: date, eventName: name,
@@ -1148,9 +1170,9 @@
                 events.push(newEvent); bookedDates.push(date); 
                 if(API_URL.includes("http")) {
                     showLoader();
-                    fetch(API_URL, { method: 'POST', body: JSON.stringify(newEvent) }).then(()=> { hideLoader(); customAlert("האירוע נוצר והתאריך נתפס!"); window.closeModal('quickEventModal'); renderCalendar(); filterEvents(); loadData(); });
+                    fetch(API_URL, { method: 'POST', body: JSON.stringify(newEvent) }).then(()=> { hideLoader(); window.closeModal('quickEventModal'); renderCalendar(); filterEvents(); loadData(); });
                 } else {
-                     customAlert("האירוע נוצר והתאריך נתפס!"); window.closeModal('quickEventModal'); renderCalendar(); filterEvents();
+                     window.closeModal('quickEventModal'); renderCalendar(); filterEvents();
                 }
             }
 
@@ -1160,7 +1182,7 @@
                 if (id) {
                     const evt = events.find(e => e.id == id);
                     if(evt) {
-                        form.eventName.value = evt.eventName || ''; 
+                        form.eventName.value = evt.eventName || ''; // טעינת שם האירוע
                         for (let key in evt) { 
                             if(form.elements[key]) {
                                 if(form.elements[key].type === 'checkbox') form.elements[key].checked = evt[key];
@@ -1209,16 +1231,13 @@
                     fetch(API_URL, { method: 'POST', body: JSON.stringify(eventData) })
                     .then(() => {
                         hideLoader();
-                        customAlert(id ? "האירוע עודכן!" : "האירוע נוצר בהצלחה!");
                         loadData(); 
                         window.closeModal('eventEditor');
                     });
                 } else {
-                    customAlert("מצב דמו - נתונים לא יישמרו");
                     window.closeModal('eventEditor');
                 }
             }
-
 
             // ... (שאר כפתורי הכלים)
              window.openWhatsAppTool = () => { window.closeSideMenu(); window.openModal('whatsappModal'); }
@@ -1251,9 +1270,7 @@
                             body: JSON.stringify({ action: 'updateConfig', key: key, value: val })
                          });
                      });
-                     setTimeout(() => { hideLoader(); customAlert('המחירים נשמרו והתעדכנו!'); }, 1000);
-                 } else {
-                     customAlert('המחירים נשמרו והתעדכנו!');
+                     setTimeout(() => { hideLoader(); }, 1000);
                  }
                  window.closeModal('priceListEditorModal');
             }
@@ -1275,7 +1292,6 @@
                 const details = document.getElementById('propCustomDetails').value;
                 const price = document.getElementById('propCustomPrice').value;
 
-                // --- יצירת דף הדפסה חדש ונקי ---
                 const printWindow = window.open('', '_blank');
                 
                 printWindow.document.write(`
@@ -1364,7 +1380,7 @@
 
             window.sendWaToClient = (phone) => {
                  const p = phone || document.getElementById('waPhone').value;
-                 if(!p) return customAlert('נא להזין מספר טלפון');
+                 if(!p) return;
                  const msg = "היי :) שמחתי לשוחח, מצורף הצעת המחיר ופרטים נוספים...";
                  window.open(`https://wa.me/972${p.replace(/-/g,'').substring(1)}?text=${encodeURIComponent(msg)}`, '_blank');
             }
