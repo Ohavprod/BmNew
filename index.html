@@ -188,20 +188,20 @@
              .form-grid { grid-template-columns: 1fr 1fr; }
         }
 
-        /* --- הדפסה A3 מתוקנת סופית (V84) --- */
+        /* --- הדפסה A3 מתוקנת (V85) --- */
         @media print { 
             @page { size: A3 portrait; margin: 0; } 
             
-            /* הסתרת כל האלמנטים שלא קשורים להדפסה */
+            /* הסתרת הכל */
             body * { visibility: hidden; } 
             
-            /* הסתרת אלמנטים צפים וקבועים שמפריעים להדפסה */
+            /* הסתרת אלמנטים צפים ומפריעים */
             #adminPanel, .next-event-label, #loggedInMenuBtn, 
             .whatsapp-float, .sound-toggle-btn, #sideMenu, .modal-overlay { 
                 display: none !important; 
             }
 
-            /* הצגת אזור ההדפסה בלבד */
+            /* הצגת אזור ההדפסה בלבד עם דריסה חזקה */
             #proposalPrintArea, #proposalPrintArea * { 
                 visibility: visible !important;
                 color: black !important; 
@@ -220,7 +220,7 @@
             .a3-page { width: 90%; margin: 0 auto; padding: 40px; box-sizing: border-box; display: flex; flex-direction: column; min-height: 98vh; justify-content: space-between; }
             .a3-logo-img { display: block !important; }
 
-            /* תיקון צבע מחיר בהיר */
+            /* מחיר */
             .a3-total-area { 
                 background-color: #051c42 !important; 
                 border-radius: 12px;
@@ -235,7 +235,7 @@
                 text-shadow: none !important;
             } 
 
-            /* תיקון פונט משפט תחתון */
+            /* פונט משפט תחתון */
             .a3-quote { 
                 font-family: 'Heebo', sans-serif !important; 
                 font-weight: 900 !important; 
@@ -608,7 +608,7 @@
         </div>
     </div>
 
-    <div id="proposalPrintArea">
+    <div id="proposalPrintArea" class="hidden">
         <div class="a3-page">
             <div class="a3-bsd">בס"ד</div>
             <div class="a3-header">
