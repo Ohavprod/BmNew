@@ -140,7 +140,7 @@
 
         .modal-header { background: #1e293b; padding: 1rem; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 10; }
         .modal-body { padding: 1rem; }
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .form-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
         .input-group label { display: block; color: #94a3b8; margin-bottom: 3px; font-size: 0.85rem; }
         .input-group input, .input-group select, .input-group textarea { width: 100%; background: #1e293b; border: 1px solid #475569; color: white; padding: 10px; border-radius: 8px; font-size: 1rem; outline: none; }
         .checkbox-group { display: flex; gap: 15px; align-items: center; background: #1e293b; padding: 10px; border-radius: 8px; border: 1px solid #475569; flex-wrap: wrap; }
@@ -184,76 +184,78 @@
         }
         /* ========================================== */
 
-        /* --- הדפסה A3 מתוקנת (V82) --- */
-    @media print { 
-        @page { size: A3 portrait; margin: 10mm; } 
-        
-        /* איפוס: רקע לבן, טקסט שחור, גובה אוטומטי */
-        body, html { 
-            height: auto !important; 
-            overflow: visible !important; 
-            background: white !important; 
-            color: black !important; 
-            margin: 0; padding: 0;
+        @media (min-width: 769px) {
+             .form-grid { grid-template-columns: 1fr 1fr; }
         }
 
-        /* הסתרת כל האלמנטים בדף */
-        body > * { display: none !important; } 
+        /* --- הדפסה A3 מתוקנת (V83) --- */
+        @media print { 
+            @page { size: A3 portrait; margin: 10mm; } 
+            
+            /* איפוס: רקע לבן, טקסט שחור, גובה אוטומטי */
+            body, html { 
+                height: auto !important; 
+                overflow: visible !important; 
+                background: white !important; 
+                color: black !important; 
+                margin: 0; padding: 0;
+            }
 
-        /* הסתרה ספציפית של פאנל הניהול והכפתורים בהדפסה */
-        #adminPanel, .admin-controls, #loggedInMenuBtn, .whatsapp-float, .sound-toggle-btn { 
-            display: none !important; 
-        }
+            /* הסתרת כל האלמנטים בדף */
+            body > * { display: none !important; } 
 
-        /* חשיפת אזור ההדפסה בלבד */
-        #proposalPrintArea, #proposalPrintArea * { 
-            visibility: visible !important; 
-        }
+            /* הסתרה ספציפית של פאנל הניהול והכפתורים בהדפסה */
+            #adminPanel, .admin-controls, #loggedInMenuBtn, .whatsapp-float, .sound-toggle-btn { 
+                display: none !important; 
+            }
 
-        #proposalPrintArea { 
-            position: absolute; 
-            left: 0; top: 0; 
-            width: 100%; 
-            display: block !important; 
-            background: white !important;
-            color: black;
-        }
+            /* חשיפת אזור ההדפסה בלבד */
+            #proposalPrintArea, #proposalPrintArea * { 
+                visibility: visible !important; 
+            }
 
-        .a3-page { width: 100%; margin: 0 auto; padding: 20px; box-sizing: border-box; }
-        .a3-logo-img { display: block !important; }
+            #proposalPrintArea { 
+                position: absolute; 
+                left: 0; top: 0; 
+                width: 100%; 
+                display: block !important; 
+                background: white !important;
+                color: black;
+            }
 
-        /* --- תיקון 1: מחיר בצבע ירוק בהיר על רקע כחול --- */
-        .a3-total-area { 
-            background-color: #051c42 !important; 
-            border-radius: 12px;
-            padding: 20px;
-            -webkit-print-color-adjust: exact; 
-            print-color-adjust: exact;
-        }
-        
-        /* הטקסט "סה"כ לתשלום" בלבן */
-        .a3-total-label { color: #ffffff !important; } 
-        
-        /* המחיר עצמו בירוק בהיר */
-        .a3-total-price { 
-            color: #86efac !important; /* ירוק בהיר נעים */
-            font-weight: 900 !important;
-            text-shadow: none !important;
-        } 
+            .a3-page { width: 100%; margin: 0 auto; padding: 20px; box-sizing: border-box; }
+            .a3-logo-img { display: block !important; }
 
-        /* --- תיקון 2: הפונט של המשפט למטה כמו הכותרת --- */
-        .a3-quote { 
-            font-family: 'Heebo', sans-serif !important; 
-            font-weight: 900 !important; /* משקל כבד כמו הכותרת */
-            font-size: 24px;
-            color: #051c42 !important; 
-            margin-bottom: 10px; 
-            text-decoration: none;
-        }
+            /* --- תיקון 1: מחיר בצבע ירוק בהיר על רקע כחול --- */
+            .a3-total-area { 
+                background-color: #051c42 !important; 
+                border-radius: 12px;
+                padding: 20px;
+                -webkit-print-color-adjust: exact; 
+                print-color-adjust: exact;
+            }
+            
+            /* הטקסט "סה"כ לתשלום" בלבן */
+            .a3-total-label { color: #ffffff !important; } 
+            
+            /* המחיר עצמו בירוק בהיר */
+            .a3-total-price { 
+                color: #86efac !important; /* ירוק בהיר נעים */
+                font-weight: 900 !important;
+                text-shadow: none !important;
+            } 
 
-        .a3-footer { margin-top: 50px; page-break-inside: avoid; }
-    }
-            button, .sound-toggle-btn { display: none !important; }
+            /* --- תיקון 2: הפונט של המשפט למטה כמו הכותרת --- */
+            .a3-quote { 
+                font-family: 'Heebo', sans-serif !important; 
+                font-weight: 900 !important; /* משקל כבד כמו הכותרת */
+                font-size: 24px;
+                color: #051c42 !important; 
+                margin-bottom: 10px; 
+                text-decoration: none;
+            }
+
+            .a3-footer { margin-top: 50px; page-break-inside: avoid; }
         }
         
         #proposalPrintArea { display: none; background: white; color: black; font-family: 'Heebo', sans-serif; }
@@ -585,7 +587,7 @@
                             <option value="חגיגית">חגיגית</option>
                             <option value="הכל כלול">הכל כלול</option>
                             <option value="בסיס">בסיס</option>
-                            <option value="לימוד לבר מצווה">לימוד לבר מצווה</option>
+                            <option value="ליווי וחזנות">ליווי וחזנות</option>
                         </select>
                     </div>
                     <textarea id="qeNotes" placeholder="הערות..." class="w-full p-3 bg-slate-800 border border-slate-600 rounded text-white h-24"></textarea>
@@ -869,7 +871,7 @@
                             if (!isBooked) { window.openQuickEventModal(dateString); } 
                             else { if(confirm("לבטל נעילה לתאריך זה?")) { bookedDates = bookedDates.filter(bd => bd !== dateString); renderCalendar(); } }
                         } else {
-                            if (!isBooked) { window.open(`https://wa.me/972559907076?text=${encodeURIComponent('היי, התאריך ' + dateString + ' פנוי?')}`, '_blank'); }
+                            if (!isBooked) { window.open(`https://wa.me/972559907076?text=${encodeURIComponent('היי, אנחנו מעוניינים לסגור תאריך עבור בר מצווה, נשמח לדעת האם התאריך פנוי. תודה :) ' + dateString + ' פנוי?')}`, '_blank'); }
                         }
                     };
                     g.appendChild(d);
@@ -1230,4 +1232,3 @@
     </script>
 </body>
 </html>
-
