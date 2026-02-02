@@ -184,66 +184,75 @@
         }
         /* ========================================== */
 
-        @media (min-width: 769px) {
-             .form-grid { grid-template-columns: 1fr 1fr; }
+        /* --- הדפסה A3 מתוקנת (V82) --- */
+    @media print { 
+        @page { size: A3 portrait; margin: 10mm; } 
+        
+        /* איפוס: רקע לבן, טקסט שחור, גובה אוטומטי */
+        body, html { 
+            height: auto !important; 
+            overflow: visible !important; 
+            background: white !important; 
+            color: black !important; 
+            margin: 0; padding: 0;
         }
 
-        /* --- תיקון הדפסה A3 מלא (V81) --- */
-        @media print { 
-            @page { size: A3 portrait; margin: 0; } /* ביטול שוליים למקסימום מקום */
-            
-            body > * { display: none !important; } /* הסתרת הכל מלבד מה שצריך */
-            
-            /* הגדרות לאזור ההדפסה */
-            #proposalPrintArea { 
-                display: block !important;
-                visibility: visible !important;
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: auto;
-                background-color: white !important;
-                color: black !important;
-                z-index: 999999;
-            }
+        /* הסתרת כל האלמנטים בדף */
+        body > * { display: none !important; } 
 
-            #proposalPrintArea * {
-                visibility: visible !important;
-                color: black !important; /* אכיפת צבע שחור לטקסט */
-            }
+        /* הסתרה ספציפית של פאנל הניהול והכפתורים בהדפסה */
+        #adminPanel, .admin-controls, #loggedInMenuBtn, .whatsapp-float, .sound-toggle-btn { 
+            display: none !important; 
+        }
 
-            .a3-page {
-                width: 90%;
-                margin: 0 auto;
-                padding: 40px;
-                box-sizing: border-box;
-                display: flex;
-                flex-direction: column;
-                min-height: 98vh; /* הבטחת פריסה על כל הדף */
-                justify-content: space-between; /* דוחף את הפוטר למטה */
-            }
+        /* חשיפת אזור ההדפסה בלבד */
+        #proposalPrintArea, #proposalPrintArea * { 
+            visibility: visible !important; 
+        }
 
-            .a3-logo-img { display: block !important; }
+        #proposalPrintArea { 
+            position: absolute; 
+            left: 0; top: 0; 
+            width: 100%; 
+            display: block !important; 
+            background: white !important;
+            color: black;
+        }
 
-            /* תיקון ספציפי לרקע הכחול של המחיר */
-            .a3-total-area { 
-                background-color: #051c42 !important; 
-                color: white !important;
-                -webkit-print-color-adjust: exact; 
-                print-color-adjust: exact;
-                border-radius: 12px;
-                padding: 15px;
-            }
-            .a3-total-area * { color: white !important; } /* טקסט לבן בתוך התיבה */
-            
-            .a3-footer { 
-                margin-top: 50px; 
-                page-break-inside: avoid; 
-                text-align: center;
-                width: 100%;
-            }
+        .a3-page { width: 100%; margin: 0 auto; padding: 20px; box-sizing: border-box; }
+        .a3-logo-img { display: block !important; }
 
+        /* --- תיקון 1: מחיר בצבע ירוק בהיר על רקע כחול --- */
+        .a3-total-area { 
+            background-color: #051c42 !important; 
+            border-radius: 12px;
+            padding: 20px;
+            -webkit-print-color-adjust: exact; 
+            print-color-adjust: exact;
+        }
+        
+        /* הטקסט "סה"כ לתשלום" בלבן */
+        .a3-total-label { color: #ffffff !important; } 
+        
+        /* המחיר עצמו בירוק בהיר */
+        .a3-total-price { 
+            color: #86efac !important; /* ירוק בהיר נעים */
+            font-weight: 900 !important;
+            text-shadow: none !important;
+        } 
+
+        /* --- תיקון 2: הפונט של המשפט למטה כמו הכותרת --- */
+        .a3-quote { 
+            font-family: 'Heebo', sans-serif !important; 
+            font-weight: 900 !important; /* משקל כבד כמו הכותרת */
+            font-size: 24px;
+            color: #051c42 !important; 
+            margin-bottom: 10px; 
+            text-decoration: none;
+        }
+
+        .a3-footer { margin-top: 50px; page-break-inside: avoid; }
+    }
             button, .sound-toggle-btn { display: none !important; }
         }
         
@@ -1221,3 +1230,4 @@
     </script>
 </body>
 </html>
+
