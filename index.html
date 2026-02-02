@@ -146,13 +146,13 @@
         .checkbox-group { display: flex; gap: 15px; align-items: center; background: #1e293b; padding: 10px; border-radius: 8px; border: 1px solid #475569; flex-wrap: wrap; }
         .checkbox-group input { width: 20px; height: 20px; accent-color: #fbbf24; }
 
-        /* ========= התאמות אגרסיביות לנייד (V80) ========= */
+        /* ========= התאמות אגרסיביות לנייד ========= */
         @media (max-width: 768px) {
             html { font-size: 12px; }
             .container { padding-left: 1rem; padding-right: 1rem; }
             .form-grid { grid-template-columns: 1fr; } 
             
-            /* --- תיקון גלריה: קוביות מלבניות קטנות (פס פילם) --- */
+            /* גלריה - תמונות נמוכות יותר !important */
             .gallery-item {
                 width: 160px !important;
                 height: 90px !important;
@@ -165,7 +165,6 @@
                 object-fit: cover !important;
                 border-radius: 8px !important;
             }
-            /* --------------------------------------- */
 
             /* וידאו - ריבוע גדול (1:1) */
             .promo-video-container {
@@ -189,57 +188,62 @@
              .form-grid { grid-template-columns: 1fr 1fr; }
         }
 
-        /* --- הדפסה A3 (תיקון דפים לבנים) --- */
+        /* --- תיקון הדפסה A3 מלא (V81) --- */
         @media print { 
-            @page { size: A3 portrait; margin: 10mm; }
+            @page { size: A3 portrait; margin: 0; } /* ביטול שוליים למקסימום מקום */
             
-            /* איפוס גורף להדפסה */
-            * {
-                visibility: hidden !important; /* הסתרת הכל */
-                background-color: transparent !important;
-                box-shadow: none !important;
-            }
-
-            body, html { 
-                height: auto; 
-                width: 100%;
-                margin: 0; padding: 0; 
-                overflow: visible !important;
-                background: white !important;
-                color: black !important;
-            }
-
-            /* חשיפת אזור ההדפסה בלבד */
-            #proposalPrintArea, #proposalPrintArea * { 
-                visibility: visible !important;
-                color: black !important; /* טקסט שחור */
-            }
-
-            #proposalPrintArea {
-                position: absolute;
-                top: 0; left: 0;
-                width: 100%;
+            body > * { display: none !important; } /* הסתרת הכל מלבד מה שצריך */
+            
+            /* הגדרות לאזור ההדפסה */
+            #proposalPrintArea { 
                 display: block !important;
+                visibility: visible !important;
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: auto;
+                background-color: white !important;
+                color: black !important;
+                z-index: 999999;
             }
 
-            /* תיקון לוגו */
-            .a3-logo-img { display: block !important; visibility: visible !important; }
+            #proposalPrintArea * {
+                visibility: visible !important;
+                color: black !important; /* אכיפת צבע שחור לטקסט */
+            }
 
-            /* תיקון צבעים ספציפיים */
-            .a3-header { border-bottom: 5px solid #0056b3 !important; }
+            .a3-page {
+                width: 90%;
+                margin: 0 auto;
+                padding: 40px;
+                box-sizing: border-box;
+                display: flex;
+                flex-direction: column;
+                min-height: 98vh; /* הבטחת פריסה על כל הדף */
+                justify-content: space-between; /* דוחף את הפוטר למטה */
+            }
+
+            .a3-logo-img { display: block !important; }
+
+            /* תיקון ספציפי לרקע הכחול של המחיר */
             .a3-total-area { 
                 background-color: #051c42 !important; 
                 color: white !important;
                 -webkit-print-color-adjust: exact; 
                 print-color-adjust: exact;
+                border-radius: 12px;
+                padding: 15px;
             }
-            .a3-total-area * { color: white !important; } /* טקסט לבן בתוך המחיר */
+            .a3-total-area * { color: white !important; } /* טקסט לבן בתוך התיבה */
             
-            /* פריסה */
-            .a3-grid { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 20px; }
-            .a3-footer { margin-top: 50px; page-break-inside: avoid; }
-            
-            /* הסתרת כפתורים */
+            .a3-footer { 
+                margin-top: 50px; 
+                page-break-inside: avoid; 
+                text-align: center;
+                width: 100%;
+            }
+
             button, .sound-toggle-btn { display: none !important; }
         }
         
@@ -259,14 +263,14 @@
         .a3-pkg-desc { font-size: 18px; line-height: 1.6; white-space: pre-line; }
         .a3-total-area { margin-top: 30px; padding: 15px; background: #051c42; color: white; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; }
         .a3-total-label { font-size: 24px; font-weight: bold; }
-        .a3-total-price { font-size: 40px; font-weight: 900; text-shadow: 0 0 10px rgba(0,0,0,0.5); }
+        .a3-total-price { font-size: 40px; font-weight: 900; color: white; text-shadow: 0 0 10px rgba(0,0,0,0.5); }
         .a3-footer { margin-top: auto; padding-top: 20px; text-align: center; color: #666; border-top: 1px solid #ddd; font-size: 14px; }
         .a3-quote { font-family: cursive; font-size: 22px; color: #051c42; margin-bottom: 10px; font-weight: bold; }
     </style>
 </head>
 <body class="antialiased relative">
 
-    <a href="https://wa.me/972500000000" class="whatsapp-float" title="צור קשר בוואטסאפ">
+    <a href="https://wa.me/972559907076" class="whatsapp-float" title="צור קשר בוואטסאפ">
         <i class="fab fa-whatsapp"></i>
     </a>
 
@@ -294,7 +298,7 @@
                 <span class="gold-text">אביב</span>
                 <span class="text-white drop-shadow-lg">ויצמן</span>
             </div>
-            <div class="flex flex-wrap justify-center gap-4 text-sm font-bold text-blue-100 items-center">
+            <div class="flex flex-wrap justify-center gap-4 text-lg md:text-lg font-bold text-blue-100 items-center">
                 <a href="#packages" class="hover:text-amber-400 transition">חבילות</a>
                 <a href="#calendar" class="hover:text-amber-400 transition">זמינות</a>
                 <a href="#gallery" class="hover:text-amber-400 transition">גלריה</a>
@@ -339,7 +343,7 @@
     </header>
 
     <section id="packages" class="py-24 bg-[#021029] relative z-10">
-        <div class="container mx-auto px-6">
+        <div class="container mx-auto px-4">
             <div class="text-center mb-16">
                 <h2 class="text-3xl md:text-5xl font-bold mb-4 text-white">החבילות שלנו</h2>
                 <p class="text-blue-300 max-w-2xl mx-auto">בחרו את ההפקה המתאימה ביותר לאירוע שלכם</p>
@@ -348,15 +352,12 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <div class="glass-card hover:-translate-y-4">
                     <div class="pkg-header">
-                        <div class="text-5xl text-teal-400 mb-4"><i class="fas fa-microphone"></i></div>
-                        <h3 class="text-2xl font-bold text-white">ליווי וחזנות</h3>
+                        <div class="text-5xl text-blue-400 mb-4"><i class="fas fa-book-open"></i></div>
+                        <h3 class="text-2xl font-bold text-white">לימוד לבר מצווה</h3>
                     </div>
                     <ul class="pkg-list">
-                        <li><i class="fas fa-check text-green-400"></i> ליווי תפילה ופיוטים</li>
-                        <li><i class="fas fa-check text-green-400"></i> חזנות מקצועית</li>
-                        <li><i class="fas fa-check text-green-400"></i> הגברה מקצועית</li>
-                        <li><i class="fas fa-times text-red-500"></i> ללא קלידן</li>
-                        <li><i class="fas fa-book-open text-blue-300"></i> לימוד הפרשה (במידת הצורך)</li>
+                                <li><i class="fas fa-check text-green-400"></i> לימוד יסודי של קריאת התורה בטעמי המקרא (נוסח עדות המזרח/אחר)</li>
+                           <li><i class="fas fa-check text-green-400"></i> ליווי אישי צמוד המבטיח קריאה רהוטה, נכונה ומרגשת ביום העלייה לתורה</li>
                     </ul>
                 </div>
 
@@ -383,8 +384,8 @@
                         <li><i class="fas fa-check text-green-400"></i> ליווי תפילה ופיוטים</li>
                         <li><i class="fas fa-check text-green-400"></i> חזנות + הגברה</li>
                         <li><i class="fas fa-check text-green-400"></i> קלידן</li>
-                        <li><i class="fas fa-drum text-amber-400"></i> <strong>זוג מתופפים</strong></li>
-                        <li><i class="fas fa-bullhorn text-amber-400"></i> <strong>חופה ושופרות</strong></li>
+                        <li><i class="fas fa-check text-green-400"></i> <strong>זוג מתופפים</strong></li>
+                        <li><i class="fas fa-check text-green-400"></i> <strong>חופה ושופרות</strong></li>
                         <li><i class="fas fa-book-open text-blue-300"></i> לימוד הפרשה (במידת הצורך)</li>
                     </ul>
                 </div>
@@ -392,17 +393,17 @@
                 <div class="glass-card hover:-translate-y-4">
                     <div class="pkg-header">
                         <div class="text-5xl text-purple-400 mb-4"><i class="fas fa-gem"></i></div>
-                        <h3 class="text-2xl font-bold text-white">הכל כלול VIP</h3>
+                        <h3 class="text-2xl font-bold text-white">הכל כלול</h3>
                     </div>
                     <ul class="pkg-list">
-                        <li><i class="fas fa-check text-purple-400"></i> ליווי תפילה ופיוטים</li>
-                        <li><i class="fas fa-check text-purple-400"></i> חזנות</li>
-                        <li><i class="fas fa-check text-purple-400"></i> הגברה מקצועית</li>
-                        <li><i class="fas fa-check text-purple-400"></i> קלידן</li>
-                        <li><i class="fas fa-drum text-purple-400"></i> זוג מתופפים</li>
-                        <li><i class="fas fa-bullhorn text-purple-400"></i> כניסה מיוחדת עם חופה ושופרות</li>
-                        <li><i class="fas fa-utensils text-purple-400"></i> ליווי שירים בסעודה</li>
-                        <li><i class="fas fa-book-open text-purple-400"></i> לימוד הפרשה (במידת הצורך)</li>
+                        <li><i class="fas fa-check text-green-400"></i> ליווי תפילה ופיוטים</li>
+                        <li><i class="fas fa-check text-green-400"></i> חזנות</li>
+                        <li><i class="fas fa-check text-green-400"></i> הגברה מקצועית</li>
+                        <li><i class="fas fa-check text-green-400"></i> קלידן</li>
+                        <li><i class="fas fa-check text-green-400"></i> זוג מתופפים</li>
+                        <li><i class="fas fa-check text-green-400"></i> כניסה מיוחדת בליווי חופה ושופרות</li>
+                        <li><i class="fas fa-utensils text-green-400"></i>ליווי הסעודה במופע אקוסטי חי, המשלב שירה ונגינה על קלידים וגיטרה ליצירת אווירת בוקר נעימה ומרגשת לצד הארוחה</li>
+                        <li><i class="fas fa-book-open text-blue-300"></i> לימוד הפרשה (במידת הצורך)</li>
                     </ul>
                 </div>
             </div>
@@ -472,11 +473,11 @@
     </section>
 
     <section id="contact" class="py-20 bg-black text-center border-t border-blue-900 relative z-10">
-        <h2 class="text-3xl font-bold mb-8 text-white" data-id="contact-title" data-type="text">בואו נדבר</h2>
+        <h2 class="text-3xl font-bold mb-8 text-white" data-id="contact-title" data-type="text">צרו קשר</h2>
         <div class="flex flex-col items-center gap-6">
-            <a href="tel:0500000000" id="phoneLink" class="flex items-center gap-3 bg-blue-900/50 hover:bg-blue-900 border border-blue-800 px-8 py-4 rounded-2xl text-2xl text-white font-bold transition group">
+            <a href="tel:0559907076" id="phoneLink" class="flex items-center gap-3 bg-blue-900/50 hover:bg-blue-900 border border-blue-800 px-8 py-4 rounded-2xl text-2xl text-white font-bold transition group">
                 <i class="fas fa-phone-alt text-amber-500 group-hover:rotate-12 transition"></i>
-                <span data-id="phone-text" data-type="text">050-000-0000</span>
+                <span data-id="phone-text" data-type="text">055-990-7076</span>
             </a>
             <div class="flex gap-6 text-4xl text-blue-500 mt-4 bg-blue-950/50 p-4 rounded-full px-8">
                 <a href="#" onclick="editLink('social-fb')" class="hover:text-amber-500 transition hover:-translate-y-1"><i class="fab fa-facebook"></i></a>
@@ -575,7 +576,7 @@
                             <option value="חגיגית">חגיגית</option>
                             <option value="הכל כלול">הכל כלול</option>
                             <option value="בסיס">בסיס</option>
-                            <option value="ליווי וחזנות">ליווי וחזנות</option>
+                            <option value="לימוד לבר מצווה">לימוד לבר מצווה</option>
                         </select>
                     </div>
                     <textarea id="qeNotes" placeholder="הערות..." class="w-full p-3 bg-slate-800 border border-slate-600 rounded text-white h-24"></textarea>
@@ -603,7 +604,7 @@
                         <option value="VIP">הכל כלול VIP</option>
                         <option value="FESTIVE">חבילה חגיגית</option>
                         <option value="BASIC">חבילה בסיסית</option>
-                        <option value="SOLO">חבילת ליווי וחזנות</option>
+                        <option value="SOLO">חבילת לימוד לבר מצווה</option>
                         <option value="CUSTOM">התאמה אישית</option>
                     </select>
                 </div>
@@ -859,7 +860,7 @@
                             if (!isBooked) { window.openQuickEventModal(dateString); } 
                             else { if(confirm("לבטל נעילה לתאריך זה?")) { bookedDates = bookedDates.filter(bd => bd !== dateString); renderCalendar(); } }
                         } else {
-                            if (!isBooked) { window.open(`https://wa.me/972500000000?text=${encodeURIComponent('היי, התאריך ' + dateString + ' פנוי?')}`, '_blank'); }
+                            if (!isBooked) { window.open(`https://wa.me/972559907076?text=${encodeURIComponent('היי, התאריך ' + dateString + ' פנוי?')}`, '_blank'); }
                         }
                     };
                     g.appendChild(d);
