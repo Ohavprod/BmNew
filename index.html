@@ -9,7 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&family=Raleway:wght@400;700&display=swap" rel="stylesheet">
 
     <script>
-        // *** עדכן את הקישור לגרסה החדשה שיצרת עכשיו ***
+        // *** וודא שהקישור הזה תקין ומעודכן ***
         const API_URL = "https://script.google.com/macros/s/AKfycbz8jgqmdOVFQ1-dx3S78tLGKeXT7Zpa7PxNKs81oheI4gM8nw61Cz9bb5nDEfOty0v52Q/exec?mode=api"; 
     </script>
 
@@ -59,6 +59,7 @@
         .whatsapp-float { position: fixed; bottom: 20px; right: 20px; z-index: 100; background: #25D366; color: white; padding: 12px; border-radius: 50%; font-size: 2rem; box-shadow: 0 4px 10px rgba(0,0,0,0.3); transition: 0.3s; display: flex; align-items: center; justify-content: center; width: 55px; height: 55px; }
 
         #loggedInMenuBtn { position: fixed; top: 20px; right: 20px; z-index: 99999; background: transparent; width: 45px; height: 45px; color: white; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; cursor: pointer; text-shadow: 0 2px 5px rgba(0,0,0,0.5); }
+        
         #sideMenu { position: fixed; top: 0; right: -320px; width: 280px; height: 100%; background: #0f172a; z-index: 100000; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); border-left: 4px solid #fbbf24; padding: 2rem; padding-top: 80px; display: flex; flex-direction: column; gap: 1rem; box-shadow: -20px 0 50px rgba(0,0,0,0.9); }
         #sideMenu.open { right: 0; }
         .menu-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 99998; display: none; backdrop-filter: blur(8px); }
@@ -167,7 +168,7 @@
         #proposalSetupModal .modal-content { max-width: 700px; }
         #eventEditor .modal-content { max-width: 800px; }
         
-        /* מודאל התחברות גדול יותר (V106) */
+        /* מודאל התחברות גדול יותר */
         #loginModal .modal-content { 
             max-width: 480px; 
             padding: 40px 20px; 
@@ -184,7 +185,7 @@
         .checkbox-group { display: flex; gap: 15px; align-items: center; background: #1e293b; padding: 10px; border-radius: 8px; border: 1px solid #475569; flex-wrap: wrap; }
         .checkbox-group input { width: 20px; height: 20px; accent-color: #fbbf24; }
         
-        /* חצים לגלריה (V106) */
+        /* חצים לגלריה */
         .lightbox-nav {
             position: absolute; top: 50%; transform: translateY(-50%);
             background: rgba(0,0,0,0.5); color: white;
@@ -289,6 +290,7 @@
     <div id="adminPanel" class="fixed bottom-0 left-0 w-full bg-slate-900/95 border-t border-amber-500/30 p-4 z-[90] justify-between items-center shadow-[0_-5px_20px_rgba(0,0,0,0.5)] backdrop-blur-md">
         <div class="text-amber-400 font-bold flex items-center"><i class="fas fa-user-shield mr-2"></i> מצב עריכה פעיל</div>
         <div class="flex gap-4">
+            <button onclick="saveChanges()" class="bg-green-600 hover:bg-green-500 text-white px-6 py-2 rounded font-bold shadow-lg transition flex items-center"><i class="fas fa-save ml-2"></i> שמירה</button>
             <button onclick="logout()" class="bg-red-600 hover:bg-red-500 text-white px-6 py-2 rounded font-bold shadow-lg transition">יציאה</button>
         </div>
     </div>
@@ -647,8 +649,8 @@
     <div id="lightboxModal" class="modal-overlay" onclick="closeModal('lightboxModal')">
         <div class="relative max-w-4xl mx-auto p-4 w-full h-full flex justify-center items-center">
              <button onclick="closeModal('lightboxModal')" class="absolute top-4 right-4 text-white text-4xl z-50 hover:text-amber-400 bg-black/50 rounded-full w-12 h-12 flex items-center justify-center"><i class="fas fa-times"></i></button>
-             <button onclick="prevImage()" class="lightbox-nav lightbox-prev"><i class="fas fa-chevron-right"></i></button>
-             <button onclick="nextImage()" class="lightbox-nav lightbox-next"><i class="fas fa-chevron-left"></i></button>
+             <button onclick="prevImage(event)" class="lightbox-nav lightbox-prev"><i class="fas fa-chevron-right"></i></button>
+             <button onclick="nextImage(event)" class="lightbox-nav lightbox-next"><i class="fas fa-chevron-left"></i></button>
              <img id="lightboxImage" src="" alt="הגדלה" class="max-h-[90vh] max-w-full object-contain rounded-lg shadow-2xl border-4 border-amber-500">
         </div>
     </div>
@@ -680,6 +682,10 @@
                 'SOLO': { t: 'חבילת לימוד לבר מצווה', p: '₪1,500', d: 'לימוד יסודי של קריאת התורה בטעמי המקרא\nליווי אישי צמוד' },
                 'CUSTOM': { t: 'התאמה אישית', p: '', d: '' }
             };
+            
+            // האזנה לאנטר בלוגין (V107)
+            document.getElementById('uName').addEventListener('keypress', function(e) { if(e.key === 'Enter') login(); });
+            document.getElementById('uPass').addEventListener('keypress', function(e) { if(e.key === 'Enter') login(); });
 
             // Global functions
             window.showLoader = () => { document.getElementById('globalLoader').style.display = 'flex'; }
@@ -722,7 +728,7 @@
                 document.getElementById('menuOverlay').classList.remove('show'); 
             }
             
-            window.saveChanges = () => { } // ריק כי השמירה אוטומטית
+            window.saveChanges = () => { } 
             
             window.deleteEvent = async () => {
                 const id = document.forms['eventForm'].id.value;
@@ -876,7 +882,6 @@
                 }
             }
             
-            // פונקציית עריכת תמונה בגלריה (V106)
             window.editGalleryItem = (oldUrl) => {
                  const newUrl = prompt("הכנס קישור חדש:", oldUrl);
                  if (newUrl && newUrl !== oldUrl) {
@@ -910,7 +915,6 @@
                 const images = galleryImages.filter(item => typeof item === 'string' || item.type === 'image');
                 const videos = galleryImages.filter(item => item.type === 'video');
 
-                // עדכון מערך ה-Lightbox
                 lightboxImageUrls = images.map(i => (typeof i === 'string' ? i : i.url));
 
                 const createSet = (clone) => {
@@ -936,7 +940,9 @@
                 videos.forEach(vid => {
                     let embedUrl = vid.url;
                     let isDirectFile = false;
+                    let poster = ''; // תמונת מקדימה (V107)
 
+                    // זיהוי קובץ ישיר
                     if (vid.url.match(/\.(mp4|webm|ogg)$/i) || vid.url.includes('drive.google.com/file')) {
                         isDirectFile = true;
                         if(vid.url.includes('drive.google.com/file')) {
@@ -944,15 +950,18 @@
                             if(fileId) embedUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
                         }
                     } 
+                    // זיהוי Vimeo
                     else if (vid.url.includes('vimeo')) {
                         const vimeoId = vid.url.match(/vimeo\.com\/(?:.*#|.*\/videos\/)?([0-9]+)/);
                         if (vimeoId && vimeoId[1]) {
                              embedUrl = `https://player.vimeo.com/video/${vimeoId[1]}?title=0&byline=0&portrait=0&badge=0&autopause=0&player_id=0&app_id=58479`; 
                         }
                     } 
+                    // זיהוי YouTube - Facade Pattern (V107)
                     else if (vid.url.includes('youtu')) {
                         let id = vid.url.includes('v=') ? vid.url.split('v=')[1].split('&')[0] : vid.url.split('youtu.be/')[1].split('?')[0];
-                        embedUrl = `https://www.youtube.com/embed/${id}`;
+                        embedUrl = `https://www.youtube.com/embed/${id}?autoplay=1&rel=0`;
+                        poster = `https://img.youtube.com/vi/${id}/maxresdefault.jpg`;
                     }
 
                     const div = document.createElement('div');
@@ -969,32 +978,46 @@
                     
                     if (isDirectFile) {
                         div.innerHTML = `${delBtn}<div class="bg-black aspect-video relative"><video src="${embedUrl}" class="w-full h-full" controls playsinline controlsList="nodownload"></video></div>`;
-                    } else {
+                    } 
+                    else if (poster) { // אם יש תמונה (YouTube)
+                        div.innerHTML = `
+                            ${delBtn}
+                            <div class="bg-black aspect-video relative cursor-pointer group" onclick="this.innerHTML='<iframe class=\\'w-full h-full\\' src=\\'${embedUrl}\\' frameborder=\\'0\\' allowfullscreen allow=\\'autoplay\\'></iframe>'">
+                                <img src="${poster}" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition duration-500">
+                                <div class="absolute inset-0 flex items-center justify-center">
+                                    <div class="bg-red-600 text-white rounded-full w-16 h-16 flex items-center justify-center shadow-lg group-hover:scale-110 transition"><i class="fas fa-play text-2xl ml-1"></i></div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                    else { // Vimeo ואחרים
                         div.innerHTML = `${delBtn}<div class="bg-black aspect-video relative"><iframe class="w-full h-full" src="${embedUrl}" frameborder="0" allowfullscreen allow="autoplay; fullscreen; picture-in-picture"></iframe></div>`;
                     }
                     v.appendChild(div);
                 });
             }
 
-            // Lightbox Logic (V106)
             window.openLightbox = (src) => { 
                 currentLightboxIndex = lightboxImageUrls.indexOf(src);
                 document.getElementById('lightboxImage').src = src; 
                 window.openModal('lightboxModal'); 
             }
             
-            window.nextImage = () => {
+            // תיקון דפדוף (V107)
+            window.nextImage = (e) => {
+                if(e) e.stopPropagation(); 
                 currentLightboxIndex = (currentLightboxIndex + 1) % lightboxImageUrls.length;
                 document.getElementById('lightboxImage').src = lightboxImageUrls[currentLightboxIndex];
             }
             
-            window.prevImage = () => {
+            window.prevImage = (e) => {
+                if(e) e.stopPropagation(); 
                 currentLightboxIndex = (currentLightboxIndex - 1 + lightboxImageUrls.length) % lightboxImageUrls.length;
                 document.getElementById('lightboxImage').src = lightboxImageUrls[currentLightboxIndex];
             }
 
             let currentDate = new Date();
-            // ... (שאר הפונקציות זהות)
+            // ... (המשך פונקציות ללא שינוי מהותי)
              function renderCalendar() {
                 const g = document.getElementById('calendarGrid'); 
                 if(!g) return;
@@ -1122,12 +1145,57 @@
                 });
             }
 
-            // ... (שאר הפונקציות זהות)
+            // תיקון ניהול תשלומים (V107) - לוגיקה עמידה יותר לשגיאות
+            function renderPaymentsBoard() {
+                const board = document.getElementById('paymentsBoard');
+                if(!board) return;
+                board.innerHTML = '';
+                
+                events.forEach(evt => {
+                    // הגנה: וודא שיש אובייקט תשלומים תקין לפני גישה
+                    let payments = evt.payments || {};
+                    let client = payments.client || { downPayment: false, fullPayment: false };
+                    let staff = payments.staff || {};
+
+                    const isFinished = evt.status === 'הסתיים';
+                    let isFullyPaid = false;
+                    
+                    if (!isFinished) {
+                        isFullyPaid = client.downPayment; 
+                    } else {
+                        const clientOK = client.fullPayment;
+                        const staffOK = Object.values(staff).every(s => {
+                            if (s.amount && s.amount > 0) return s.paid;
+                            return true; 
+                        });
+                        isFullyPaid = clientOK && staffOK;
+                    }
+
+                    const borderClass = isFullyPaid ? 'payment-ok' : 'payment-bad';
+                    const depositIcon = client.downPayment ? '<i class="fas fa-check text-green-500"></i>' : '<i class="fas fa-times text-red-500"></i>';
+
+                    let cardHtml = `
+                        <div class="payment-card ${borderClass}">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-xl font-bold text-white">${evt.eventName || 'אירוע'}</h3>
+                                <span class="text-sm text-gray-400">${evt.date}</span>
+                            </div>
+                            <div class="mb-4 text-right text-gray-300">
+                                 <div>מקדמה: ${depositIcon}</div>
+                                 ${isFinished ? `<div>גמר חשבון: ${client.fullPayment ? '<i class="fas fa-check text-green-500"></i>' : '<i class="fas fa-times text-red-500"></i>'}</div>` : ''}
+                            </div>
+                            <button onclick="openPaymentModal('${evt.id}')" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 rounded">ניהול תשלומים</button>
+                        </div>
+                    `;
+                    board.innerHTML += cardHtml;
+                });
+            }
+
             window.openPaymentModal = (eventId) => {
                 const evt = events.find(e => e.id == eventId);
                 if(!evt) return;
                 
-                // וודא שאובייקט התשלומים קיים (תיקון V105)
+                // וודא שאובייקט התשלומים קיים (תיקון V105/107)
                 if (!evt.payments) evt.payments = { client: {}, staff: {} };
                 const client = evt.payments.client || {};
                 const staff = evt.payments.staff || {};
@@ -1163,7 +1231,9 @@
                 if(!evt) return;
 
                 if(!evt.payments) evt.payments = { client: {}, staff: {} };
-                
+                if(!evt.payments.client) evt.payments.client = {};
+                if(!evt.payments.staff) evt.payments.staff = {};
+
                 evt.payments.client.downPayment = document.getElementById('payClientDeposit').checked;
                 
                 if(evt.status === 'הסתיים') {
@@ -1268,8 +1338,7 @@
                 } else {
                     eventData.action = 'createEvent';
                     eventData.id = 'evt-' + Date.now();
-                    // אתחול תשלומים לאירוע חדש בצד לקוח (כדי שיראו מיד)
-                    eventData.payments = { client: {}, staff: {} };
+                    eventData.payments = { client: {}, staff: {} }; // אתחול קריטי
                 }
                 
                 if(API_URL.includes("http")) {
@@ -1336,7 +1405,6 @@
                 const details = document.getElementById('propCustomDetails').value;
                 const price = document.getElementById('propCustomPrice').value;
 
-                // --- יצירת דף הדפסה חדש ונקי ---
                 const printWindow = window.open('', '_blank');
                 
                 printWindow.document.write(`
