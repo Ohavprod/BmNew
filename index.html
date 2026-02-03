@@ -9,8 +9,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&family=Raleway:wght@400;700&display=swap" rel="stylesheet">
 
     <script>
-        // *** וודא שהקישור הזה תקין ומעודכן לגרסה האחרונה ***
-        const API_URL = "https://script.google.com/macros/s/AKfycby0ETBWgSQRmV014veRcJvthH6_y9NyJZ_auyBf82HJFxhIwnoN-BR55S-mj_IglcrUQQ/exec?mode=api"; 
+        // *** עדכן את הקישור לגרסה החדשה שיצרת עכשיו ***
+        const API_URL = "https://script.google.com/macros/s/AKfycbz8jgqmdOVFQ1-dx3S78tLGKeXT7Zpa7PxNKs81oheI4gM8nw61Cz9bb5nDEfOty0v52Q/exec?mode=api"; 
     </script>
 
     <style>
@@ -22,7 +22,7 @@
         .gold-text { background: linear-gradient(45deg, #fbbf24, #d97706); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 900; text-shadow: 0px 0px 20px rgba(251, 191, 36, 0.3); }
         .a3-logo-img { display: none; } 
 
-        /* --- Loader (גלגל טעינה) --- */
+        /* --- Loader --- */
         #globalLoader {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.8); z-index: 9999999;
@@ -58,9 +58,7 @@
         .footer-login-btn { color: #1e293b; font-size: 1.2rem; cursor: pointer; transition: 0.3s; padding: 10px; }
         .whatsapp-float { position: fixed; bottom: 20px; right: 20px; z-index: 100; background: #25D366; color: white; padding: 12px; border-radius: 50%; font-size: 2rem; box-shadow: 0 4px 10px rgba(0,0,0,0.3); transition: 0.3s; display: flex; align-items: center; justify-content: center; width: 55px; height: 55px; }
 
-        /* המבורגר נקי */
         #loggedInMenuBtn { position: fixed; top: 20px; right: 20px; z-index: 99999; background: transparent; width: 45px; height: 45px; color: white; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; cursor: pointer; text-shadow: 0 2px 5px rgba(0,0,0,0.5); }
-        
         #sideMenu { position: fixed; top: 0; right: -320px; width: 280px; height: 100%; background: #0f172a; z-index: 100000; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); border-left: 4px solid #fbbf24; padding: 2rem; padding-top: 80px; display: flex; flex-direction: column; gap: 1rem; box-shadow: -20px 0 50px rgba(0,0,0,0.9); }
         #sideMenu.open { right: 0; }
         .menu-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 99998; display: none; backdrop-filter: blur(8px); }
@@ -115,7 +113,7 @@
         /* --- גלריה ויומן --- */
         .marquee-wrapper { overflow: hidden; width: 100%; position: relative; direction: ltr; }
         
-        /* מהירות גלריה - 160 שניות */
+        /* מהירות גלריה - 200 שניות */
         .marquee-track { 
             display: flex; width: max-content; gap: 0; 
             animation: scroll-loop 200s linear infinite; 
@@ -169,7 +167,13 @@
         #proposalSetupModal .modal-content { max-width: 700px; }
         #eventEditor .modal-content { max-width: 800px; }
         
-        /* מודאל אישור והודעות */
+        /* מודאל התחברות גדול יותר (V106) */
+        #loginModal .modal-content { 
+            max-width: 480px; 
+            padding: 40px 20px; 
+            border: 2px solid #fbbf24; 
+        }
+
         #confirmModal .modal-content, #alertModal .modal-content { max-width: 400px; text-align: center; padding: 20px; border: 1px solid #fbbf24; background: #0f172a; height: auto; }
 
         .modal-header { background: #1e293b; padding: 1rem; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 10; flex-shrink: 0; }
@@ -179,6 +183,21 @@
         .input-group input, .input-group select, .input-group textarea { width: 100%; background: #1e293b; border: 1px solid #475569; color: white; padding: 10px; border-radius: 8px; font-size: 1rem; outline: none; }
         .checkbox-group { display: flex; gap: 15px; align-items: center; background: #1e293b; padding: 10px; border-radius: 8px; border: 1px solid #475569; flex-wrap: wrap; }
         .checkbox-group input { width: 20px; height: 20px; accent-color: #fbbf24; }
+        
+        /* חצים לגלריה (V106) */
+        .lightbox-nav {
+            position: absolute; top: 50%; transform: translateY(-50%);
+            background: rgba(0,0,0,0.5); color: white;
+            border: none; padding: 15px; cursor: pointer;
+            font-size: 2rem; z-index: 100;
+            transition: 0.3s;
+            border-radius: 50%;
+            width: 60px; height: 60px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .lightbox-nav:hover { background: #fbbf24; color: black; }
+        .lightbox-prev { left: 20px; }
+        .lightbox-next { right: 20px; }
 
         /* ========= התאמות אגרסיביות לנייד ========= */
         @media (max-width: 768px) {
@@ -215,6 +234,10 @@
                 margin: 0 auto !important;
                 max-width: none !important;
             }
+            
+            .lightbox-nav { width: 45px; height: 45px; font-size: 1.5rem; padding: 10px; }
+            .lightbox-prev { left: 10px; }
+            .lightbox-next { right: 10px; }
         }
 
         @media (min-width: 769px) {
@@ -266,7 +289,6 @@
     <div id="adminPanel" class="fixed bottom-0 left-0 w-full bg-slate-900/95 border-t border-amber-500/30 p-4 z-[90] justify-between items-center shadow-[0_-5px_20px_rgba(0,0,0,0.5)] backdrop-blur-md">
         <div class="text-amber-400 font-bold flex items-center"><i class="fas fa-user-shield mr-2"></i> מצב עריכה פעיל</div>
         <div class="flex gap-4">
-            <button onclick="saveChanges()" class="bg-green-600 hover:bg-green-500 text-white px-6 py-2 rounded font-bold shadow-lg transition flex items-center"><i class="fas fa-save ml-2"></i> שמירה</button>
             <button onclick="logout()" class="bg-red-600 hover:bg-red-500 text-white px-6 py-2 rounded font-bold shadow-lg transition">יציאה</button>
         </div>
     </div>
@@ -625,6 +647,8 @@
     <div id="lightboxModal" class="modal-overlay" onclick="closeModal('lightboxModal')">
         <div class="relative max-w-4xl mx-auto p-4 w-full h-full flex justify-center items-center">
              <button onclick="closeModal('lightboxModal')" class="absolute top-4 right-4 text-white text-4xl z-50 hover:text-amber-400 bg-black/50 rounded-full w-12 h-12 flex items-center justify-center"><i class="fas fa-times"></i></button>
+             <button onclick="prevImage()" class="lightbox-nav lightbox-prev"><i class="fas fa-chevron-right"></i></button>
+             <button onclick="nextImage()" class="lightbox-nav lightbox-next"><i class="fas fa-chevron-left"></i></button>
              <img id="lightboxImage" src="" alt="הגדלה" class="max-h-[90vh] max-w-full object-contain rounded-lg shadow-2xl border-4 border-amber-500">
         </div>
     </div>
@@ -640,10 +664,14 @@
             let isAdmin = false;
             let currentUser = null;
             let bookedDates = [];
-            let events = []; // ייטען מהשרת
-            let galleryImages = []; // ייטען מהשרת
+            let events = []; 
+            let galleryImages = []; 
             let siteConfig = {}; 
-            let users = []; // רשימת משתמשים
+            let users = []; 
+            
+            // משתני גלריה
+            let currentLightboxIndex = 0;
+            let lightboxImageUrls = [];
 
             const packagesData = {
                 'VIP': { t: 'חבילת הכל כלול VIP', p: '₪5,500', d: 'ליווי תפילה ופיוטים\nחזנות\nהגברה מקצועית\nקלידן\nזוג מתופפים\nכניסה מיוחדת עם חופה ושופרות\nליווי שירים בסעודה (אביב + קלידן)\nלימוד הפרשה (במידת הצורך)' },
@@ -657,11 +685,8 @@
             window.showLoader = () => { document.getElementById('globalLoader').style.display = 'flex'; }
             window.hideLoader = () => { document.getElementById('globalLoader').style.display = 'none'; }
 
-            // ביטול Alert סטנדרטי לטובת המודאל
             window.customAlert = (message) => {
-                // בדיקה אם ההודעה היא "טעינה מחדש" - אם כן, אל תציג כלום כי הלואדר עובד
                 if (message.includes('טוען מחדש')) return; 
-                
                 document.getElementById('alertMsg').innerText = message;
                 document.getElementById('alertModal').style.display = 'flex';
             }
@@ -697,9 +722,7 @@
                 document.getElementById('menuOverlay').classList.remove('show'); 
             }
             
-            window.saveChanges = () => {
-                // ללא הודעה - המשתמש רואה את הנתונים מתעדכנים
-            }
+            window.saveChanges = () => { } // ריק כי השמירה אוטומטית
             
             window.deleteEvent = async () => {
                 const id = document.forms['eventForm'].id.value;
@@ -714,7 +737,7 @@
                         body: JSON.stringify({ action: 'deleteEvent', id: id })
                     }).then(() => {
                         window.closeModal('eventEditor');
-                        loadData(); // הלואדר יוסתר בתוך loadData
+                        loadData(); 
                     });
                 }
             }
@@ -852,6 +875,20 @@
                     }).then(() => { loadData(); });
                 }
             }
+            
+            // פונקציית עריכת תמונה בגלריה (V106)
+            window.editGalleryItem = (oldUrl) => {
+                 const newUrl = prompt("הכנס קישור חדש:", oldUrl);
+                 if (newUrl && newUrl !== oldUrl) {
+                     if(API_URL.includes("http")) {
+                        showLoader();
+                        fetch(API_URL, {
+                            method: 'POST',
+                            body: JSON.stringify({ action: 'updateGallery', oldUrl: oldUrl, newUrl: newUrl })
+                        }).then(() => { loadData(); });
+                     }
+                 }
+            }
 
             window.editHeroMedia = () => {
                  const u = prompt("הכנס קישור לתמונת רקע חדשה:");
@@ -873,16 +910,25 @@
                 const images = galleryImages.filter(item => typeof item === 'string' || item.type === 'image');
                 const videos = galleryImages.filter(item => item.type === 'video');
 
-                const imgUrls = images.map(i => (typeof i === 'string' ? i : i.url));
+                // עדכון מערך ה-Lightbox
+                lightboxImageUrls = images.map(i => (typeof i === 'string' ? i : i.url));
+
                 const createSet = (clone) => {
                     const w = document.createElement('div'); w.className = clone ? 'clone-set flex' : 'flex';
-                    imgUrls.forEach((src) => {
-                        let btns = isAdmin && !clone ? `<button class="admin-controls absolute top-2 right-2 bg-red-600/80 text-white p-2 rounded-full z-50" onclick="deleteImage('${src}')"><i class="fas fa-trash"></i></button>` : '';
+                    lightboxImageUrls.forEach((src, idx) => {
+                        let btns = '';
+                        if (isAdmin && !clone) {
+                             btns = `
+                                <div class="absolute top-2 right-2 flex gap-2 z-50">
+                                    <button class="bg-blue-600/80 text-white p-2 rounded-full hover:bg-blue-500" onclick="editGalleryItem('${src}')"><i class="fas fa-pencil-alt"></i></button>
+                                    <button class="bg-red-600/80 text-white p-2 rounded-full hover:bg-red-500" onclick="deleteImage('${src}')"><i class="fas fa-trash"></i></button>
+                                </div>`;
+                        }
                         w.innerHTML += `<div class="gallery-item relative">${btns}<img src="${src}" class="gallery-img" onclick="openLightbox('${src}')"></div>`;
                     });
                     return w;
                 };
-                if(imgUrls.length > 0) {
+                if(lightboxImageUrls.length > 0) {
                     c.appendChild(createSet(false)); 
                     c.appendChild(createSet(true));
                 }
@@ -911,7 +957,15 @@
 
                     const div = document.createElement('div');
                     div.className = "rounded-2xl overflow-hidden border border-blue-800 relative group shadow-xl video-item";
-                    let delBtn = isAdmin ? `<button onclick="deleteImage('${vid.url}')" class="admin-controls absolute top-2 right-2 bg-red-600/80 text-white p-2 rounded-full shadow-lg hover:bg-red-700 z-50"><i class="fas fa-trash"></i></button>` : '';
+                    
+                    let delBtn = '';
+                    if (isAdmin) {
+                        delBtn = `
+                            <div class="absolute top-2 right-2 flex gap-2 z-50">
+                                <button class="bg-blue-600/80 text-white p-2 rounded-full hover:bg-blue-500" onclick="editGalleryItem('${vid.url}')"><i class="fas fa-pencil-alt"></i></button>
+                                <button class="bg-red-600/80 text-white p-2 rounded-full hover:bg-red-500" onclick="deleteImage('${vid.url}')"><i class="fas fa-trash"></i></button>
+                            </div>`;
+                    }
                     
                     if (isDirectFile) {
                         div.innerHTML = `${delBtn}<div class="bg-black aspect-video relative"><video src="${embedUrl}" class="w-full h-full" controls playsinline controlsList="nodownload"></video></div>`;
@@ -921,7 +975,23 @@
                     v.appendChild(div);
                 });
             }
-            window.openLightbox = (src) => { document.getElementById('lightboxImage').src=src; window.openModal('lightboxModal'); }
+
+            // Lightbox Logic (V106)
+            window.openLightbox = (src) => { 
+                currentLightboxIndex = lightboxImageUrls.indexOf(src);
+                document.getElementById('lightboxImage').src = src; 
+                window.openModal('lightboxModal'); 
+            }
+            
+            window.nextImage = () => {
+                currentLightboxIndex = (currentLightboxIndex + 1) % lightboxImageUrls.length;
+                document.getElementById('lightboxImage').src = lightboxImageUrls[currentLightboxIndex];
+            }
+            
+            window.prevImage = () => {
+                currentLightboxIndex = (currentLightboxIndex - 1 + lightboxImageUrls.length) % lightboxImageUrls.length;
+                document.getElementById('lightboxImage').src = lightboxImageUrls[currentLightboxIndex];
+            }
 
             let currentDate = new Date();
             // ... (שאר הפונקציות זהות)
@@ -1056,11 +1126,15 @@
             window.openPaymentModal = (eventId) => {
                 const evt = events.find(e => e.id == eventId);
                 if(!evt) return;
-                if(!evt.payments) evt.payments = { client: { downPayment: false, fullPayment: false }, staff: { drummer: {paid:false}, keyboard: {paid:false}, sound: {paid:false}, manager: {paid:false} } };
+                
+                // וודא שאובייקט התשלומים קיים (תיקון V105)
+                if (!evt.payments) evt.payments = { client: {}, staff: {} };
+                const client = evt.payments.client || {};
+                const staff = evt.payments.staff || {};
 
                 document.getElementById('payEventName').innerText = evt.eventName || 'אירוע';
                 document.getElementById('payEventId').value = evt.id;
-                document.getElementById('payClientDeposit').checked = evt.payments.client.downPayment;
+                document.getElementById('payClientDeposit').checked = client.downPayment || false;
                 
                 const fullPayContainer = document.getElementById('payClientFullContainer');
                 const staffContainer = document.getElementById('staffPaymentsContainer');
@@ -1068,12 +1142,12 @@
                 if(evt.status === 'הסתיים') {
                     fullPayContainer.classList.remove('hidden');
                     staffContainer.classList.remove('hidden');
-                    document.getElementById('payClientFull').checked = evt.payments.client.fullPayment;
+                    document.getElementById('payClientFull').checked = client.fullPayment || false;
                     const tbody = document.getElementById('staffPaymentsTableBody');
                     tbody.innerHTML = '';
                     const roles = [ { key: 'drummer', label: 'מתופפים' }, { key: 'keyboard', label: 'קלידן' }, { key: 'sound', label: 'סאונד' }, { key: 'manager', label: 'מנהלת' } ];
                     roles.forEach(role => {
-                        const data = evt.payments.staff[role.key] || { paid: false, amount: 0, date: '' };
+                        const data = staff[role.key] || { paid: false, amount: 0, date: '' };
                         tbody.innerHTML += `<tr><td>${role.label}</td><td><input type="checkbox" class="w-5 h-5 accent-green-500" id="pay_${role.key}_check" ${data.paid ? 'checked' : ''}></td><td><input type="number" class="bg-slate-700 text-white w-20 p-1 rounded" id="pay_${role.key}_amount" value="${data.amount || 0}"></td><td><input type="date" class="bg-slate-700 text-white w-32 p-1 rounded" id="pay_${role.key}_date" value="${data.date || ''}"></td></tr>`;
                     });
                 } else {
@@ -1088,6 +1162,8 @@
                 const evt = events.find(e => e.id == eventId);
                 if(!evt) return;
 
+                if(!evt.payments) evt.payments = { client: {}, staff: {} };
+                
                 evt.payments.client.downPayment = document.getElementById('payClientDeposit').checked;
                 
                 if(evt.status === 'הסתיים') {
@@ -1192,6 +1268,8 @@
                 } else {
                     eventData.action = 'createEvent';
                     eventData.id = 'evt-' + Date.now();
+                    // אתחול תשלומים לאירוע חדש בצד לקוח (כדי שיראו מיד)
+                    eventData.payments = { client: {}, staff: {} };
                 }
                 
                 if(API_URL.includes("http")) {
@@ -1258,6 +1336,7 @@
                 const details = document.getElementById('propCustomDetails').value;
                 const price = document.getElementById('propCustomPrice').value;
 
+                // --- יצירת דף הדפסה חדש ונקי ---
                 const printWindow = window.open('', '_blank');
                 
                 printWindow.document.write(`
@@ -1393,6 +1472,3 @@
     </script>
 </body>
 </html>
-
-
-
