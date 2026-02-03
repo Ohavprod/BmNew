@@ -9,27 +9,48 @@
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&family=Raleway:wght@400;700&display=swap" rel="stylesheet">
 
     <script>
-        // הלינק שלך (כבר כולל mode=api)
+        // *** הקישור שלך (V113) ***
         const API_URL = "https://script.google.com/macros/s/AKfycbydOBFs8G3bh-1Y5qK9DtYv-ielUpRet_oSY4qTQr5ehuMYNxGj1t-3VrkJk5SmvJvmOA/exec?mode=api"; 
     </script>
 
     <style>
         /* --- בסיס --- */
-        html { font-size: 14px; }
-        body { font-family: 'Heebo', sans-serif; background-color: #051c42; color: #ffffff; min-height: 100vh; overflow-x: hidden; margin: 0; padding: 0; display: flex; flex-direction: column; }
-        
-        /* רקע קבוע שלא זז (פותר את הבעיה בויקס) */
-        #fixed-background {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1;
-            background-image: linear-gradient(180deg, #051c42 0%, #021029 100%);
-        }
-        #bg-image-layer {
+        html, body { 
+            font-size: 14px; 
+            margin: 0; padding: 0; 
             width: 100%; height: 100%;
-            background-size: cover; background-position: center top; background-repeat: no-repeat;
+            overflow-x: hidden;
+        }
+        body { 
+            font-family: 'Heebo', sans-serif; 
+            background-color: #051c42; 
+            color: #ffffff; 
+            display: flex; flex-direction: column; 
         }
 
+        /* --- תיקון רקע קריטי ל-WIX ו-IFRAME --- */
+        #fixed-background {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            background-image: linear-gradient(180deg, #051c42 0%, #021029 100%);
+            pointer-events: none;
+        }
+        
+        #bg-image-layer {
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center top;
+            background-repeat: no-repeat;
+            background-attachment: scroll;
+        }
+        
         body.no-scroll { overflow: hidden !important; height: 100vh; }
         .gold-text { background: linear-gradient(45deg, #fbbf24, #d97706); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 900; text-shadow: 0px 0px 20px rgba(251, 191, 36, 0.3); }
+        .a3-logo-img { display: none; } 
 
         /* --- Loader --- */
         #globalLoader {
@@ -122,7 +143,12 @@
         
         /* --- גלריה ויומן --- */
         .marquee-wrapper { overflow: hidden; width: 100%; position: relative; direction: ltr; }
-        .marquee-track { display: flex; width: max-content; gap: 0; animation: scroll-loop 200s linear infinite; }
+        
+        /* מהירות גלריה */
+        .marquee-track { 
+            display: flex; width: max-content; gap: 0; 
+            animation: scroll-loop 200s linear infinite; 
+        }
         .marquee-track:hover { animation-play-state: paused; }
         @keyframes scroll-loop { 0% { transform: translateX(-50%); } 100% { transform: translateX(0%); } }
         
@@ -138,6 +164,25 @@
         body.admin-mode .calendar-day:hover { transform: scale(1.1); cursor: pointer; border-color: white; }
         
         /* --- וידאו ורקע --- */
+        #fixed-background {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            background-image: linear-gradient(180deg, #051c42 0%, #021029 100%);
+            pointer-events: none;
+        }
+        
+        #bg-image-layer {
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center top;
+            background-repeat: no-repeat;
+            background-attachment: scroll;
+        }
+
         .promo-video-container { 
             width: 98%; max-width: 1800px; 
             margin: 30px auto; 
@@ -172,7 +217,6 @@
         #proposalSetupModal .modal-content { max-width: 700px; }
         #eventEditor .modal-content { max-width: 800px; }
         
-        /* מודאל התחברות */
         #loginModal .modal-content { max-width: 480px; padding: 40px 20px; border: 2px solid #fbbf24; }
         #confirmModal .modal-content, #alertModal .modal-content { max-width: 400px; text-align: center; padding: 20px; border: 1px solid #fbbf24; background: #0f172a; height: auto; }
 
@@ -199,7 +243,7 @@
         .lightbox-prev { left: 20px; }
         .lightbox-next { right: 20px; }
 
-        /* ========= התאמות לנייד ========= */
+        /* ========= התאמות אגרסיביות לנייד ========= */
         @media (max-width: 768px) {
             html { font-size: 12px; }
             .container { padding-left: 1rem; padding-right: 1rem; }
@@ -207,10 +251,8 @@
             
             .gallery-item { width: 300px !important; height: 200px !important; flex-shrink: 0; margin: 0 5px; }
             .gallery-img { height: 100% !important; width: 100% !important; object-fit: cover !important; border-radius: 8px !important; }
-
             .promo-video-container { width: 100% !important; margin: 10px auto 20px auto !important; aspect-ratio: 1 / 1 !important; border-radius: 0 !important; border-left: none !important; border-right: none !important; }
             .modal-content { width: 95vw !important; margin: 0 auto !important; max-width: none !important; }
-            
             .lightbox-nav { width: 45px; height: 45px; font-size: 1.5rem; padding: 10px; }
             .lightbox-prev { left: 10px; }
             .lightbox-next { right: 10px; }
@@ -458,7 +500,7 @@
             <button onclick="login()" class="w-full bg-amber-500 text-black font-bold py-3 rounded hover:bg-amber-400 transition">כניסה</button>
         </div>
     </div>
-    
+
     <div id="confirmModal" class="modal-overlay">
         <div class="modal-content bg-slate-900 border border-amber-500/50 p-6 rounded-2xl text-center max-w-sm">
             <i class="fas fa-exclamation-triangle text-4xl text-amber-400 mb-4"></i>
@@ -495,8 +537,12 @@
                      </button>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
-                    <a href="https://forms.gle/yYLCZtynqt664iF86" target="_blank" class="bg-purple-600 text-white py-4 rounded-xl font-bold hover:bg-purple-500 transition shadow-lg block"><i class="fas fa-file-alt block text-2xl mb-2"></i> טופס הזמנה</a>
-                    <a href="https://drive.google.com/drive/folders/15IEoTiyuEM71DmVzpqFtWcu8FdI9opUz?usp=sharing" target="_blank" class="bg-blue-600 text-white py-4 rounded-xl font-bold hover:bg-blue-500 transition shadow-lg block"><i class="fas fa-folder-open block text-2xl mb-2"></i> תיקיית אישורים</a>
+                    <a href="https://forms.gle/yYLCZtynqt664iF86" target="_blank" class="bg-purple-600 text-white py-4 rounded-xl font-bold hover:bg-purple-500 transition shadow-lg block">
+                        <i class="fas fa-file-alt block text-2xl mb-2"></i> טופס הזמנה
+                    </a>
+                    <a href="https://drive.google.com/drive/folders/15IEoTiyuEM71DmVzpqFtWcu8FdI9opUz?usp=sharing" target="_blank" class="bg-blue-600 text-white py-4 rounded-xl font-bold hover:bg-blue-500 transition shadow-lg block">
+                        <i class="fas fa-folder-open block text-2xl mb-2"></i> תיקיית אישורים
+                    </a>
                 </div>
             </div>
         </div>
@@ -713,6 +759,7 @@
             window.login = () => {
                 const u = document.getElementById('uName').value;
                 const p = document.getElementById('uPass').value;
+                
                 const user = users.find(usr => usr.username === u && usr.password == p); 
 
                 if (user) { 
@@ -882,7 +929,6 @@
                 videos.forEach(vid => {
                     let embedUrl = vid.url;
                     let isDirectFile = false;
-                    let poster = ''; 
 
                     if (vid.url.match(/\.(mp4|webm|ogg)$/i) || vid.url.includes('drive.google.com/file')) {
                         isDirectFile = true;
@@ -891,21 +937,21 @@
                             if(fileId) embedUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
                         }
                     } 
-                    // Cloudinary / Vimeo clean mode (V111)
                     else if (vid.url.includes('vimeo')) {
-                        const vimeoId = vid.url.match(/vimeo\.com\/(?:.*#|.*\/videos\/)?([0-9]+)/);
-                        if (vimeoId && vimeoId[1]) {
-                             embedUrl = `https://player.vimeo.com/video/${vimeoId[1]}?title=0&byline=0&portrait=0&badge=0&autopause=0&player_id=0&app_id=58479`; 
-                        }
+                        const vimeoId = vid.url.split('/').pop();
+                        // Vimeo Clean Embed (V113)
+                        embedUrl = `https://player.vimeo.com/video/${vimeoId}?title=0&byline=0&portrait=0`; 
                     } 
                     else if (vid.url.includes('youtu')) {
-                        let id = vid.url.includes('v=') ? vid.url.split('v=')[1].split('&')[0] : vid.url.split('youtu.be/')[1].split('?')[0];
-                        embedUrl = `https://www.youtube.com/embed/${id}?autoplay=0&rel=0`;
-                        poster = `https://img.youtube.com/vi/${id}/maxresdefault.jpg`;
+                        let id = vid.url.split('v=')[1] || vid.url.split('/').pop();
+                        id = id.split('&')[0];
+                        // YouTube Clean Embed (V113)
+                        embedUrl = `https://www.youtube.com/embed/${id}?rel=0&modestbranding=1`;
                     }
-                    else if (vid.url.includes("cloudinary")) {
+                    else {
+                        // All other links (Cloudinary etc) treated as direct video
                         isDirectFile = true;
-                        embedUrl = vid.url; 
+                        embedUrl = vid.url;
                     }
 
                     const div = document.createElement('div');
@@ -921,21 +967,9 @@
                     }
                     
                     if (isDirectFile) {
-                        div.innerHTML = `${delBtn}<div class="bg-black aspect-video relative"><video src="${embedUrl}" class="w-full h-full" controls playsinline controlsList="nodownload" preload="metadata"></video></div>`;
-                    } 
-                    else if (poster) { // YouTube Custom Cover
-                        div.innerHTML = `
-                            ${delBtn}
-                            <div class="bg-black aspect-video relative cursor-pointer group" onclick="this.innerHTML='<iframe class=\\'w-full h-full\\' src=\\'${embedUrl}&autoplay=1\\' frameborder=\\'0\\' allowfullscreen allow=\\'autoplay\\'></iframe>'">
-                                <img src="${poster}" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition duration-500">
-                                <div class="absolute inset-0 flex items-center justify-center">
-                                    <div class="bg-red-600 text-white rounded-full w-16 h-16 flex items-center justify-center shadow-lg group-hover:scale-110 transition"><i class="fas fa-play text-2xl ml-1"></i></div>
-                                </div>
-                            </div>
-                        `;
-                    }
-                    else { 
-                        div.innerHTML = `${delBtn}<div class="bg-black aspect-video relative"><iframe class="w-full h-full" src="${embedUrl}" frameborder="0" allowfullscreen allow="autoplay; fullscreen; picture-in-picture"></iframe></div>`;
+                        div.innerHTML = `${delBtn}<div class="bg-black aspect-video relative"><video src="${embedUrl}" class="w-full h-full" controls playsinline controlsList="nodownload"></video></div>`;
+                    } else {
+                        div.innerHTML = `${delBtn}<div class="bg-black aspect-video relative"><iframe class="w-full h-full" src="${embedUrl}" frameborder="0" allowfullscreen></iframe></div>`;
                     }
                     v.appendChild(div);
                 });
@@ -1088,12 +1122,14 @@
                 });
             }
 
+            // תיקון ניהול תשלומים (V107) - לוגיקה עמידה יותר לשגיאות
             function renderPaymentsBoard() {
                 const board = document.getElementById('paymentsBoard');
                 if(!board) return;
                 board.innerHTML = '';
                 
                 events.forEach(evt => {
+                    // הגנה: וודא שיש אובייקט תשלומים תקין לפני גישה
                     let payments = evt.payments || {};
                     let client = payments.client || { downPayment: false, fullPayment: false };
                     let staff = payments.staff || {};
@@ -1136,6 +1172,7 @@
                 const evt = events.find(e => e.id == eventId);
                 if(!evt) return;
                 
+                // וודא שאובייקט התשלומים קיים (תיקון V105/107)
                 if (!evt.payments) evt.payments = { client: {}, staff: {} };
                 const client = evt.payments.client || {};
                 const staff = evt.payments.staff || {};
@@ -1451,7 +1488,7 @@
                     if (data.config) {
                         siteConfig = data.config;
                         if(siteConfig.heroVideo) document.getElementById('promoIframe').src = siteConfig.heroVideo;
-                        if(siteConfig.heroImage) document.getElementById('bg-image-layer').style.backgroundImage = `url('${siteConfig.heroImage}')`;
+                        if(siteConfig.heroImage) document.getElementById('heroBgImage').style.backgroundImage = `url('${siteConfig.heroImage}')`;
                         
                         // עדכון הקישורים החברתיים (כפי שביקשת)
                         if(siteConfig['social-fb']) document.getElementById('link-fb').href = siteConfig['social-fb'];
