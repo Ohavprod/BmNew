@@ -9,13 +9,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&family=Raleway:wght@400;700&display=swap" rel="stylesheet">
 
     <script>
-        // *** וודא שהקישור הזה תקין ומעודכן ***
+        // *** וודא שהקישור הזה תקין ומעודכן לגרסה האחרונה ***
         const API_URL = "https://script.google.com/macros/s/AKfycbz8jgqmdOVFQ1-dx3S78tLGKeXT7Zpa7PxNKs81oheI4gM8nw61Cz9bb5nDEfOty0v52Q/exec?mode=api"; 
     </script>
 
     <style>
         /* --- בסיס --- */
-        html { font-size: 14px; }
+        html { font-size: 14px; height: 100%; }
         body { font-family: 'Heebo', sans-serif; background-color: #051c42; background-image: linear-gradient(180deg, #051c42 0%, #021029 100%); color: #ffffff; min-height: 100vh; overflow-x: hidden; margin: 0; padding: 0; display: flex; flex-direction: column; }
         
         body.no-scroll { overflow: hidden !important; height: 100vh; }
@@ -134,6 +134,17 @@
         body.admin-mode .calendar-day:hover { transform: scale(1.1); cursor: pointer; border-color: white; }
         
         /* --- וידאו ורקע --- */
+        /* תיקון קריטי ל-Wix: התאמת הרקע למסגרת ה-iFrame */
+        #heroBgImage { 
+            position: absolute; 
+            inset: 0; 
+            background-size: 100% 100% !important; /* מתיחה מוחלטת */
+            background-position: center top; 
+            background-repeat: no-repeat;
+            background-attachment: scroll !important; /* מניעת זום במובייל */
+            transition: all 0.5s; 
+        }
+
         .promo-video-container { 
             width: 98%; max-width: 1800px; 
             margin: 30px auto; 
@@ -682,7 +693,7 @@
                 'CUSTOM': { t: 'התאמה אישית', p: '', d: '' }
             };
             
-            // האזנה לאנטר בלוגין (V107)
+            // האזנה לאנטר בלוגין
             document.getElementById('uName').addEventListener('keypress', function(e) { if(e.key === 'Enter') login(); });
             document.getElementById('uPass').addEventListener('keypress', function(e) { if(e.key === 'Enter') login(); });
 
@@ -939,9 +950,8 @@
                 videos.forEach(vid => {
                     let embedUrl = vid.url;
                     let isDirectFile = false;
-                    let poster = ''; // תמונת מקדימה (V107)
+                    let poster = ''; 
 
-                    // זיהוי קובץ ישיר
                     if (vid.url.match(/\.(mp4|webm|ogg)$/i) || vid.url.includes('drive.google.com/file')) {
                         isDirectFile = true;
                         if(vid.url.includes('drive.google.com/file')) {
@@ -949,18 +959,21 @@
                             if(fileId) embedUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
                         }
                     } 
-                    // זיהוי Vimeo
                     else if (vid.url.includes('vimeo')) {
                         const vimeoId = vid.url.match(/vimeo\.com\/(?:.*#|.*\/videos\/)?([0-9]+)/);
                         if (vimeoId && vimeoId[1]) {
                              embedUrl = `https://player.vimeo.com/video/${vimeoId[1]}?title=0&byline=0&portrait=0&badge=0&autopause=0&player_id=0&app_id=58479`; 
                         }
                     } 
-                    // זיהוי YouTube - Facade Pattern (V107)
                     else if (vid.url.includes('youtu')) {
                         let id = vid.url.includes('v=') ? vid.url.split('v=')[1].split('&')[0] : vid.url.split('youtu.be/')[1].split('?')[0];
                         embedUrl = `https://www.youtube.com/embed/${id}?autoplay=1&rel=0`;
                         poster = `https://img.youtube.com/vi/${id}/maxresdefault.jpg`;
+                    }
+                    else if (vid.url.includes("cloudinary")) {
+                        isDirectFile = true;
+                        const posterUrl = vid.url.replace(/\.(mp4|mov|avi|wmv|flv|webm)$/i, '.jpg');
+                        embedUrl = vid.url; 
                     }
 
                     const div = document.createElement('div');
@@ -976,9 +989,14 @@
                     }
                     
                     if (isDirectFile) {
-                        div.innerHTML = `${delBtn}<div class="bg-black aspect-video relative"><video src="${embedUrl}" class="w-full h-full" controls playsinline controlsList="nodownload"></video></div>`;
+                        let posterAttr = "";
+                        if (vid.url.includes("cloudinary")) {
+                            const posterUrl = vid.url.replace(/\.(mp4|mov|avi|wmv|flv|webm)$/i, '.jpg');
+                            posterAttr = `poster="${posterUrl}"`;
+                        }
+                        div.innerHTML = `${delBtn}<div class="bg-black aspect-video relative"><video src="${embedUrl}" ${posterAttr} class="w-full h-full" controls playsinline controlsList="nodownload"></video></div>`;
                     } 
-                    else if (poster) { // אם יש תמונה (YouTube)
+                    else if (poster) { 
                         div.innerHTML = `
                             ${delBtn}
                             <div class="bg-black aspect-video relative cursor-pointer group" onclick="this.innerHTML='<iframe class=\\'w-full h-full\\' src=\\'${embedUrl}\\' frameborder=\\'0\\' allowfullscreen allow=\\'autoplay\\'></iframe>'">
@@ -989,7 +1007,7 @@
                             </div>
                         `;
                     }
-                    else { // Vimeo ואחרים
+                    else { 
                         div.innerHTML = `${delBtn}<div class="bg-black aspect-video relative"><iframe class="w-full h-full" src="${embedUrl}" frameborder="0" allowfullscreen allow="autoplay; fullscreen; picture-in-picture"></iframe></div>`;
                     }
                     v.appendChild(div);
@@ -1016,7 +1034,7 @@
             }
 
             let currentDate = new Date();
-            // ... (המשך פונקציות ללא שינוי מהותי)
+            // ... (שאר הפונקציות זהות)
              function renderCalendar() {
                 const g = document.getElementById('calendarGrid'); 
                 if(!g) return;
@@ -1404,6 +1422,7 @@
                 const details = document.getElementById('propCustomDetails').value;
                 const price = document.getElementById('propCustomPrice').value;
 
+                // --- יצירת דף הדפסה חדש ונקי ---
                 const printWindow = window.open('', '_blank');
                 
                 printWindow.document.write(`
@@ -1539,4 +1558,3 @@
     </script>
 </body>
 </html>
-
