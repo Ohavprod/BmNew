@@ -10,13 +10,45 @@
 
     <script>
         // *** וודא שהקישור הזה תקין ומעודכן לגרסה האחרונה ***
-        const API_URL = "https://script.google.com/macros/s/AKfycbz8jgqmdOVFQ1-dx3S78tLGKeXT7Zpa7PxNKs81oheI4gM8nw61Cz9bb5nDEfOty0v52Q/exec?mode=api"; 
+        const API_URL = "https://script.google.com/macros/u/3/s/AKfycbz8jgqmdOVFQ1-dx3S78tLGKeXT7Zpa7PxNKs81oheI4gM8nw61Cz9bb5nDEfOty0v52Q/exec?mode=api"; 
     </script>
 
     <style>
         /* --- בסיס --- */
-        html { font-size: 14px; height: 100%; }
-        body { font-family: 'Heebo', sans-serif; background-color: #051c42; background-image: linear-gradient(180deg, #051c42 0%, #021029 100%); color: #ffffff; min-height: 100vh; overflow-x: hidden; margin: 0; padding: 0; display: flex; flex-direction: column; }
+        html, body { 
+            font-size: 14px; 
+            margin: 0; padding: 0; 
+            width: 100%; height: 100%;
+            overflow-x: hidden;
+        }
+        body { 
+            font-family: 'Heebo', sans-serif; 
+            background-color: #051c42; 
+            color: #ffffff; 
+            display: flex; flex-direction: column; 
+        }
+
+        /* --- תיקון רקע קריטי ל-WIX ו-IFRAME (V111) --- */
+        /* שכבת רקע נפרדת שלא מושפעת מהגלילה */
+        #fixed-background {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1; /* מאחורי הכל */
+            background-image: linear-gradient(180deg, #051c42 0%, #021029 100%); /* ברירת מחדל */
+            pointer-events: none;
+        }
+        
+        /* התמונה עצמה בתוך שכבת הרקע */
+        #bg-image-layer {
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center top;
+            background-repeat: no-repeat;
+            background-attachment: scroll; /* חשוב למובייל */
+        }
         
         body.no-scroll { overflow: hidden !important; height: 100vh; }
         .gold-text { background: linear-gradient(45deg, #fbbf24, #d97706); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 900; text-shadow: 0px 0px 20px rgba(251, 191, 36, 0.3); }
@@ -134,17 +166,6 @@
         body.admin-mode .calendar-day:hover { transform: scale(1.1); cursor: pointer; border-color: white; }
         
         /* --- וידאו ורקע --- */
-        /* תיקון קריטי ל-Wix: התאמת הרקע למסגרת ה-iFrame */
-        #heroBgImage { 
-            position: absolute; 
-            inset: 0; 
-            background-size: 100% 100% !important; /* מתיחה מוחלטת */
-            background-position: center top; 
-            background-repeat: no-repeat;
-            background-attachment: scroll !important; /* מניעת זום במובייל */
-            transition: all 0.5s; 
-        }
-
         .promo-video-container { 
             width: 98%; max-width: 1800px; 
             margin: 30px auto; 
@@ -179,7 +200,7 @@
         #proposalSetupModal .modal-content { max-width: 700px; }
         #eventEditor .modal-content { max-width: 800px; }
         
-        /* מודאל התחברות גדול יותר */
+        /* מודאל התחברות */
         #loginModal .modal-content { 
             max-width: 480px; 
             padding: 40px 20px; 
@@ -279,6 +300,10 @@
 </head>
 <body class="antialiased relative">
 
+    <div id="fixed-background">
+        <div id="bg-image-layer" style="background-image: url('https://i.postimg.cc/8PFH5RRC/BIMG_2271A_(103).jpg');"></div>
+    </div>
+
     <div id="globalLoader">
         <div class="spinner"></div>
         <div class="text-white text-xl font-bold">מעבד נתונים...</div>
@@ -322,10 +347,8 @@
     </nav>
 
     <header id="heroSection" class="relative min-h-screen flex items-center justify-center text-center px-4 pt-32 overflow-hidden">
-        <div id="heroMediaContainer" class="absolute inset-0 z-0 bg-blue-950">
-            <div id="heroYoutube" class="video-background-container hidden"><iframe id="heroYoutubeIframe" class="video-background-iframe" src="" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe></div>
-            <div id="heroBgImage" class="absolute inset-0 bg-cover bg-center transition-all duration-500" style="background-image: url('https://i.postimg.cc/8PFH5RRC/BIMG_2271A_(103).jpg');"></div>
-        </div>
+        <div id="heroMediaContainer" class="absolute inset-0 z-0">
+             </div>
         <div id="heroOverlay"></div>
         <div class="absolute top-24 right-4 z-40 admin-controls flex flex-col gap-2">
              <button onclick="editHeroMedia()" class="bg-blue-600 hover:bg-blue-500 text-white px-3 py-2 rounded text-sm shadow-lg">שנה רקע</button>
@@ -910,7 +933,7 @@
                  if(u && API_URL.includes("http")) {
                      showLoader();
                      fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'updateConfig', key: 'heroImage', value: u }) })
-                     .then(() => { hideLoader(); document.getElementById('heroBgImage').style.backgroundImage = `url('${u}')`; });
+                     .then(() => { hideLoader(); document.getElementById('bg-image-layer').style.backgroundImage = `url('${u}')`; });
                  }
             }
 
@@ -989,12 +1012,7 @@
                     }
                     
                     if (isDirectFile) {
-                        let posterAttr = "";
-                        if (vid.url.includes("cloudinary")) {
-                            const posterUrl = vid.url.replace(/\.(mp4|mov|avi|wmv|flv|webm)$/i, '.jpg');
-                            posterAttr = `poster="${posterUrl}"`;
-                        }
-                        div.innerHTML = `${delBtn}<div class="bg-black aspect-video relative"><video src="${embedUrl}" ${posterAttr} class="w-full h-full" controls playsinline controlsList="nodownload"></video></div>`;
+                        div.innerHTML = `${delBtn}<div class="bg-black aspect-video relative"><video src="${embedUrl}" class="w-full h-full" controls playsinline controlsList="nodownload"></video></div>`;
                     } 
                     else if (poster) { 
                         div.innerHTML = `
@@ -1034,7 +1052,7 @@
             }
 
             let currentDate = new Date();
-            // ... (שאר הפונקציות זהות)
+            // ... (שאר הפונקציות ללא שינוי מהותי)
              function renderCalendar() {
                 const g = document.getElementById('calendarGrid'); 
                 if(!g) return;
@@ -1528,7 +1546,7 @@
                     if (data.config) {
                         siteConfig = data.config;
                         if(siteConfig.heroVideo) document.getElementById('promoIframe').src = siteConfig.heroVideo;
-                        if(siteConfig.heroImage) document.getElementById('heroBgImage').style.backgroundImage = `url('${siteConfig.heroImage}')`;
+                        if(siteConfig.heroImage) document.getElementById('bg-image-layer').style.backgroundImage = `url('${siteConfig.heroImage}')`;
                         
                         // עדכון הקישורים החברתיים (כפי שביקשת)
                         if(siteConfig['social-fb']) document.getElementById('link-fb').href = siteConfig['social-fb'];
