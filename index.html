@@ -18,17 +18,19 @@
         html { font-size: 14px; }
         body { font-family: 'Heebo', sans-serif; background-color: #051c42; color: #ffffff; min-height: 100vh; overflow-x: hidden; margin: 0; padding: 0; display: flex; flex-direction: column; }
         
-        /* רקע קבוע ל-WIX (הגרסה המתוקנת) */
+        /* --- תיקון רקע קריטי ל-WIX ו-IFRAME --- */
         #fixed-background {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1;
             background-image: linear-gradient(180deg, #051c42 0%, #021029 100%);
+            pointer-events: none;
         }
+        
         #bg-image-layer {
             width: 100%; height: 100%;
             background-size: cover; background-position: center top; background-repeat: no-repeat;
             background-attachment: scroll;
         }
-
+        
         body.no-scroll { overflow: hidden !important; height: 100vh; }
         .gold-text { background: linear-gradient(45deg, #fbbf24, #d97706); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 900; text-shadow: 0px 0px 20px rgba(251, 191, 36, 0.3); }
 
@@ -121,10 +123,8 @@
         .payment-ok { border-color: #22c55e !important; box-shadow: 0 0 10px rgba(34, 197, 94, 0.3); }
         .payment-bad { border-color: #ef4444 !important; box-shadow: 0 0 10px rgba(239, 68, 68, 0.3); }
         
-        /* --- גלריה ויומן --- */
+        /* --- גלריה --- */
         .marquee-wrapper { overflow: hidden; width: 100%; position: relative; direction: ltr; }
-        
-        /* מהירות גלריה - 200 שניות */
         .marquee-track { 
             display: flex; width: max-content; gap: 0; 
             animation: scroll-loop 200s linear infinite; 
@@ -132,7 +132,6 @@
         .marquee-track:hover { animation-play-state: paused; }
         @keyframes scroll-loop { 0% { transform: translateX(-50%); } 100% { transform: translateX(0%); } }
         
-        /* גלריה - מחשב */
         .gallery-item { margin: 0 5px; }
         .gallery-img { height: 250px; width: auto; aspect-ratio: 3/2; object-fit: cover; border-radius: 16px; cursor: pointer; transition: 0.3s; border: 2px solid transparent; }
         .gallery-img:hover { border-color: #fbbf24; transform: scale(1.05); }
@@ -159,11 +158,7 @@
         
         .video-background-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; z-index: 0; }
         .video-background-iframe { position: absolute; top: 50%; left: 50%; width: 100vw; height: 100vh; transform: translate(-50%, -50%); pointer-events: none; }
-        #heroOverlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #051c42; opacity: 0.6; z-index: 0; pointer-events: none; }
-        .site-logo { height: 80px; width: auto; object-fit: contain; filter: drop-shadow(0 0 10px rgba(255,255,255,0.2)); position: relative; z-index: 50; }
-        #siteFooter { background: #020617; padding: 20px; text-align: center; border-top: 1px solid #1e293b; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 10px; }
-        .copyright { color: #64748b; font-size: 0.9rem; }
-
+        
         /* --- מודאלים --- */
         .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 50000; justify-content: center; align-items: center; backdrop-filter: blur(5px); padding: 10px; }
         .modal-content { 
@@ -324,8 +319,8 @@
                         <h3 class="text-2xl font-bold text-white">לימוד לבר מצווה</h3>
                     </div>
                     <ul class="pkg-list">
-                                <li><i class="fas fa-check text-green-400"></i> לימוד יסודי של קריאת התורה בטעמי המקרא</li>
-                           <li><i class="fas fa-check text-green-400"></i> ליווי אישי צמוד</li>
+                                <li><i class="fas fa-check text-green-400"></i> לימוד יסודי של קריאת התורה בטעמי המקרא (נוסח עדות המזרח/אחר)</li>
+                           <li><i class="fas fa-check text-green-400"></i> ליווי אישי צמוד המבטיח קריאה רהוטה, נכונה ומרגשת ביום העלייה לתורה</li>
                     </ul>
                 </div>
 
@@ -370,7 +365,7 @@
                         <li><i class="fas fa-check text-green-400"></i> קלידן</li>
                         <li><i class="fas fa-check text-green-400"></i> זוג מתופפים</li>
                         <li><i class="fas fa-check text-green-400"></i> כניסה מיוחדת בליווי חופה ושופרות</li>
-                        <li><i class="fas fa-utensils text-green-400"></i>ליווי הסעודה במופע אקוסטי חי</li>
+                        <li><i class="fas fa-utensils text-green-400"></i>ליווי הסעודה במופע אקוסטי חי, המשלב שירה ונגינה על קלידים וגיטרה ליצירת אווירת בוקר נעימה ומרגשת לצד הארוחה</li>
                         <li><i class="fas fa-book-open text-blue-300"></i> לימוד הפרשה (במידת הצורך)</li>
                     </ul>
                 </div>
@@ -647,7 +642,7 @@
                 'CUSTOM': { t: 'התאמה אישית', p: '', d: '' }
             };
             
-            // האזנה לאנטר בלוגין (V116)
+            // האזנה לאנטר בלוגין (V117)
             document.getElementById('uName').addEventListener('keypress', function(e) { if(e.key === 'Enter') login(); });
             document.getElementById('uPass').addEventListener('keypress', function(e) { if(e.key === 'Enter') login(); });
 
@@ -904,9 +899,9 @@
                 videos.forEach(vid => {
                     let embedUrl = vid.url;
                     let isDirectFile = false;
-                    let poster = ''; 
 
-                    if (vid.url.match(/\.(mp4|webm|ogg)$/i) || vid.url.includes('drive.google.com/file')) {
+                    // תיקון V117: זיהוי קלאודינרי כקובץ ישיר כדי שיקבל נגן וידאו פשוט
+                    if (vid.url.match(/\.(mp4|webm|ogg)$/i) || vid.url.includes('drive.google.com/file') || vid.url.includes('cloudinary')) {
                         isDirectFile = true;
                         if(vid.url.includes('drive.google.com/file')) {
                             const fileId = vid.url.match(/d\/([a-zA-Z0-9_-]+)/)?.[1];
@@ -921,13 +916,7 @@
                     } 
                     else if (vid.url.includes('youtu')) {
                         let id = vid.url.includes('v=') ? vid.url.split('v=')[1].split('&')[0] : vid.url.split('youtu.be/')[1].split('?')[0];
-                        embedUrl = `https://www.youtube.com/embed/${id}?autoplay=1&rel=0`;
-                        poster = `https://img.youtube.com/vi/${id}/maxresdefault.jpg`;
-                    }
-                    else {
-                        // V116: חזרה לנגן הרגיל עבור Cloudinary וקבצים ישירים
-                        isDirectFile = true;
-                        embedUrl = vid.url;
+                        embedUrl = `https://www.youtube.com/embed/${id}`;
                     }
 
                     const div = document.createElement('div');
@@ -943,20 +932,9 @@
                     }
                     
                     if (isDirectFile) {
-                        div.innerHTML = `${delBtn}<div class="bg-black aspect-video relative"><video src="${embedUrl}" class="w-full h-full" controls playsinline controlsList="nodownload"></video></div>`;
-                    } 
-                    else if (poster) { 
-                        div.innerHTML = `
-                            ${delBtn}
-                            <div class="bg-black aspect-video relative cursor-pointer group" onclick="this.innerHTML='<iframe class=\\'w-full h-full\\' src=\\'${embedUrl}\\' frameborder=\\'0\\' allowfullscreen allow=\\'autoplay\\'></iframe>'">
-                                <img src="${poster}" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition duration-500">
-                                <div class="absolute inset-0 flex items-center justify-center">
-                                    <div class="bg-red-600 text-white rounded-full w-16 h-16 flex items-center justify-center shadow-lg group-hover:scale-110 transition"><i class="fas fa-play text-2xl ml-1"></i></div>
-                                </div>
-                            </div>
-                        `;
-                    }
-                    else { 
+                        // חזרה לנגן הפשוט שהמשתמש אישר שעובד לו
+                        div.innerHTML = `${delBtn}<div class="bg-black aspect-video relative"><video src="${embedUrl}" class="w-full h-full" controls playsinline></video></div>`;
+                    } else {
                         div.innerHTML = `${delBtn}<div class="bg-black aspect-video relative"><iframe class="w-full h-full" src="${embedUrl}" frameborder="0" allowfullscreen allow="autoplay; fullscreen; picture-in-picture"></iframe></div>`;
                     }
                     v.appendChild(div);
