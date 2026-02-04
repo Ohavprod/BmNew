@@ -18,19 +18,18 @@
         html { font-size: 14px; }
         body { font-family: 'Heebo', sans-serif; background-color: #051c42; color: #ffffff; min-height: 100vh; overflow-x: hidden; margin: 0; padding: 0; display: flex; flex-direction: column; }
         
-        /* --- תיקון רקע קריטי ל-WIX ו-IFRAME --- */
+        /* --- תיקון רקע קריטי ל-WIX --- */
         #fixed-background {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1;
             background-image: linear-gradient(180deg, #051c42 0%, #021029 100%);
             pointer-events: none;
         }
-        
         #bg-image-layer {
             width: 100%; height: 100%;
             background-size: cover; background-position: center top; background-repeat: no-repeat;
             background-attachment: scroll;
         }
-        
+
         body.no-scroll { overflow: hidden !important; height: 100vh; }
         .gold-text { background: linear-gradient(45deg, #fbbf24, #d97706); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 900; text-shadow: 0px 0px 20px rgba(251, 191, 36, 0.3); }
 
@@ -288,14 +287,12 @@
              <button onclick="editOverlayOpacity()" class="bg-blue-800 hover:bg-blue-700 text-white px-3 py-2 rounded text-sm shadow-lg">שקיפות</button>
         </div>
         <div class="max-w-6xl relative z-10 w-full">
-            
             <div class="promo-video-container mb-10">
                 <iframe id="promoIframe" class="promo-video-iframe" src="https://player.vimeo.com/video/1158001407?background=1&autoplay=1&loop=1&muted=1" frameborder="0" width="100%" height="100%" allow="autoplay; fullscreen; picture-in-picture"></iframe>
                 <button onclick="toggleSound()" id="soundBtn" class="sound-toggle-btn" title="הפעל/השתק סאונד">
                     <i id="soundBtnIcon" class="fas fa-volume-mute"></i>
                 </button>
             </div>
-
             <h1 class="text-4xl md:text-7xl font-black mb-6 leading-tight drop-shadow-2xl">
                 <span data-id="hero-h1-1" data-type="text">לחגוג בר מצווה</span><br>
                 <span class="text-amber-400" data-id="hero-h1-2" data-type="text">בשמחה ובהתרגשות</span>
@@ -303,7 +300,6 @@
             <p class="text-lg md:text-2xl mb-10 text-blue-100 max-w-2xl mx-auto font-light leading-relaxed drop-shadow-md" data-id="hero-desc" data-type="text">
                 אביב ויצמן בהפקה מוזיקלית לעלייה לתורה: שופרות, תופים, פיוטים וליווי מרגש לחתן בר המצווה.
             </p>
-            
             <div class="flex flex-col md:flex-row gap-4 justify-center">
                 <a href="#calendar" class="bg-gradient-to-r from-amber-400 to-amber-600 hover:from-amber-500 hover:to-amber-700 text-blue-900 font-bold py-4 px-12 rounded-full transition duration-300 shadow-[0_0_30px_rgba(245,158,11,0.4)] text-lg">
                     <span data-id="btn-cta-1" data-type="text">בדיקת תאריך פנוי</span>
@@ -326,11 +322,10 @@
                         <h3 class="text-2xl font-bold text-white">לימוד לבר מצווה</h3>
                     </div>
                     <ul class="pkg-list">
-                                <li><i class="fas fa-check text-green-400"></i> לימוד יסודי של קריאת התורה בטעמי המקרא (נוסח עדות המזרח/אחר)</li>
-                           <li><i class="fas fa-check text-green-400"></i> ליווי אישי צמוד המבטיח קריאה רהוטה, נכונה ומרגשת ביום העלייה לתורה</li>
+                                <li><i class="fas fa-check text-green-400"></i> לימוד יסודי של קריאת התורה בטעמי המקרא</li>
+                           <li><i class="fas fa-check text-green-400"></i> ליווי אישי צמוד</li>
                     </ul>
                 </div>
-
                 <div class="glass-card hover:-translate-y-4">
                     <div class="pkg-header">
                         <div class="text-5xl text-slate-400 mb-4"><i class="fas fa-music"></i></div>
@@ -344,7 +339,6 @@
                         <li><i class="fas fa-book-open text-blue-300"></i> לימוד הפרשה (במידת הצורך)</li>
                     </ul>
                 </div>
-                
                 <div class="glass-card border-amber-500/50 shadow-2xl relative overflow-hidden transform scale-105">
                     <div class="pkg-header">
                         <div class="text-5xl text-amber-400 mb-4"><i class="fas fa-crown"></i></div>
@@ -359,7 +353,6 @@
                         <li><i class="fas fa-book-open text-blue-300"></i> לימוד הפרשה (במידת הצורך)</li>
                     </ul>
                 </div>
-                
                 <div class="glass-card hover:-translate-y-4">
                     <div class="pkg-header">
                         <div class="text-5xl text-purple-400 mb-4"><i class="fas fa-gem"></i></div>
@@ -372,7 +365,7 @@
                         <li><i class="fas fa-check text-green-400"></i> קלידן</li>
                         <li><i class="fas fa-check text-green-400"></i> זוג מתופפים</li>
                         <li><i class="fas fa-check text-green-400"></i> כניסה מיוחדת בליווי חופה ושופרות</li>
-                        <li><i class="fas fa-utensils text-green-400"></i>ליווי הסעודה במופע אקוסטי חי, המשלב שירה ונגינה על קלידים וגיטרה ליצירת אווירת בוקר נעימה ומרגשת לצד הארוחה</li>
+                        <li><i class="fas fa-utensils text-green-400"></i>ליווי הסעודה במופע אקוסטי חי</li>
                         <li><i class="fas fa-book-open text-blue-300"></i> לימוד הפרשה (במידת הצורך)</li>
                     </ul>
                 </div>
@@ -908,20 +901,22 @@
                     let isDirectFile = false;
                     let poster = ''; 
 
-                    // V118 Fix: Explicit Cloudinary check to match user's working code
-                    if (vid.url.match(/\.(mp4|webm|ogg)$/i) || vid.url.includes('drive.google.com/file') || vid.url.includes('cloudinary')) {
+                    // זיהוי קובץ ישיר
+                    if (vid.url.match(/\.(mp4|webm|ogg)$/i) || vid.url.includes('drive.google.com/file')) {
                         isDirectFile = true;
                         if(vid.url.includes('drive.google.com/file')) {
                             const fileId = vid.url.match(/d\/([a-zA-Z0-9_-]+)/)?.[1];
                             if(fileId) embedUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
                         }
                     } 
+                    // זיהוי Vimeo
                     else if (vid.url.includes('vimeo')) {
                         const vimeoId = vid.url.match(/vimeo\.com\/(?:.*#|.*\/videos\/)?([0-9]+)/);
                         if (vimeoId && vimeoId[1]) {
                              embedUrl = `https://player.vimeo.com/video/${vimeoId[1]}?title=0&byline=0&portrait=0&badge=0&autopause=0&player_id=0&app_id=58479`; 
                         }
                     } 
+                    // זיהוי YouTube - Facade Pattern (V107)
                     else if (vid.url.includes('youtu')) {
                         let id = vid.url.includes('v=') ? vid.url.split('v=')[1].split('&')[0] : vid.url.split('youtu.be/')[1].split('?')[0];
                         embedUrl = `https://www.youtube.com/embed/${id}?autoplay=1&rel=0`;
@@ -943,7 +938,7 @@
                     if (isDirectFile) {
                         div.innerHTML = `${delBtn}<div class="bg-black aspect-video relative"><video src="${embedUrl}" class="w-full h-full" controls playsinline controlsList="nodownload"></video></div>`;
                     } 
-                    else if (poster) { 
+                    else if (poster) { // אם יש תמונה (YouTube)
                         div.innerHTML = `
                             ${delBtn}
                             <div class="bg-black aspect-video relative cursor-pointer group" onclick="this.innerHTML='<iframe class=\\'w-full h-full\\' src=\\'${embedUrl}\\' frameborder=\\'0\\' allowfullscreen allow=\\'autoplay\\'></iframe>'">
@@ -954,7 +949,7 @@
                             </div>
                         `;
                     }
-                    else { 
+                    else { // Vimeo ואחרים
                         div.innerHTML = `${delBtn}<div class="bg-black aspect-video relative"><iframe class="w-full h-full" src="${embedUrl}" frameborder="0" allowfullscreen allow="autoplay; fullscreen; picture-in-picture"></iframe></div>`;
                     }
                     v.appendChild(div);
@@ -967,7 +962,7 @@
                 window.openModal('lightboxModal'); 
             }
             
-            // תיקון דפדוף (V107) - לחיצה לא סוגרת מודאל
+            // תיקון דפדוף (V107)
             window.nextImage = (e) => {
                 if(e) e.stopPropagation(); 
                 currentLightboxIndex = (currentLightboxIndex + 1) % lightboxImageUrls.length;
