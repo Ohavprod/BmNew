@@ -9,8 +9,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&family=Raleway:wght@400;700&display=swap" rel="stylesheet">
 
     <script>
-        // הקישור שלך (כולל ?mode=api)
-        const API_URL = "https://script.google.com/macros/s/AKfycbydOBFs8G3bh-1Y5qK9DtYv-ielUpRet_oSY4qTQr5ehuMYNxGj1t-3VrkJk5SmvJvmOA/exec?mode=api"; 
+        // *** הקישור שלך (V113) ***
+        const API_URL = "https://script.google.com/macros/s/AKfycbydOBFs8G3bh-1Y5qK9DtYv-ielUpRet_oSY4qTQr5ehuMYNxGj1t-3VrkJk5SmvJvmOA/exec"; 
     </script>
 
     <style>
@@ -144,7 +144,7 @@
         /* --- גלריה ויומן --- */
         .marquee-wrapper { overflow: hidden; width: 100%; position: relative; direction: ltr; }
         
-        /* מהירות גלריה - 200 שניות */
+        /* מהירות גלריה */
         .marquee-track { 
             display: flex; width: max-content; gap: 0; 
             animation: scroll-loop 200s linear infinite; 
@@ -164,6 +164,25 @@
         body.admin-mode .calendar-day:hover { transform: scale(1.1); cursor: pointer; border-color: white; }
         
         /* --- וידאו ורקע --- */
+        #fixed-background {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            background-image: linear-gradient(180deg, #051c42 0%, #021029 100%);
+            pointer-events: none;
+        }
+        
+        #bg-image-layer {
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center top;
+            background-repeat: no-repeat;
+            background-attachment: scroll;
+        }
+
         .promo-video-container { 
             width: 98%; max-width: 1800px; 
             margin: 30px auto; 
@@ -179,7 +198,11 @@
         
         .video-background-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; z-index: 0; }
         .video-background-iframe { position: absolute; top: 50%; left: 50%; width: 100vw; height: 100vh; transform: translate(-50%, -50%); pointer-events: none; }
-        
+        #heroOverlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #051c42; opacity: 0.6; z-index: 0; pointer-events: none; }
+        .site-logo { height: 80px; width: auto; object-fit: contain; filter: drop-shadow(0 0 10px rgba(255,255,255,0.2)); position: relative; z-index: 50; }
+        #siteFooter { background: #020617; padding: 20px; text-align: center; border-top: 1px solid #1e293b; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 10px; }
+        .copyright { color: #64748b; font-size: 0.9rem; }
+
         /* --- מודאלים --- */
         .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 50000; justify-content: center; align-items: center; backdrop-filter: blur(5px); padding: 10px; }
         .modal-content { 
@@ -489,7 +512,7 @@
             </div>
         </div>
     </div>
-    
+
     <div id="alertModal" class="modal-overlay" onclick="this.style.display='none'">
         <div class="modal-content bg-slate-900 border border-green-500/50 p-6 rounded-2xl text-center max-w-sm" onclick="event.stopPropagation()">
             <i class="fas fa-check-circle text-4xl text-green-400 mb-4"></i>
@@ -607,12 +630,11 @@
                         </select>
                     </div>
                     <div id="proposalEditArea" class="border p-4 rounded bg-gray-50 mt-2">
-                        <label class="text-xs font-bold text-gray-500">פירוט השירותים (ניתן לעריכה חופשית)</label>
+                        <label class="text-xs font-bold text-gray-500">פירוט השירותים</label>
                         <textarea id="propCustomDetails" class="w-full bg-white p-2 rounded border border-gray-300 h-32 mb-2 text-black"></textarea>
                         <label class="text-xs font-bold text-gray-500">מחיר כולל</label>
                         <input type="text" id="propCustomPrice" class="w-full bg-white p-2 rounded border border-gray-300 font-bold text-lg text-green-600">
                     </div>
-                    
                     <button onclick="generateProposal()" class="bg-blue-600 text-white font-bold py-4 rounded-xl text-lg shadow hover:bg-blue-700 mt-4 w-full">הפק מסמך להדפסה</button>
                 </div>
             </div>
@@ -629,9 +651,7 @@
     </div>
 
     <div id="eventEditor" class="modal-overlay"><div class="modal-content"><div class="modal-header"><h3 class="text-3xl font-black text-white">פרטי אירוע</h3><button onclick="closeModal('eventEditor')" class="text-slate-400 hover:text-white text-2xl"><i class="fas fa-times"></i></button></div><div class="modal-body"><form id="eventForm" class="form-grid"><input type="hidden" name="id">
-    
     <div class="input-group col-span-1 md:col-span-2"><label>שם האירוע (כותרת)</label><input type="text" name="eventName" placeholder="לדוגמה: בר מצווה - משפחת כהן"></div>
-    
     <div class="input-group"><label>תאריך לועזי</label><input type="date" name="date" required></div><div class="input-group"><label>תאריך עברי</label><input type="text" name="hebrewDate"></div><div class="input-group"><label>שם הלקוח</label><input type="text" name="clientName"></div><div class="input-group"><label>שם חתן הבר מצווה</label><input type="text" name="childName"></div><div class="input-group"><label>טלפון</label><input type="tel" name="phone"></div><div class="input-group"><label>מיקום האירוע</label><input type="text" name="location"></div><div class="input-group"><label>לינק ל-Waze</label><input type="text" name="wazeLink"></div><div class="input-group"><label>סוג חבילה</label><select name="packageType"><option>לימוד לבר מצווה</option><option>בסיס</option><option>חגיגית</option><option>הכל כלול</option><option>מותאמת אישית</option></select></div><div class="input-group"><label>שעת הזמנת אורחים</label><input type="time" name="guestTime"></div><div class="input-group"><label>שעת תחילת אירוע</label><input type="time" name="startTime"></div><div class="input-group"><label>מחיר סגירה</label><input type="text" name="price"></div><div class="input-group"><label>סטטוס</label><select name="status"><option value="תהליך">בתהליך סגירה</option><option value="סגור">סגור (מאושר)</option><option value="הסתיים">הסתיים</option></select></div><div class="checkbox-group col-span-2"><label class="flex items-center gap-2 text-white font-bold"><input type="checkbox" name="hasKeyboard"> כולל קלידן</label><label class="flex items-center gap-2 text-white font-bold"><input type="checkbox" name="hasDrummers"> כולל מתופפים</label><label class="flex items-center gap-2 text-white font-bold text-pink-400"><input type="checkbox" name="isStudent"> תלמיד של אביב</label></div><div class="input-group col-span-1 md:col-span-2"><label>לינק למדיה</label><input type="text" name="mediaLink"></div><div class="input-group col-span-1 md:col-span-2"><label>הערות לצוות</label><textarea name="notes" class="h-32 notes-area"></textarea></div></form><div class="mt-8 flex justify-between items-center border-t border-slate-700 pt-6"><button type="button" onclick="deleteEvent()" class="text-red-500 font-bold px-4">מחק אירוע</button><button type="button" onclick="saveEvent()" class="bg-green-600 hover:bg-green-500 text-white font-bold py-3 px-10 rounded-xl text-lg shadow-lg">שמור</button></div></div></div></div>
 
     <script>
@@ -643,8 +663,6 @@
             let galleryImages = []; 
             let siteConfig = {}; 
             let users = []; 
-            
-            // משתני גלריה
             let currentLightboxIndex = 0;
             let lightboxImageUrls = [];
 
@@ -656,11 +674,9 @@
                 'CUSTOM': { t: 'התאמה אישית', p: '', d: '' }
             };
             
-            // האזנה לאנטר בלוגין (V107)
             document.getElementById('uName').addEventListener('keypress', function(e) { if(e.key === 'Enter') login(); });
             document.getElementById('uPass').addEventListener('keypress', function(e) { if(e.key === 'Enter') login(); });
 
-            // Global functions
             window.showLoader = () => { document.getElementById('globalLoader').style.display = 'flex'; }
             window.hideLoader = () => { document.getElementById('globalLoader').style.display = 'none'; }
 
@@ -913,7 +929,6 @@
                 videos.forEach(vid => {
                     let embedUrl = vid.url;
                     let isDirectFile = false;
-                    let poster = ''; 
 
                     if (vid.url.match(/\.(mp4|webm|ogg)$/i) || vid.url.includes('drive.google.com/file')) {
                         isDirectFile = true;
@@ -923,19 +938,20 @@
                         }
                     } 
                     else if (vid.url.includes('vimeo')) {
-                        const vimeoId = vid.url.match(/vimeo\.com\/(?:.*#|.*\/videos\/)?([0-9]+)/);
-                        if (vimeoId && vimeoId[1]) {
-                             embedUrl = `https://player.vimeo.com/video/${vimeoId[1]}?title=0&byline=0&portrait=0&badge=0&autopause=0&player_id=0&app_id=58479`; 
-                        }
+                        const vimeoId = vid.url.split('/').pop();
+                        // Vimeo Clean Embed (V113)
+                        embedUrl = `https://player.vimeo.com/video/${vimeoId}?title=0&byline=0&portrait=0`; 
                     } 
                     else if (vid.url.includes('youtu')) {
-                        let id = vid.url.includes('v=') ? vid.url.split('v=')[1].split('&')[0] : vid.url.split('youtu.be/')[1].split('?')[0];
-                        embedUrl = `https://www.youtube.com/embed/${id}?autoplay=1&rel=0`;
-                        poster = `https://img.youtube.com/vi/${id}/maxresdefault.jpg`; // תמונת תצוגה איכותית ליוטיוב
+                        let id = vid.url.split('v=')[1] || vid.url.split('/').pop();
+                        id = id.split('&')[0];
+                        // YouTube Clean Embed (V113)
+                        embedUrl = `https://www.youtube.com/embed/${id}?rel=0&modestbranding=1`;
                     }
-                    else if (vid.url.includes("cloudinary")) {
+                    else {
+                        // All other links (Cloudinary etc) treated as direct video
                         isDirectFile = true;
-                        embedUrl = vid.url; 
+                        embedUrl = vid.url;
                     }
 
                     const div = document.createElement('div');
@@ -950,23 +966,10 @@
                             </div>`;
                     }
                     
-                    // V113: חזרה לנגן HTML5 בסיסי עבור Cloudinary (ללא התחכמויות)
                     if (isDirectFile) {
                         div.innerHTML = `${delBtn}<div class="bg-black aspect-video relative"><video src="${embedUrl}" class="w-full h-full" controls playsinline controlsList="nodownload"></video></div>`;
-                    } 
-                    else if (poster) { 
-                        div.innerHTML = `
-                            ${delBtn}
-                            <div class="bg-black aspect-video relative cursor-pointer group" onclick="this.innerHTML='<iframe class=\\'w-full h-full\\' src=\\'${embedUrl}\\' frameborder=\\'0\\' allowfullscreen allow=\\'autoplay\\'></iframe>'">
-                                <img src="${poster}" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition duration-500">
-                                <div class="absolute inset-0 flex items-center justify-center">
-                                    <div class="bg-red-600 text-white rounded-full w-16 h-16 flex items-center justify-center shadow-lg group-hover:scale-110 transition"><i class="fas fa-play text-2xl ml-1"></i></div>
-                                </div>
-                            </div>
-                        `;
-                    }
-                    else { 
-                        div.innerHTML = `${delBtn}<div class="bg-black aspect-video relative"><iframe class="w-full h-full" src="${embedUrl}" frameborder="0" allowfullscreen allow="autoplay; fullscreen; picture-in-picture"></iframe></div>`;
+                    } else {
+                        div.innerHTML = `${delBtn}<div class="bg-black aspect-video relative"><iframe class="w-full h-full" src="${embedUrl}" frameborder="0" allowfullscreen></iframe></div>`;
                     }
                     v.appendChild(div);
                 });
@@ -1169,6 +1172,7 @@
                 const evt = events.find(e => e.id == eventId);
                 if(!evt) return;
                 
+                // וודא שאובייקט התשלומים קיים (תיקון V105/107)
                 if (!evt.payments) evt.payments = { client: {}, staff: {} };
                 const client = evt.payments.client || {};
                 const staff = evt.payments.staff || {};
@@ -1484,7 +1488,7 @@
                     if (data.config) {
                         siteConfig = data.config;
                         if(siteConfig.heroVideo) document.getElementById('promoIframe').src = siteConfig.heroVideo;
-                        if(siteConfig.heroImage) document.getElementById('bg-image-layer').style.backgroundImage = `url('${siteConfig.heroImage}')`;
+                        if(siteConfig.heroImage) document.getElementById('heroBgImage').style.backgroundImage = `url('${siteConfig.heroImage}')`;
                         
                         // עדכון הקישורים החברתיים (כפי שביקשת)
                         if(siteConfig['social-fb']) document.getElementById('link-fb').href = siteConfig['social-fb'];
