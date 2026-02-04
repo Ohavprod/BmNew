@@ -9,30 +9,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&family=Raleway:wght@400;700&display=swap" rel="stylesheet">
 
     <script>
-        // *** הקישור שלך ***
-        const API_URL = "https://script.google.com/macros/s/AKfycbydOBFs8G3bh-1Y5qK9DtYv-ielUpRet_oSY4qTQr5ehuMYNxGj1t-3VrkJk5SmvJvmOA/exec?mode=api"; 
+        // *** הקישור החדש שלך (עם תוספת mode=api) ***
+        const API_URL = "https://script.google.com/macros/s/AKfycbydOBFs8G3bh-1Y5qK9DtYv-ielUpRet_oSY4qTQr5ehuMYNxGj1t-3VrkJk5SmvJvmOA/exec?mode=api";
     </script>
 
     <style>
         /* --- בסיס --- */
         html { font-size: 14px; }
-        body { font-family: 'Heebo', sans-serif; background-color: #051c42; color: #ffffff; min-height: 100vh; overflow-x: hidden; margin: 0; padding: 0; display: flex; flex-direction: column; }
-        
-        /* --- תיקון רקע קריטי ל-WIX ו-IFRAME --- */
-        #fixed-background {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1;
-            background-image: linear-gradient(180deg, #051c42 0%, #021029 100%);
-            pointer-events: none;
-        }
-        
-        #bg-image-layer {
-            width: 100%; height: 100%;
-            background-size: cover; background-position: center top; background-repeat: no-repeat;
-            background-attachment: scroll;
-        }
+        body { font-family: 'Heebo', sans-serif; background-color: #051c42; background-image: linear-gradient(180deg, #051c42 0%, #021029 100%); color: #ffffff; min-height: 100vh; overflow-x: hidden; margin: 0; padding: 0; display: flex; flex-direction: column; }
         
         body.no-scroll { overflow: hidden !important; height: 100vh; }
         .gold-text { background: linear-gradient(45deg, #fbbf24, #d97706); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 900; text-shadow: 0px 0px 20px rgba(251, 191, 36, 0.3); }
+        .a3-logo-img { display: none; } 
 
         /* --- Loader --- */
         #globalLoader {
@@ -123,8 +111,10 @@
         .payment-ok { border-color: #22c55e !important; box-shadow: 0 0 10px rgba(34, 197, 94, 0.3); }
         .payment-bad { border-color: #ef4444 !important; box-shadow: 0 0 10px rgba(239, 68, 68, 0.3); }
         
-        /* --- גלריה --- */
+        /* --- גלריה ויומן --- */
         .marquee-wrapper { overflow: hidden; width: 100%; position: relative; direction: ltr; }
+        
+        /* מהירות גלריה - 200 שניות */
         .marquee-track { 
             display: flex; width: max-content; gap: 0; 
             animation: scroll-loop 200s linear infinite; 
@@ -132,6 +122,7 @@
         .marquee-track:hover { animation-play-state: paused; }
         @keyframes scroll-loop { 0% { transform: translateX(-50%); } 100% { transform: translateX(0%); } }
         
+        /* גלריה - מחשב */
         .gallery-item { margin: 0 5px; }
         .gallery-img { height: 250px; width: auto; aspect-ratio: 3/2; object-fit: cover; border-radius: 16px; cursor: pointer; transition: 0.3s; border: 2px solid transparent; }
         .gallery-img:hover { border-color: #fbbf24; transform: scale(1.05); }
@@ -143,6 +134,18 @@
         body.admin-mode .calendar-day:hover { transform: scale(1.1); cursor: pointer; border-color: white; }
         
         /* --- וידאו ורקע --- */
+        /* הוספתי את התיקון לויקס שהיה בגרסאות האחרונות שלך, כי זה חשוב */
+        #fixed-background {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1;
+            background-image: linear-gradient(180deg, #051c42 0%, #021029 100%);
+            pointer-events: none;
+        }
+        #bg-image-layer {
+            width: 100%; height: 100%;
+            background-size: cover; background-position: center top; background-repeat: no-repeat;
+            background-attachment: scroll;
+        }
+
         .promo-video-container { 
             width: 98%; max-width: 1800px; 
             margin: 30px auto; 
@@ -158,7 +161,11 @@
         
         .video-background-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; z-index: 0; }
         .video-background-iframe { position: absolute; top: 50%; left: 50%; width: 100vw; height: 100vh; transform: translate(-50%, -50%); pointer-events: none; }
-        
+        #heroOverlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #051c42; opacity: 0.6; z-index: 0; pointer-events: none; }
+        .site-logo { height: 80px; width: auto; object-fit: contain; filter: drop-shadow(0 0 10px rgba(255,255,255,0.2)); position: relative; z-index: 50; }
+        #siteFooter { background: #020617; padding: 20px; text-align: center; border-top: 1px solid #1e293b; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 10px; }
+        .copyright { color: #64748b; font-size: 0.9rem; }
+
         /* --- מודאלים --- */
         .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 50000; justify-content: center; align-items: center; backdrop-filter: blur(5px); padding: 10px; }
         .modal-content { 
@@ -281,7 +288,6 @@
              <button onclick="editOverlayOpacity()" class="bg-blue-800 hover:bg-blue-700 text-white px-3 py-2 rounded text-sm shadow-lg">שקיפות</button>
         </div>
         <div class="max-w-6xl relative z-10 w-full">
-            
             <div class="promo-video-container mb-10">
                 <iframe id="promoIframe" class="promo-video-iframe" src="https://player.vimeo.com/video/1158001407?background=1&autoplay=1&loop=1&muted=1" frameborder="0" width="100%" height="100%" allow="autoplay; fullscreen; picture-in-picture"></iframe>
                 <button onclick="toggleSound()" id="soundBtn" class="sound-toggle-btn" title="הפעל/השתק סאונד">
@@ -296,7 +302,6 @@
             <p class="text-lg md:text-2xl mb-10 text-blue-100 max-w-2xl mx-auto font-light leading-relaxed drop-shadow-md" data-id="hero-desc" data-type="text">
                 אביב ויצמן בהפקה מוזיקלית לעלייה לתורה: שופרות, תופים, פיוטים וליווי מרגש לחתן בר המצווה.
             </p>
-            
             <div class="flex flex-col md:flex-row gap-4 justify-center">
                 <a href="#calendar" class="bg-gradient-to-r from-amber-400 to-amber-600 hover:from-amber-500 hover:to-amber-700 text-blue-900 font-bold py-4 px-12 rounded-full transition duration-300 shadow-[0_0_30px_rgba(245,158,11,0.4)] text-lg">
                     <span data-id="btn-cta-1" data-type="text">בדיקת תאריך פנוי</span>
@@ -311,7 +316,6 @@
                 <h2 class="text-3xl md:text-5xl font-bold mb-4 text-white">החבילות שלנו</h2>
                 <p class="text-blue-300 max-w-2xl mx-auto">בחרו את ההפקה המתאימה ביותר לאירוע שלכם</p>
             </div>
-            
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <div class="glass-card hover:-translate-y-4">
                     <div class="pkg-header">
@@ -319,11 +323,10 @@
                         <h3 class="text-2xl font-bold text-white">לימוד לבר מצווה</h3>
                     </div>
                     <ul class="pkg-list">
-                                <li><i class="fas fa-check text-green-400"></i> לימוד יסודי של קריאת התורה בטעמי המקרא (נוסח עדות המזרח/אחר)</li>
-                           <li><i class="fas fa-check text-green-400"></i> ליווי אישי צמוד המבטיח קריאה רהוטה, נכונה ומרגשת ביום העלייה לתורה</li>
+                                <li><i class="fas fa-check text-green-400"></i> לימוד יסודי של קריאת התורה בטעמי המקרא</li>
+                           <li><i class="fas fa-check text-green-400"></i> ליווי אישי צמוד</li>
                     </ul>
                 </div>
-
                 <div class="glass-card hover:-translate-y-4">
                     <div class="pkg-header">
                         <div class="text-5xl text-slate-400 mb-4"><i class="fas fa-music"></i></div>
@@ -337,7 +340,6 @@
                         <li><i class="fas fa-book-open text-blue-300"></i> לימוד הפרשה (במידת הצורך)</li>
                     </ul>
                 </div>
-                
                 <div class="glass-card border-amber-500/50 shadow-2xl relative overflow-hidden transform scale-105">
                     <div class="pkg-header">
                         <div class="text-5xl text-amber-400 mb-4"><i class="fas fa-crown"></i></div>
@@ -352,7 +354,6 @@
                         <li><i class="fas fa-book-open text-blue-300"></i> לימוד הפרשה (במידת הצורך)</li>
                     </ul>
                 </div>
-                
                 <div class="glass-card hover:-translate-y-4">
                     <div class="pkg-header">
                         <div class="text-5xl text-purple-400 mb-4"><i class="fas fa-gem"></i></div>
@@ -365,7 +366,7 @@
                         <li><i class="fas fa-check text-green-400"></i> קלידן</li>
                         <li><i class="fas fa-check text-green-400"></i> זוג מתופפים</li>
                         <li><i class="fas fa-check text-green-400"></i> כניסה מיוחדת בליווי חופה ושופרות</li>
-                        <li><i class="fas fa-utensils text-green-400"></i>ליווי הסעודה במופע אקוסטי חי, המשלב שירה ונגינה על קלידים וגיטרה ליצירת אווירת בוקר נעימה ומרגשת לצד הארוחה</li>
+                        <li><i class="fas fa-utensils text-green-400"></i>ליווי הסעודה במופע אקוסטי חי</li>
                         <li><i class="fas fa-book-open text-blue-300"></i> לימוד הפרשה (במידת הצורך)</li>
                     </ul>
                 </div>
@@ -899,6 +900,7 @@
                 videos.forEach(vid => {
                     let embedUrl = vid.url;
                     let isDirectFile = false;
+                    let poster = ''; 
 
                     // תיקון V117: זיהוי קלאודינרי כקובץ ישיר כדי שיקבל נגן וידאו פשוט
                     if (vid.url.match(/\.(mp4|webm|ogg)$/i) || vid.url.includes('drive.google.com/file') || vid.url.includes('cloudinary')) {
