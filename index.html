@@ -9,8 +9,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&family=Raleway:wght@400;700&display=swap" rel="stylesheet">
 
     <script>
-        // *** הקישור שלך ***
-        const API_URL = "https://script.google.com/macros/s/AKfycbydOBFs8G3bh-1Y5qK9DtYv-ielUpRet_oSY4qTQr5ehuMYNxGj1t-3VrkJk5SmvJvmOA/exec?mode=api"; 
+        // *** הקישור החדש שלך ***
+        const API_URL = "https://script.google.com/macros/s/AKfycbydOBFs8G3bh-1Y5qK9DtYv-ielUpRet_oSY4qTQr5ehuMYNxGj1t-3VrkJk5SmvJvmOA/exec?mode=api";
     </script>
 
     <style>
@@ -18,41 +18,20 @@
         html { font-size: 14px; }
         body { font-family: 'Heebo', sans-serif; background-color: #051c42; color: #ffffff; min-height: 100vh; overflow-x: hidden; margin: 0; padding: 0; display: flex; flex-direction: column; }
         
-        /* --- תיקון רקע קריטי ל-WIX (V119) --- */
-        /* אנחנו נועלים את הגובה המקסימלי כדי שמתיחה בויקס לא תהרוס את הפרופורציה */
+        /* --- תיקון רקע קריטי ל-WIX --- */
         #fixed-background {
-            position: absolute; /* שונה מ-fixed ל-absolute כדי להיצמד למעלה */
-            top: 0; left: 0; 
-            width: 100%; 
-            height: 100vh; 
-            max-height: 900px; /* הגבלה קריטית! */
-            z-index: -1;
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1;
             background-image: linear-gradient(180deg, #051c42 0%, #021029 100%);
-            overflow: hidden;
+            pointer-events: none;
         }
-        
         #bg-image-layer {
             width: 100%; height: 100%;
-            background-size: cover; 
-            background-position: center top; 
-            background-repeat: no-repeat;
+            background-size: cover; background-position: center top; background-repeat: no-repeat;
+            background-attachment: scroll;
         }
 
         body.no-scroll { overflow: hidden !important; height: 100vh; }
         .gold-text { background: linear-gradient(45deg, #fbbf24, #d97706); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 900; text-shadow: 0px 0px 20px rgba(251, 191, 36, 0.3); }
-
-        /* --- Header Fix (V119) --- */
-        #heroSection {
-            position: relative;
-            min-height: 100vh;
-            max-height: 900px; /* הגבלה קריטית גם כאן! */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding-top: 8rem;
-            overflow: hidden;
-        }
 
         /* --- Loader --- */
         #globalLoader {
@@ -300,7 +279,7 @@
         </div>
     </nav>
 
-    <header id="heroSection" class="relative min-h-screen flex items-center justify-center text-center px-4 pt-32 overflow-hidden" style="max-height: 900px;">
+    <header id="heroSection" class="relative min-h-screen flex items-center justify-center text-center px-4 pt-32 overflow-hidden">
         <div id="heroMediaContainer" class="absolute inset-0 z-0"></div>
         <div id="heroOverlay"></div>
         <div class="absolute top-24 right-4 z-40 admin-controls flex flex-col gap-2">
@@ -314,7 +293,6 @@
                     <i id="soundBtnIcon" class="fas fa-volume-mute"></i>
                 </button>
             </div>
-
             <h1 class="text-4xl md:text-7xl font-black mb-6 leading-tight drop-shadow-2xl">
                 <span data-id="hero-h1-1" data-type="text">לחגוג בר מצווה</span><br>
                 <span class="text-amber-400" data-id="hero-h1-2" data-type="text">בשמחה ובהתרגשות</span>
@@ -336,6 +314,7 @@
                 <h2 class="text-3xl md:text-5xl font-bold mb-4 text-white">החבילות שלנו</h2>
                 <p class="text-blue-300 max-w-2xl mx-auto">בחרו את ההפקה המתאימה ביותר לאירוע שלכם</p>
             </div>
+            
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <div class="glass-card hover:-translate-y-4">
                     <div class="pkg-header">
@@ -663,7 +642,7 @@
                 'CUSTOM': { t: 'התאמה אישית', p: '', d: '' }
             };
             
-            // האזנה לאנטר בלוגין (V119)
+            // האזנה לאנטר בלוגין (V107)
             document.getElementById('uName').addEventListener('keypress', function(e) { if(e.key === 'Enter') login(); });
             document.getElementById('uPass').addEventListener('keypress', function(e) { if(e.key === 'Enter') login(); });
 
@@ -922,20 +901,22 @@
                     let isDirectFile = false;
                     let poster = ''; 
 
-                    // V119: שימוש במנגנון הנגן הפשוט מהקוד שעבד לך
-                    if (vid.url.match(/\.(mp4|webm|ogg)$/i) || vid.url.includes('drive.google.com/file') || vid.url.includes('cloudinary')) {
+                    // זיהוי קובץ ישיר
+                    if (vid.url.match(/\.(mp4|webm|ogg)$/i) || vid.url.includes('drive.google.com/file')) {
                         isDirectFile = true;
                         if(vid.url.includes('drive.google.com/file')) {
                             const fileId = vid.url.match(/d\/([a-zA-Z0-9_-]+)/)?.[1];
                             if(fileId) embedUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
                         }
                     } 
+                    // זיהוי Vimeo
                     else if (vid.url.includes('vimeo')) {
                         const vimeoId = vid.url.match(/vimeo\.com\/(?:.*#|.*\/videos\/)?([0-9]+)/);
                         if (vimeoId && vimeoId[1]) {
                              embedUrl = `https://player.vimeo.com/video/${vimeoId[1]}?title=0&byline=0&portrait=0&badge=0&autopause=0&player_id=0&app_id=58479`; 
                         }
                     } 
+                    // זיהוי YouTube - Facade Pattern (V107)
                     else if (vid.url.includes('youtu')) {
                         let id = vid.url.includes('v=') ? vid.url.split('v=')[1].split('&')[0] : vid.url.split('youtu.be/')[1].split('?')[0];
                         embedUrl = `https://www.youtube.com/embed/${id}?autoplay=1&rel=0`;
@@ -957,7 +938,7 @@
                     if (isDirectFile) {
                         div.innerHTML = `${delBtn}<div class="bg-black aspect-video relative"><video src="${embedUrl}" class="w-full h-full" controls playsinline controlsList="nodownload"></video></div>`;
                     } 
-                    else if (poster) { 
+                    else if (poster) { // אם יש תמונה (YouTube)
                         div.innerHTML = `
                             ${delBtn}
                             <div class="bg-black aspect-video relative cursor-pointer group" onclick="this.innerHTML='<iframe class=\\'w-full h-full\\' src=\\'${embedUrl}\\' frameborder=\\'0\\' allowfullscreen allow=\\'autoplay\\'></iframe>'">
@@ -968,7 +949,7 @@
                             </div>
                         `;
                     }
-                    else { 
+                    else { // Vimeo ואחרים
                         div.innerHTML = `${delBtn}<div class="bg-black aspect-video relative"><iframe class="w-full h-full" src="${embedUrl}" frameborder="0" allowfullscreen allow="autoplay; fullscreen; picture-in-picture"></iframe></div>`;
                     }
                     v.appendChild(div);
@@ -981,7 +962,7 @@
                 window.openModal('lightboxModal'); 
             }
             
-            // תיקון דפדוף (V107) - לחיצה לא סוגרת מודאל
+            // תיקון דפדוף (V107)
             window.nextImage = (e) => {
                 if(e) e.stopPropagation(); 
                 currentLightboxIndex = (currentLightboxIndex + 1) % lightboxImageUrls.length;
@@ -1024,8 +1005,7 @@
                         if (isAdmin) {
                             if (!isBooked) { window.openQuickEventModal(dateString); } 
                         } else {
-                            if (!isBooked) { window.open(`https://wa.me/972559907076?text=${encodeURIComponent('היי,מתעניינים באירוע בר מצווה בתאריך ' + dateString + ' האם התאריך פנוי?')}`, '_blank'); }
-                        }
+if (!isBooked) { window.open(`https://wa.me/972559907076?text=${encodeURIComponent('היי,מעוניינים לסגור אירוע בר מצווה בתאריך ' + dateString + ' האם התאריך פנוי?')}`, '_blank'); }                        }
                     };
                     g.appendChild(d);
                 }
@@ -1518,4 +1498,3 @@
     </script>
 </body>
 </html>
-
