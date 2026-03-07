@@ -111,6 +111,11 @@
         .badge-student { background: linear-gradient(to bottom, #ec4899, #be185d); color: white; }
 
         /* --- תשלומים --- */
+        .payment-status-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #334155; }
+        .table-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; margin-top: 10px; }
+        .payment-table { width: 100%; min-width: 300px; text-align: right; border-collapse: collapse; margin-top: 10px; }
+        .payment-table th { background: #1e293b; padding: 8px; font-size: 0.8rem; color: #94a3b8; }
+        .payment-table td { border-bottom: 1px solid #334155; padding: 8px; font-size: 0.9rem; }
         .payment-card { background: #0f172a; border: 3px solid #334155; border-radius: 1rem; padding: 1rem; margin-bottom: 1rem; position: relative; transition: 0.3s; }
         .payment-ok { border-color: #22c55e !important; box-shadow: 0 0 10px rgba(34, 197, 94, 0.3); }
         .payment-bad { border-color: #ef4444 !important; box-shadow: 0 0 10px rgba(239, 68, 68, 0.3); }
@@ -796,6 +801,7 @@
                 const u = document.getElementById('uName').value;
                 const p = document.getElementById('uPass').value;
                 
+                // חיפוש המשתמש אך ורק מתוך הנתונים שהגיעו מגיליון Users באקסל
                 let user = users.find(usr => usr.username === u && String(usr.password) === p); 
 
                 if (user) { 
@@ -1239,6 +1245,8 @@
                                 <div class="info-bubble"><i class="far fa-clock"></i> ${evt.startTime || '--:--'} <span style="color:#94a3b8; font-size:0.9em; margin-right:5px;">(הגעה: ${evt.guestTime || '--:--'})</span></div>
                                 <div class="comp-badges">${compBadges}</div>
                     `;
+                    
+                    // מנהלים רואים הערות ונתונים אישיים
                     if (isAdmin) {
                         cardHtml += `
                                 <div class="info-bubble"><i class="fas fa-user"></i> ${evt.clientName}</div>
@@ -1252,9 +1260,10 @@
                                 <button onclick="sendWaToClient('${evt.phone}')" class="action-btn btn-wa-green"><i class="fab fa-whatsapp"></i> הודעה</button>
                             </div>
                         `;
-                    } else {
+                    } 
+                    // צוות לא רואה את ההערות הפנימיות!
+                    else {
                         cardHtml += `
-                                <div class="mt-4 p-4 rounded-xl text-lg italic notes-area">${evt.notes || 'אין הערות מיוחדות'}</div>
                             </div>
                             <div class="card-actions">
                                 <a href="${evt.wazeLink || '#'}" target="_blank" class="action-btn btn-waze"><i class="fab fa-waze"></i> נווט</a>
@@ -1812,10 +1821,8 @@
                             const evtDateObj = new Date(evt.date);
                             evtDateObj.setHours(0,0,0,0);
                             
-                            // העברה אוטומטית ל"הסתיים" אם התאריך חלף והאירוע היה "סגור"
                             if (evtDateObj < todayDate && evt.status === 'סגור') {
                                 evt.status = 'הסתיים';
-                                // אופציונלי: אפשר גם לשלוח לשרת עדכון סטטוס כאן, אבל כרגע זה ויזואלי/מקומי לתצוגה חכמה
                             }
                         });
                         events = data.events;
