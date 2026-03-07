@@ -12,6 +12,7 @@
         // *** הקישור לשרת ה-Google Apps Script שלך ***
         const API_URL = "https://script.google.com/macros/s/AKfycbxxLLK5-IMuApks3P24ZLNdXTAC86U6JIalRPqxqAldb97nsuHEP7Xb-Jgd8p3jXQVB_g/exec?mode=api";
     </script>
+
     <style>
         /* --- בסיס --- */
         html { font-size: 14px; }
@@ -82,49 +83,50 @@
         .menu-overlay.show { display: block; }
         .menu-item { background: #1e293b; color: white; padding: 15px; border-radius: 12px; text-align: right; cursor: pointer; border: 1px solid #334155; display: flex; align-items: center; gap: 15px; font-weight: bold; font-size: 1.1rem; }
 
-        /* --- כרטיס אירוע מודרני (זכוכית כהה) --- */
+        /* --- כרטיס אירוע מודרני מובהר (הפרדה מהרקע) --- */
         .event-card { 
-            background: linear-gradient(145deg, rgba(15, 23, 42, 0.8), rgba(2, 6, 23, 0.95));
+            background: linear-gradient(145deg, rgba(40, 56, 84, 0.9), rgba(15, 23, 42, 0.95)); 
             backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-top: 1px solid rgba(251, 191, 36, 0.3); 
+            border: 1px solid rgba(96, 165, 250, 0.25); 
+            border-top: 1px solid rgba(251, 191, 36, 0.4); 
             border-radius: 1.5rem; 
             padding: 0; overflow: hidden; position: relative; 
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-            box-shadow: 0 15px 35px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05); 
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.1); 
             color: #f8fafc; 
             margin-bottom: 2rem; 
         }
         .event-card:hover {
             transform: translateY(-8px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.7), 0 0 20px rgba(251, 191, 36, 0.15);
-            border-top: 1px solid rgba(251, 191, 36, 0.7);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.8), 0 0 20px rgba(251, 191, 36, 0.2);
+            border-top: 1px solid rgba(251, 191, 36, 0.8);
+            border-color: rgba(96, 165, 250, 0.4);
         }
         .next-event-label { position: absolute; top: 0; left: 50%; transform: translateX(-50%); background: linear-gradient(to right, #fbbf24, #f59e0b); color: #000; font-weight: 900; padding: 6px 20px; border-bottom-left-radius: 1rem; border-bottom-right-radius: 1rem; z-index: 10; font-size: 0.9rem; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4); letter-spacing: 0.5px; }
-        .card-header { background: transparent; padding: 2.5rem 1.5rem 1rem 1.5rem; display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .card-header { background: transparent; padding: 2.5rem 1.5rem 1rem 1.5rem; display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid rgba(255,255,255,0.08); }
         .date-badge { background: linear-gradient(135deg, #f59e0b, #d97706); border: none; color: #fff; padding: 10px 20px; border-radius: 1rem; text-align: center; font-weight: 900; box-shadow: 0 8px 20px rgba(217, 119, 6, 0.4); }
         .date-badge .day { font-size: 2.2rem; line-height: 0.9; text-shadow: 1px 1px 2px rgba(0,0,0,0.2); }
         .date-badge .month { font-size: 1rem; color: #fff; text-transform: uppercase; font-weight: 700; opacity: 0.9; }
         .card-body { padding: 1.5rem; }
         .location-title { font-size: 1.8rem; font-weight: 900; color: #fff; line-height: 1.2; margin-bottom: 1.5rem; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
-        .info-bubble { background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(255,255,255,0.05); border-radius: 1rem; padding: 12px 15px; margin-bottom: 12px; display: flex; align-items: center; gap: 15px; font-size: 1.05rem; color: #cbd5e1; font-weight: 500; transition: 0.3s; }
+        .info-bubble { background: rgba(15, 23, 42, 0.5); border: 1px solid rgba(255,255,255,0.1); border-radius: 1rem; padding: 12px 15px; margin-bottom: 12px; display: flex; align-items: center; gap: 15px; font-size: 1.05rem; color: #e2e8f0; font-weight: 500; transition: 0.3s; }
         .info-bubble a { color: #60a5fa; transition: 0.2s; }
         .info-bubble a:hover { color: #fbbf24; }
-        .info-bubble:hover { background: rgba(30, 41, 59, 0.9); border-color: rgba(251, 191, 36, 0.3); }
+        .info-bubble:hover { background: rgba(15, 23, 42, 0.8); border-color: rgba(251, 191, 36, 0.4); }
         .info-bubble i { width: 25px; text-align: center; font-size: 1.3rem; color: #fbbf24; }
         .comp-badges { display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap; }
         .comp-badge { padding: 6px 12px; border-radius: 8px; font-weight: bold; font-size: 0.85rem; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); }
         .comp-badge-key { background: linear-gradient(135deg, #7e22ce, #9333ea); color: white; }
         .comp-badge-drum { background: linear-gradient(135deg, #be185d, #db2777); color: white; }
-        .card-actions { padding: 1.5rem; background: rgba(15, 23, 42, 0.8); display: grid; grid-template-columns: 1fr 1fr; gap: 12px; border-top: 1px solid rgba(255,255,255,0.05); }
+        .card-actions { padding: 1.5rem; background: rgba(15, 23, 42, 0.6); display: grid; grid-template-columns: 1fr 1fr; gap: 12px; border-top: 1px solid rgba(255,255,255,0.08); }
         .action-btn { text-align: center; padding: 12px; border-radius: 1rem; font-weight: 900; font-size: 1.05rem; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); cursor: pointer; text-decoration: none; }
         .action-btn:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0,0,0,0.4); }
         .btn-waze { background: linear-gradient(135deg, #2563eb, #1d4ed8); color: white; border: none; } 
         .btn-cal { background: linear-gradient(135deg, #7c3aed, #6d28d9); color: white; border: none; } 
         .btn-media { grid-column: span 2; background: linear-gradient(135deg, #ec4899, #e11d48); color: white; font-size: 1.2rem; padding: 15px; border: none; } 
-        .btn-edit { background: linear-gradient(135deg, #334155, #1e293b); color: white; border: 1px solid #475569; } 
+        .btn-edit { background: linear-gradient(135deg, #475569, #334155); color: white; border: 1px solid #64748b; } 
         .btn-wa-green { background: linear-gradient(135deg, #16a34a, #15803d); color: white; border: none; }
-        .notes-area { background: rgba(15, 23, 42, 0.6) !important; color: #cbd5e1 !important; border: 1px solid rgba(255,255,255,0.1); font-size: 0.95rem; padding: 15px; border-radius: 12px; line-height: 1.5; box-shadow: inset 0 2px 10px rgba(0,0,0,0.3); }
+        .notes-area { background: rgba(2, 6, 23, 0.4) !important; color: #cbd5e1 !important; border: 1px solid rgba(255,255,255,0.1); font-size: 0.95rem; padding: 15px; border-radius: 12px; line-height: 1.5; box-shadow: inset 0 2px 10px rgba(0,0,0,0.3); }
         
         .floating-badges { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; }
         .status-pill, .special-badge { padding: 4px 12px; border-radius: 99px; font-weight: 900; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.5px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
@@ -135,11 +137,6 @@
         .badge-student { background: linear-gradient(to bottom, #ec4899, #be185d); color: white; }
 
         /* --- תשלומים --- */
-        .payment-status-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #334155; }
-        .table-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; margin-top: 10px; }
-        .payment-table { width: 100%; min-width: 300px; text-align: right; border-collapse: collapse; margin-top: 10px; }
-        .payment-table th { background: #1e293b; padding: 8px; font-size: 0.8rem; color: #94a3b8; }
-        .payment-table td { border-bottom: 1px solid #334155; padding: 8px; font-size: 0.9rem; }
         .payment-card { background: #0f172a; border: 3px solid #334155; border-radius: 1rem; padding: 1rem; margin-bottom: 1rem; position: relative; transition: 0.3s; }
         .payment-ok { border-color: #22c55e !important; box-shadow: 0 0 10px rgba(34, 197, 94, 0.3); }
         .payment-bad { border-color: #ef4444 !important; box-shadow: 0 0 10px rgba(239, 68, 68, 0.3); }
@@ -195,7 +192,7 @@
             position: relative; margin: auto;
             display: flex; flex-direction: column;
         }
-        #paymentModal .modal-content { max-width: 800px; }
+        #paymentModal .modal-content { max-width: 900px; }
         #proposalSetupModal .modal-content { max-width: 700px; }
         #eventEditor .modal-content { max-width: 800px; }
         
@@ -535,31 +532,61 @@
     </div>
 
     <div id="paymentModal" class="modal-overlay">
-        <div class="modal-content !w-[700px] bg-slate-900 border border-green-500/50">
+        <div class="modal-content !max-w-4xl bg-slate-900 border border-green-500/50">
              <div class="modal-header">
                 <h3 class="text-2xl font-bold text-white">ניהול תשלומים: <span id="payEventName" class="text-green-400"></span></h3>
                 <button onclick="closeModal('paymentModal')" class="text-white"><i class="fas fa-times"></i></button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body p-4">
                 <form id="paymentForm">
                     <input type="hidden" id="payEventId">
-                    <div class="bg-slate-800 p-4 rounded-xl mb-4 border border-slate-700">
-                        <h4 class="text-xl font-bold text-amber-400 mb-3 border-b border-slate-600 pb-2">תשלום לקוח</h4>
-                        <div class="flex gap-4">
-                            <label class="flex items-center gap-2 text-white text-lg cursor-pointer"><input type="checkbox" id="payClientDeposit" class="w-6 h-6 accent-green-500"> שולמה מקדמה</label>
-                            <label class="flex items-center gap-2 text-white text-lg cursor-pointer hidden" id="payClientFullContainer"><input type="checkbox" id="payClientFull" class="w-6 h-6 accent-green-500"> שולם מלא (יתרה)</label>
+                    
+                    <div class="bg-slate-800 p-5 rounded-xl mb-6 border border-slate-700 shadow-lg">
+                        <h4 class="text-xl font-bold text-amber-400 mb-4 border-b border-slate-600 pb-2"><i class="fas fa-user-tie ml-2"></i>תשלום מלקוח</h4>
+                        
+                        <div class="mb-5 bg-slate-900/50 p-4 rounded-lg">
+                            <label class="flex items-center gap-3 text-white text-lg cursor-pointer mb-3 font-bold">
+                                <input type="checkbox" id="payClientDeposit" class="w-6 h-6 accent-green-500" onchange="document.getElementById('depositDetailsContainer').style.display = this.checked ? 'flex' : 'none'"> 
+                                שולמה מקדמה
+                            </label>
+                            
+                            <div id="depositDetailsContainer" class="flex-wrap gap-3" style="display:none;">
+                                <input type="date" id="payDepositDate" class="bg-slate-800 text-white p-2 rounded border border-slate-600 flex-1 min-w-[140px]" title="תאריך תשלום המקדמה">
+                                <select id="payDepositMethod" class="bg-slate-800 text-white p-2 rounded border border-slate-600 flex-1 min-w-[140px]" onchange="togglePayMethodNotes('payDepositMethod', 'payDepositNotes')">
+                                    <option value="">אופן תשלום...</option>
+                                    <option value="מזומן">מזומן</option>
+                                    <option value="העברה בנקאית">העברה בנקאית</option>
+                                    <option value="Bit">Bit</option>
+                                    <option value="Paybox">Paybox</option>
+                                    <option value="אחר">אחר</option>
+                                </select>
+                                <input type="text" id="payDepositNotes" placeholder="הערה (למשל: מספר צ'ק)..." class="bg-slate-800 text-white p-2 rounded border border-slate-600 flex-1 min-w-[140px] hidden">
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="block text-slate-300 mb-2 font-bold"><i class="fas fa-link ml-1"></i> לינק לקבלה דיגיטלית:</label>
+                            <div class="flex gap-2">
+                                <input type="text" id="payReceiptLink" placeholder="הדבק קישור לקבלה כאן..." class="w-full bg-slate-900 text-white p-3 rounded border border-slate-600 focus:border-amber-400 outline-none">
+                                <a href="#" id="openReceiptBtn" target="_blank" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded flex items-center justify-center transition" title="פתח קבלה" style="display:none;"><i class="fas fa-external-link-alt"></i></a>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 pt-4 border-t border-slate-700 hidden" id="payClientFullContainer">
+                            <label class="flex items-center gap-3 text-white text-lg cursor-pointer font-bold">
+                                <input type="checkbox" id="payClientFull" class="w-6 h-6 accent-green-500"> 
+                                הלקוח שילם את מלוא הסכום (גמר חשבון)
+                            </label>
                         </div>
                     </div>
-                    <div id="staffPaymentsContainer" class="bg-slate-800 p-4 rounded-xl border border-slate-700 hidden">
-                        <h4 class="text-xl font-bold text-blue-400 mb-3 border-b border-slate-600 pb-2">תשלום לספקים</h4>
-                        <div class="table-wrapper">
-                            <table class="payment-table">
-                                <thead><tr><th>תפקיד</th><th>שולם?</th><th>סכום</th><th>תאריך</th></tr></thead>
-                                <tbody id="staffPaymentsTableBody"></tbody>
-                            </table>
-                        </div>
+
+                    <div id="staffPaymentsContainer" class="bg-slate-800 p-5 rounded-xl border border-slate-700 shadow-lg hidden">
+                        <h4 class="text-xl font-bold text-blue-400 mb-4 border-b border-slate-600 pb-2"><i class="fas fa-users ml-2"></i>תשלומים לאנשי צוות</h4>
+                        
+                        <div id="staffPaymentsList" class="flex flex-col gap-4"></div>
                     </div>
-                    <button type="button" onclick="savePaymentData()" class="w-full bg-green-600 text-white font-bold py-3 rounded mt-4 hover:bg-green-500">שמור שינויים</button>
+
+                    <button type="button" onclick="savePaymentData()" class="w-full bg-green-600 hover:bg-green-500 text-white font-black py-4 rounded-xl mt-6 shadow-[0_0_15px_rgba(34,197,94,0.3)] transition text-lg">שמור נתוני תשלומים</button>
                 </form>
             </div>
         </div>
@@ -713,7 +740,7 @@
             let galleryImages = []; 
             let siteConfig = {}; 
             let users = []; 
-            let pricingData = {}; // מאגר הנתונים המפורט של המחירון
+            let pricingData = {}; 
             
             let currentLightboxIndex = 0;
             let lightboxImageUrls = [];
@@ -811,7 +838,6 @@
                 const u = document.getElementById('uName').value;
                 const p = document.getElementById('uPass').value;
                 
-                // חיפוש המשתמש אך ורק מתוך הנתונים שהגיעו מגיליון Users באקסל
                 let user = users.find(usr => usr.username === u && String(usr.password) === p); 
 
                 if (user) { 
@@ -826,7 +852,6 @@
                 window.closeModal('loginModal');
                 document.body.classList.add('is-logged-in'); 
                 
-                // הוספת קלאסים לפי תפקיד
                 if(currentUser.role === 'superadmin') document.body.classList.add('superadmin-mode');
                 if(currentUser.role === 'superadmin' || currentUser.role === 'manager') {
                     isAdmin = true;
@@ -841,33 +866,42 @@
                 if(header) header.innerHTML = `<div class="text-amber-400 text-2xl font-black mb-4 pb-4 border-b border-slate-700 text-center">שלום ${currentUser.name}! <i class="fas fa-smile-beam"></i></div>`;
 
                 const links = document.getElementById('managerLinks');
-                links.innerHTML = '';
                 
                 if (isAdmin) {
                     toggleEditMode();
                     document.getElementById('filterStatus').classList.remove('hidden'); 
-                    document.getElementById('paymentsSection').classList.remove('hidden');
                     
-                    links.innerHTML = `
+                    // בניית התפריט הדינמי לפי הרשאות
+                    let menuHtml = `
                         <div class="menu-item" onclick="openEventEditor()"><i class="fas fa-plus-circle text-green-400 text-2xl"></i> הוסף אירוע</div>
                         <div class="menu-item" onclick="scrollToEvents()"><i class="fas fa-th-large text-blue-400 text-2xl"></i> לוח אירועים</div>
-                        <div class="menu-item" onclick="scrollToPayments()"><i class="fas fa-shekel-sign text-amber-400 text-2xl"></i> תשלומים</div>
+                    `;
+                    
+                    // תשלומים - רק לאביב
+                    if (currentUser.role === 'superadmin') {
+                        document.getElementById('paymentsSection').classList.remove('hidden');
+                        menuHtml += `<div class="menu-item" onclick="scrollToPayments()"><i class="fas fa-shekel-sign text-amber-400 text-2xl"></i> תשלומים</div>`;
+                    }
+                    
+                    menuHtml += `
                         <div class="menu-item" onclick="openWhatsAppTool()"><i class="fab fa-whatsapp text-green-500 text-2xl"></i> שליחת טפסים</div>
                         <div class="menu-item" onclick="openProposalTool()"><i class="fas fa-file-invoice text-amber-400 text-2xl"></i> הצעת מחיר A3</div>
                         <div class="menu-item" onclick="openPriceListEditor()"><i class="fas fa-tags text-purple-400 text-2xl"></i> מחירון המערכת</div>
                     `;
+                    
+                    links.innerHTML = menuHtml;
+
                 } else {
                     links.innerHTML = `<div class="menu-item" onclick="scrollToEvents()"><i class="fas fa-th-large text-blue-400 text-2xl"></i> לוח אירועים</div>`;
                 }
                 
                 document.getElementById('filterTime').value = 'future';
                 filterEvents();
-                renderPaymentsBoard();
+                if(currentUser.role === 'superadmin') renderPaymentsBoard();
                 setTimeout(() => window.scrollToEvents(), 500);
             }
 
             function toggleEditMode() {
-                // רק מנהל-על עורך טקסטים לייב בדף הבית
                 if (currentUser.role === 'superadmin') {
                     document.querySelectorAll('[contenteditable]').forEach(el => {
                         el.contentEditable = true;
@@ -1165,7 +1199,7 @@
                             <div class="card-body">
                                 <div class="location-title">${evt.eventName || evt.location}</div>
                                 <div class="info-bubble"><i class="fas fa-map-marker-alt"></i> ${evt.location}</div>
-                                <div class="info-bubble"><i class="far fa-clock"></i> ${evt.startTime || '--:--'} <span style="color:#cbd5e1; font-size:0.9em; margin-right:5px;">(הגעה: ${evt.guestTime || '--:--'})</span></div>
+                                <div class="info-bubble"><i class="far fa-clock"></i> ${evt.startTime || '--:--'} <span style="color:#94a3b8; font-size:0.9em; margin-right:5px;">(הגעה: ${evt.guestTime || '--:--'})</span></div>
                                 <div class="comp-badges">${compBadges}</div>
                     `;
                     if (isAdmin) {
@@ -1173,7 +1207,7 @@
                                 <div class="info-bubble"><i class="fas fa-user"></i> ${evt.clientName}</div>
                                 <div class="info-bubble"><i class="fas fa-child"></i> חתן: ${evt.childName}</div>
                                 <div class="info-bubble"><i class="fas fa-phone"></i> <a href="tel:${evt.phone}">${evt.phone}</a></div>
-                                <div class="info-bubble" style="border-color: rgba(251, 191, 36, 0.3);"><i class="fas fa-tag"></i> ${evt.packageType} | ${evt.price} ₪</div>
+                                <div class="info-bubble" style="border-color: rgba(251, 191, 36, 0.4);"><i class="fas fa-tag"></i> ${evt.packageType} | ${evt.price} ₪</div>
                                 ${evt.notes ? `<div class="mt-4 p-4 rounded-xl text-lg italic notes-area">"${evt.notes}"</div>` : ''}
                             </div>
                             <div class="card-actions">
@@ -1241,6 +1275,16 @@
                 });
             }
 
+            window.togglePayMethodNotes = (selectId, notesId) => {
+                const val = document.getElementById(selectId).value;
+                const notesEl = document.getElementById(notesId);
+                if(val === 'אחר') {
+                    notesEl.classList.remove('hidden');
+                } else {
+                    notesEl.classList.add('hidden');
+                }
+            }
+
             window.openPaymentModal = (eventId) => {
                 const evt = events.find(e => e.id == eventId);
                 if(!evt) return;
@@ -1248,24 +1292,77 @@
                 if (!evt.payments) evt.payments = { client: {}, staff: {} };
                 const client = evt.payments.client || {};
                 const staff = evt.payments.staff || {};
+                const depData = client.deposit || {};
 
                 document.getElementById('payEventName').innerText = evt.eventName || 'אירוע';
                 document.getElementById('payEventId').value = evt.id;
-                document.getElementById('payClientDeposit').checked = client.downPayment || false;
+                
+                // מקדמה
+                const isDepositChecked = client.downPayment || false;
+                document.getElementById('payClientDeposit').checked = isDepositChecked;
+                document.getElementById('depositDetailsContainer').style.display = isDepositChecked ? 'flex' : 'none';
+                
+                document.getElementById('payDepositDate').value = depData.date || '';
+                document.getElementById('payDepositMethod').value = depData.method || '';
+                document.getElementById('payDepositNotes').value = depData.notes || '';
+                togglePayMethodNotes('payDepositMethod', 'payDepositNotes');
+                
+                // קבלה
+                const receiptLinkInput = document.getElementById('payReceiptLink');
+                const openReceiptBtn = document.getElementById('openReceiptBtn');
+                receiptLinkInput.value = client.receiptLink || '';
+                if(client.receiptLink) {
+                    openReceiptBtn.href = client.receiptLink;
+                    openReceiptBtn.style.display = 'flex';
+                } else {
+                    openReceiptBtn.style.display = 'none';
+                }
                 
                 const fullPayContainer = document.getElementById('payClientFullContainer');
                 const staffContainer = document.getElementById('staffPaymentsContainer');
+                const staffList = document.getElementById('staffPaymentsList');
                 
                 if(evt.status === 'הסתיים') {
                     fullPayContainer.classList.remove('hidden');
                     staffContainer.classList.remove('hidden');
                     document.getElementById('payClientFull').checked = client.fullPayment || false;
-                    const tbody = document.getElementById('staffPaymentsTableBody');
-                    tbody.innerHTML = '';
-                    const roles = [ { key: 'drummer', label: 'מתופפים' }, { key: 'keyboard', label: 'קלידן' }, { key: 'sound', label: 'סאונד' }, { key: 'manager', label: 'מנהלת' } ];
+                    
+                    staffList.innerHTML = '';
+                    const roles = [ 
+                        { key: 'keyboard', label: 'קלידן' }, 
+                        { key: 'drummer', label: 'מתופפים' }, 
+                        { key: 'sound', label: 'סאונד' }, 
+                        { key: 'manager', label: 'מנהלת אירועים' },
+                        { key: 'aviv', label: 'אביב' } 
+                    ];
+                    
                     roles.forEach(role => {
-                        const data = staff[role.key] || { paid: false, amount: 0, date: '' };
-                        tbody.innerHTML += `<tr><td>${role.label}</td><td><input type="checkbox" class="w-5 h-5 accent-green-500" id="pay_${role.key}_check" ${data.paid ? 'checked' : ''}></td><td><input type="number" class="bg-slate-700 text-white w-20 p-1 rounded" id="pay_${role.key}_amount" value="${data.amount || 0}"></td><td><input type="date" class="bg-slate-700 text-white w-32 p-1 rounded" id="pay_${role.key}_date" value="${data.date || ''}"></td></tr>`;
+                        const data = staff[role.key] || { paid: false, amount: '', date: '', method: '', notes: '' };
+                        let showNotes = data.method === 'אחר' ? '' : 'hidden';
+                        
+                        staffList.innerHTML += `
+                            <div class="bg-slate-700/40 p-4 rounded-xl border border-slate-600">
+                                <div class="flex justify-between items-center mb-3">
+                                    <span class="font-black text-lg text-amber-400">${role.label}</span>
+                                    <label class="flex items-center gap-2 text-white cursor-pointer font-bold bg-slate-900 px-3 py-1 rounded-lg border border-slate-700">
+                                        <input type="checkbox" class="w-5 h-5 accent-green-500" id="pay_${role.key}_check" ${data.paid ? 'checked' : ''}> שולם
+                                    </label>
+                                </div>
+                                <div class="grid grid-cols-2 gap-3">
+                                    <input type="number" placeholder="סכום (₪)" class="bg-slate-900 text-white p-2 rounded-lg border border-slate-600 outline-none focus:border-blue-400" id="pay_${role.key}_amount" value="${data.amount || ''}">
+                                    <input type="date" class="bg-slate-900 text-white p-2 rounded-lg border border-slate-600 outline-none focus:border-blue-400" id="pay_${role.key}_date" value="${data.date || ''}" title="תאריך">
+                                    <select class="bg-slate-900 text-white p-2 rounded-lg border border-slate-600 outline-none focus:border-blue-400 col-span-2 md:col-span-1" id="pay_${role.key}_method" onchange="togglePayMethodNotes('pay_${role.key}_method', 'pay_${role.key}_notes')">
+                                        <option value="" ${!data.method ? 'selected' : ''}>אופן תשלום...</option>
+                                        <option value="מזומן" ${data.method==='מזומן' ? 'selected' : ''}>מזומן</option>
+                                        <option value="העברה בנקאית" ${data.method==='העברה בנקאית' ? 'selected' : ''}>העברה בנקאית</option>
+                                        <option value="Bit" ${data.method==='Bit' ? 'selected' : ''}>Bit</option>
+                                        <option value="Paybox" ${data.method==='Paybox' ? 'selected' : ''}>Paybox</option>
+                                        <option value="אחר" ${data.method==='אחר' ? 'selected' : ''}>אחר</option>
+                                    </select>
+                                    <input type="text" placeholder="פירוט הערה..." class="bg-slate-900 text-white p-2 rounded-lg border border-slate-600 outline-none focus:border-blue-400 col-span-2 md:col-span-1 ${showNotes}" id="pay_${role.key}_notes" value="${data.notes || ''}">
+                                </div>
+                            </div>
+                        `;
                     });
                 } else {
                     fullPayContainer.classList.add('hidden');
@@ -1284,15 +1381,23 @@
                 if(!evt.payments.staff) evt.payments.staff = {};
 
                 evt.payments.client.downPayment = document.getElementById('payClientDeposit').checked;
+                evt.payments.client.deposit = {
+                    date: document.getElementById('payDepositDate').value,
+                    method: document.getElementById('payDepositMethod').value,
+                    notes: document.getElementById('payDepositNotes').value
+                };
+                evt.payments.client.receiptLink = document.getElementById('payReceiptLink').value;
                 
                 if(evt.status === 'הסתיים') {
                     evt.payments.client.fullPayment = document.getElementById('payClientFull').checked;
-                    const roles = ['drummer', 'keyboard', 'sound', 'manager'];
+                    const roles = ['drummer', 'keyboard', 'sound', 'manager', 'aviv'];
                     roles.forEach(role => {
                         evt.payments.staff[role] = {
                             paid: document.getElementById(`pay_${role}_check`).checked,
                             amount: document.getElementById(`pay_${role}_amount`).value,
-                            date: document.getElementById(`pay_${role}_date`).value
+                            date: document.getElementById(`pay_${role}_date`).value,
+                            method: document.getElementById(`pay_${role}_method`).value,
+                            notes: document.getElementById(`pay_${role}_notes`).value
                         };
                     });
                 }
@@ -1327,7 +1432,7 @@
                     packageType: document.getElementById('qeType').value,
                     status: 'סגור', notes: document.getElementById('qeNotes').value,
                     phone: '', price: '0',
-                    payments: { client: { downPayment: false, fullPayment: false }, staff: { drummer: {}, keyboard: {}, sound: {}, manager: {} } }
+                    payments: { client: { downPayment: false, fullPayment: false }, staff: {} }
                 };
                 
                 events.push(newEvent); bookedDates.push(date); 
@@ -1362,7 +1467,6 @@
                     }
                 }
                 
-                // הסתרת כפתור מחיקה אם אינו מנהל-על
                 const delBtn = document.getElementById('deleteEventBtn');
                 if (currentUser && currentUser.role === 'superadmin') delBtn.style.display = 'block';
                 else delBtn.style.display = 'none';
@@ -1421,7 +1525,6 @@
             window.openWhatsAppTool = () => { window.closeSideMenu(); window.openModal('whatsappModal'); }
             window.openProposalTool = () => { window.closeSideMenu(); window.openModal('proposalSetupModal'); }
 
-            // --- לוגיקת המחירון המפורט החדש ---
             window.openPriceListEditor = () => { 
                 const body = document.getElementById('priceListBody');
                 body.innerHTML = '';
@@ -1440,14 +1543,13 @@
                     html += `<div class="bg-slate-800 p-6 rounded-xl border border-slate-600 shadow-lg">
                         <h3 class="text-xl font-bold text-amber-400 border-b border-slate-700 pb-2 mb-4">${pkg.title}</h3>`;
                     
-                    // כולם רואים מחיר בסיס ומקסימום הנחה
                     html += buildPriceRow(`price${pkg.id}`, 'מחיר סגירה מומלץ', pricingData[`price${pkg.id}`] || siteConfig[`price${pkg.id}`] || '', isSuper, true);
                     html += buildPriceRow(`discount${pkg.id}`, 'מקסימום הנחה מותרת', pricingData[`discount${pkg.id}`] || '', isSuper, false);
                     
-                    // רק אביב רואה תשלומים לצוות
                     if (isSuper) {
                         html += `<div class="mt-4 pt-4 border-t border-slate-700">`;
                         html += buildPriceRow(`payKey${pkg.id}`, 'תשלום לקלידן', pricingData[`payKey${pkg.id}`] || '', true, false);
+                        html += buildPriceRow(`payDrum${pkg.id}`, 'תשלום למתופפים', pricingData[`payDrum${pkg.id}`] || '', true, false);
                         html += buildPriceRow(`paySound${pkg.id}`, 'תשלום לסאונד', pricingData[`paySound${pkg.id}`] || '', true, false);
                         html += buildPriceRow(`payMgr${pkg.id}`, 'תשלום למנהלת', pricingData[`payMgr${pkg.id}`] || '', true, false);
                         html += buildPriceRow(`payAviv${pkg.id}`, 'נשאר לאביב', pricingData[`payAviv${pkg.id}`] || '', true, false);
@@ -1486,7 +1588,7 @@
 
             window.savePricesFull = () => {
                 const pkgs = ['VIP', 'FESTIVE', 'BASIC', 'SOLO'];
-                const fields = ['price', 'discount', 'payKey', 'paySound', 'payMgr', 'payAviv'];
+                const fields = ['price', 'discount', 'payKey', 'payDrum', 'paySound', 'payMgr', 'payAviv'];
                 
                 pkgs.forEach(id => {
                     fields.forEach(f => {
@@ -1496,7 +1598,6 @@
                     });
                 });
 
-                // מסנכרן מחירים לחבילות באתר
                 ['VIP', 'FESTIVE', 'BASIC', 'SOLO'].forEach(id => { siteConfig[`price${id}`] = pricingData[`price${id}`]; });
                 updatePackagesFromConfig(); 
 
@@ -1638,7 +1739,22 @@
                     const response = await fetch(API_URL);
                     const data = await response.json();
                     
-                    if (data.events) events = data.events;
+                    if (data.events) {
+                        const todayDate = new Date();
+                        todayDate.setHours(0,0,0,0);
+                        
+                        // עדכון אוטומטי של סטטוס אירועים שעברו ל-"הסתיים"
+                        data.events.forEach(evt => {
+                            const evtDateObj = new Date(evt.date);
+                            evtDateObj.setHours(0,0,0,0);
+                            
+                            if (evtDateObj < todayDate && evt.status === 'סגור') {
+                                evt.status = 'הסתיים';
+                            }
+                        });
+                        events = data.events;
+                    }
+                    
                     if (data.config) {
                         siteConfig = data.config;
                         if(siteConfig.heroVideo) document.getElementById('promoIframe').src = siteConfig.heroVideo;
@@ -1649,12 +1765,10 @@
                         if(siteConfig['social-ig']) document.getElementById('link-ig').href = siteConfig['social-ig'];
                         if(siteConfig['social-sp']) document.getElementById('link-sp').href = siteConfig['social-sp'];
                         
-                        // שליפת הנתונים המפורטים של המחירון מהאחסון הכללי
                         if(siteConfig.pricingDB) {
                             try { pricingData = JSON.parse(siteConfig.pricingDB); } catch(e) {}
                         }
                         
-                        // מיגרציה של מחירים ישנים כדי שלא יילכו לאיבוד
                         ['VIP', 'FESTIVE', 'BASIC', 'SOLO'].forEach(id => {
                             if(!pricingData[`price${id}`] && siteConfig[`price${id}`]) {
                                 pricingData[`price${id}`] = siteConfig[`price${id}`];
@@ -1676,7 +1790,7 @@
                 renderCalendar();
                 filterEvents();
                 renderGallery();
-                if(isAdmin) renderPaymentsBoard();
+                if(currentUser && currentUser.role === 'superadmin') renderPaymentsBoard();
             }
 
             loadData();
