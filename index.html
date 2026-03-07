@@ -10,9 +10,8 @@
 
     <script>
         // *** הקישור החדש שלך ***
-        const API_URL = "https://script.google.com/macros/s/AKfycbw6ohEA1mB_NJmhnj0F4d2-IDtC-25InTpPC8K9hAR5I0C0wvQQ67BVkufSXdhYFxuNVQ/exec?mode=api";
+        const API_URL = "https://script.google.com/macros/s/AKfycbxxLLK5-IMuApks3P24ZLNdXTAC86U6JIalRPqxqAldb97nsuHEP7Xb-Jgd8p3jXQVB_g/exec?mode=api";
     </script>
-
     <style>
         /* --- בסיס --- */
         html { font-size: 14px; }
@@ -249,7 +248,7 @@
     <div id="loggedInMenuBtn" onclick="toggleSideMenu()" class="auth-only"><i class="fas fa-bars"></i></div>
     <div id="menuOverlay" class="menu-overlay" onclick="toggleSideMenu()"></div>
     <div id="sideMenu">
-        <div class="text-3xl font-bold text-white mb-8 pb-4 border-b border-slate-700 text-center">תפריט ניהול</div>
+        <div id="sideMenuHeader"></div> <div class="text-3xl font-bold text-white mb-8 pb-4 border-b border-slate-700 text-center">תפריט ניהול</div>
         <div id="managerLinks" class="flex flex-col gap-4"></div>
         <div class="mt-auto">
             <div class="menu-item bg-red-900/50 hover:bg-red-900 border-red-800 justify-center" onclick="logout()"><i class="fas fa-sign-out-alt"></i> יציאה</div>
@@ -614,11 +613,11 @@
         </div>
     </div>
 
-    <div id="eventEditor" class="modal-overlay"><div class="modal-content"><div class="modal-header"><h3 class="text-3xl font-black text-white">פרטי אירוע</h3><button onclick="closeModal('eventEditor')" class="text-slate-400 hover:text-white text-2xl"><i class="fas fa-times"></i></button></div><div class="modal-body"><form id="eventForm" class="form-grid"><input type="hidden" name="id">
+    <div id="eventEditor" class="modal-overlay"><div class="modal-content"><div class="modal-header"><h3 class="text-3xl font-black text-white">פרטי אירוע</h3><button onclick="closeModal('eventEditor')" class="text-slate-400 hover:text-white text-2xl"><i class="fas fa-times"></i></button></div><div class="modal-body"><form id="eventForm" class="form-grid"><input type="hidden" name="id" id="eventIdField">
     
     <div class="input-group col-span-1 md:col-span-2"><label>שם האירוע (כותרת)</label><input type="text" name="eventName" placeholder="לדוגמה: בר מצווה - משפחת כהן"></div>
     
-    <div class="input-group"><label>תאריך לועזי</label><input type="date" name="date" required></div><div class="input-group"><label>תאריך עברי</label><input type="text" name="hebrewDate"></div><div class="input-group"><label>שם הלקוח</label><input type="text" name="clientName"></div><div class="input-group"><label>שם חתן הבר מצווה</label><input type="text" name="childName"></div><div class="input-group"><label>טלפון</label><input type="tel" name="phone"></div><div class="input-group"><label>מיקום האירוע</label><input type="text" name="location"></div><div class="input-group"><label>לינק ל-Waze</label><input type="text" name="wazeLink"></div><div class="input-group"><label>סוג חבילה</label><select name="packageType"><option>לימוד לבר מצווה</option><option>בסיס</option><option>חגיגית</option><option>הכל כלול</option><option>מותאמת אישית</option></select></div><div class="input-group"><label>שעת הזמנת אורחים</label><input type="time" name="guestTime"></div><div class="input-group"><label>שעת תחילת אירוע</label><input type="time" name="startTime"></div><div class="input-group"><label>מחיר סגירה</label><input type="text" name="price"></div><div class="input-group"><label>סטטוס</label><select name="status"><option value="תהליך">בתהליך סגירה</option><option value="סגור">סגור (מאושר)</option><option value="הסתיים">הסתיים</option></select></div><div class="checkbox-group col-span-2"><label class="flex items-center gap-2 text-white font-bold"><input type="checkbox" name="hasKeyboard"> כולל קלידן</label><label class="flex items-center gap-2 text-white font-bold"><input type="checkbox" name="hasDrummers"> כולל מתופפים</label><label class="flex items-center gap-2 text-white font-bold text-pink-400"><input type="checkbox" name="isStudent"> תלמיד של אביב</label></div><div class="input-group col-span-1 md:col-span-2"><label>לינק למדיה</label><input type="text" name="mediaLink"></div><div class="input-group col-span-1 md:col-span-2"><label>הערות לצוות</label><textarea name="notes" class="h-32 notes-area"></textarea></div></form><div class="mt-8 flex justify-between items-center border-t border-slate-700 pt-6"><button type="button" onclick="deleteEvent()" class="text-red-500 font-bold px-4">מחק אירוע</button><button type="button" onclick="saveEvent()" class="bg-green-600 hover:bg-green-500 text-white font-bold py-3 px-10 rounded-xl text-lg shadow-lg">שמור</button></div></div></div></div>
+    <div class="input-group"><label>תאריך לועזי</label><input type="date" name="date" required></div><div class="input-group"><label>תאריך עברי</label><input type="text" name="hebrewDate"></div><div class="input-group"><label>שם הלקוח</label><input type="text" name="clientName"></div><div class="input-group"><label>שם חתן הבר מצווה</label><input type="text" name="childName"></div><div class="input-group"><label>טלפון</label><input type="tel" name="phone"></div><div class="input-group"><label>מיקום האירוע</label><input type="text" name="location"></div><div class="input-group"><label>לינק ל-Waze</label><input type="text" name="wazeLink"></div><div class="input-group"><label>סוג חבילה</label><select name="packageType"><option>לימוד לבר מצווה</option><option>בסיס</option><option>חגיגית</option><option>הכל כלול</option><option>מותאמת אישית</option></select></div><div class="input-group"><label>שעת הזמנת אורחים</label><input type="time" name="guestTime"></div><div class="input-group"><label>שעת תחילת אירוע</label><input type="time" name="startTime"></div><div class="input-group"><label>מחיר סגירה</label><input type="text" name="price"></div><div class="input-group"><label>סטטוס</label><select name="status"><option value="תהליך">בתהליך סגירה</option><option value="סגור">סגור (מאושר)</option><option value="הסתיים">הסתיים</option></select></div><div class="checkbox-group col-span-2"><label class="flex items-center gap-2 text-white font-bold"><input type="checkbox" name="hasKeyboard"> כולל קלידן</label><label class="flex items-center gap-2 text-white font-bold"><input type="checkbox" name="hasDrummers"> כולל מתופפים</label><label class="flex items-center gap-2 text-white font-bold text-pink-400"><input type="checkbox" name="isStudent"> תלמיד</label></div><div class="input-group col-span-1 md:col-span-2"><label>לינק למדיה</label><input type="text" name="mediaLink"></div><div class="input-group col-span-1 md:col-span-2"><label>הערות לצוות</label><textarea name="notes" class="h-32 notes-area"></textarea></div></form><div class="mt-8 flex justify-between items-center border-t border-slate-700 pt-6"><button type="button" onclick="deleteEvent()" class="text-red-500 font-bold px-4">מחק אירוע</button><button type="button" onclick="saveEvent()" class="bg-green-600 hover:bg-green-500 text-white font-bold py-3 px-10 rounded-xl text-lg shadow-lg">שמור</button></div></div></div></div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -642,7 +641,7 @@
                 'CUSTOM': { t: 'התאמה אישית', p: '', d: '' }
             };
             
-            // האזנה לאנטר בלוגין (V107)
+            // האזנה לאנטר בלוגין
             document.getElementById('uName').addEventListener('keypress', function(e) { if(e.key === 'Enter') login(); });
             document.getElementById('uPass').addEventListener('keypress', function(e) { if(e.key === 'Enter') login(); });
 
@@ -690,8 +689,9 @@
             window.saveChanges = () => { } 
             
             window.deleteEvent = async () => {
-                const id = document.forms['eventForm'].id.value;
-                if(!id) return;
+                const form = document.getElementById('eventForm');
+                const id = form.elements['id'].value;
+                if(!id || id === "") return;
                 
                 if(!await customConfirm("האם אתה בטוח שברצונך למחוק את האירוע?")) return;
                 
@@ -736,7 +736,7 @@
                     currentUser = user; 
                     onLoginSuccess(); 
                 } else if (u === 'manager' && p === '1234') { 
-                    currentUser = { role: 'manager', name: 'מנהל' }; 
+                    currentUser = { role: 'manager', name: 'אביב' }; 
                     onLoginSuccess(); 
                 } else { customAlert('פרטים שגויים'); }
             }
@@ -749,6 +749,9 @@
                 document.body.classList.add(currentUser.role === 'manager' ? 'admin-mode' : 'staff-mode');
                 document.getElementById('loginIcon').style.display = 'none'; 
                 
+                const header = document.getElementById('sideMenuHeader');
+                if(header) header.innerHTML = `<div class="text-amber-400 text-2xl font-black mb-4 pb-4 border-b border-slate-700 text-center">שלום, ${currentUser.name}! <i class="fas fa-smile-beam"></i></div>`;
+
                 const links = document.getElementById('managerLinks');
                 links.innerHTML = '';
                 
@@ -916,7 +919,7 @@
                              embedUrl = `https://player.vimeo.com/video/${vimeoId[1]}?title=0&byline=0&portrait=0&badge=0&autopause=0&player_id=0&app_id=58479`; 
                         }
                     } 
-                    // זיהוי YouTube - Facade Pattern (V107)
+                    // זיהוי YouTube 
                     else if (vid.url.includes('youtu')) {
                         let id = vid.url.includes('v=') ? vid.url.split('v=')[1].split('&')[0] : vid.url.split('youtu.be/')[1].split('?')[0];
                         embedUrl = `https://www.youtube.com/embed/${id}?autoplay=1&rel=0`;
@@ -962,7 +965,6 @@
                 window.openModal('lightboxModal'); 
             }
             
-            // תיקון דפדוף (V107)
             window.nextImage = (e) => {
                 if(e) e.stopPropagation(); 
                 currentLightboxIndex = (currentLightboxIndex + 1) % lightboxImageUrls.length;
@@ -976,7 +978,6 @@
             }
 
             let currentDate = new Date();
-            // ... (שאר הפונקציות זהות)
              function renderCalendar() {
                 const g = document.getElementById('calendarGrid'); 
                 if(!g) return;
@@ -1026,8 +1027,8 @@ if (!isBooked) { window.open(`https://wa.me/972559907076?text=${encodeURICompone
                     const evtDate = new Date(evt.date).getTime();
                     if (timeFilter === 'future' && evtDate < todayTime) return false;
                     if (timeFilter === 'past' && evtDate >= todayTime) return false;
-                    if (typeFilter === 'keyboard' && !evt.hasKeyboard) return false;
-                    if (typeFilter === 'drummers' && !evt.hasDrummers) return false;
+                    if (typeFilter === 'keyboard' && !(evt.hasKeyboard === true || String(evt.hasKeyboard).toUpperCase() === 'TRUE')) return false;
+                    if (typeFilter === 'drummers' && !(evt.hasDrummers === true || String(evt.hasDrummers).toUpperCase() === 'TRUE')) return false;
                     return true;
                 });
                 renderEventsBoard(filtered);
@@ -1051,15 +1052,19 @@ if (!isBooked) { window.open(`https://wa.me/972559907076?text=${encodeURICompone
                     
                     let badgesHtml = `<div class="floating-badges">`;
                     if(evt.packageType && evt.packageType.includes('הכל כלול')) badgesHtml += `<span class="special-badge badge-all-inclusive"><i class="fas fa-gem ml-1"></i> הכל כלול</span>`;
-                    if(evt.isStudent) badgesHtml += `<span class="special-badge badge-student"><i class="fas fa-graduation-cap ml-1"></i> תלמיד</span>`;
+                    
+                    // בדיקת סטטוס תלמיד
+                    let isStudentVal = evt.isStudent === true || String(evt.isStudent).toUpperCase() === 'TRUE';
+                    if(isStudentVal) badgesHtml += `<span class="special-badge badge-student"><i class="fas fa-graduation-cap ml-1"></i> תלמיד</span>`;
+                    
                     badgesHtml += `<span class="status-pill ${statusClass}">${evt.status}</span></div>`;
 
                     let nextEventClass = (evt.id === nextEventId) ? 'next-event' : '';
                     let nextEventLabel = (evt.id === nextEventId) ? '<div class="next-event-label">האירוע הבא</div>' : '';
 
                     let compBadges = '';
-                    if(evt.hasKeyboard) compBadges += `<span class="comp-badge comp-badge-key"><i class="fas fa-music"></i> קלידן</span>`;
-                    if(evt.hasDrummers) compBadges += `<span class="comp-badge comp-badge-drum"><i class="fas fa-drum"></i> מתופפים</span>`;
+                    if(evt.hasKeyboard === true || String(evt.hasKeyboard).toUpperCase() === 'TRUE') compBadges += `<span class="comp-badge comp-badge-key"><i class="fas fa-music"></i> קלידן</span>`;
+                    if(evt.hasDrummers === true || String(evt.hasDrummers).toUpperCase() === 'TRUE') compBadges += `<span class="comp-badge comp-badge-drum"><i class="fas fa-drum"></i> מתופפים</span>`;
 
                     let cardHtml = `
                         <div class="event-card ${nextEventClass}">
@@ -1103,14 +1108,12 @@ if (!isBooked) { window.open(`https://wa.me/972559907076?text=${encodeURICompone
                 });
             }
 
-            // תיקון ניהול תשלומים (V107) - לוגיקה עמידה יותר לשגיאות
             function renderPaymentsBoard() {
                 const board = document.getElementById('paymentsBoard');
                 if(!board) return;
                 board.innerHTML = '';
                 
                 events.forEach(evt => {
-                    // הגנה: וודא שיש אובייקט תשלומים תקין לפני גישה
                     let payments = evt.payments || {};
                     let client = payments.client || { downPayment: false, fullPayment: false };
                     let staff = payments.staff || {};
@@ -1250,14 +1253,21 @@ if (!isBooked) { window.open(`https://wa.me/972559907076?text=${encodeURICompone
             window.openEventEditor = (id) => {
                 const form = document.getElementById('eventForm');
                 form.reset();
-                if (id) {
+                form.elements['id'].value = ""; // FIX: מונע דריסת ID קודם
+
+                if (id && typeof id !== 'object') {
                     const evt = events.find(e => e.id == id);
                     if(evt) {
+                        form.elements['id'].value = evt.id; // השמת ה-ID של האירוע הקיים לעריכה
                         form.eventName.value = evt.eventName || ''; 
                         for (let key in evt) { 
                             if(form.elements[key]) {
-                                if(form.elements[key].type === 'checkbox') form.elements[key].checked = evt[key];
-                                else if(key !== 'eventName') form.elements[key].value = evt[key];
+                                if(form.elements[key].type === 'checkbox') {
+                                    form.elements[key].checked = (evt[key] === true || String(evt[key]).toUpperCase() === 'TRUE');
+                                }
+                                else if(key !== 'eventName' && key !== 'id') {
+                                    form.elements[key].value = evt[key];
+                                }
                             }
                         }
                     }
@@ -1268,8 +1278,7 @@ if (!isBooked) { window.open(`https://wa.me/972559907076?text=${encodeURICompone
 
             window.saveEvent = () => {
                 const form = document.getElementById('eventForm');
-                const id = form.id.value;
-                let evt = events.find(e => e.id == id);
+                const id = form.elements['id'].value;
                 
                 const eventData = {
                     eventName: form.eventName.value, 
@@ -1286,16 +1295,19 @@ if (!isBooked) { window.open(`https://wa.me/972559907076?text=${encodeURICompone
                     price: form.price.value,
                     status: form.status.value,
                     mediaLink: form.mediaLink.value,
-                    notes: form.notes.value
+                    notes: form.notes.value,
+                    hasKeyboard: form.hasKeyboard.checked,
+                    hasDrummers: form.hasDrummers.checked,
+                    isStudent: form.isStudent.checked // FIX: שמירת מידע תלמיד
                 };
 
-                if (id) {
+                if (id && id !== "") {
                     eventData.action = 'saveEvent';
                     eventData.id = id;
                 } else {
                     eventData.action = 'createEvent';
-                    eventData.id = 'evt-' + Date.now();
-                    eventData.payments = { client: {}, staff: {} }; // אתחול קריטי
+                    eventData.id = 'evt-' + Date.now(); // FIX: ייצור ID חדש לייחודיות
+                    eventData.payments = { client: {}, staff: {} }; 
                 }
                 
                 if(API_URL.includes("http")) {
@@ -1459,7 +1471,7 @@ if (!isBooked) { window.open(`https://wa.me/972559907076?text=${encodeURICompone
             // Init Load
             async function loadData() {
                 try {
-                    showLoader(); // מראה טעינה בטעינת האתר
+                    showLoader(); 
                     if(!API_URL.includes("http")) throw new Error("No API");
                     const response = await fetch(API_URL);
                     const data = await response.json();
@@ -1470,7 +1482,6 @@ if (!isBooked) { window.open(`https://wa.me/972559907076?text=${encodeURICompone
                         if(siteConfig.heroVideo) document.getElementById('promoIframe').src = siteConfig.heroVideo;
                         if(siteConfig.heroImage) document.getElementById('bg-image-layer').style.backgroundImage = `url('${siteConfig.heroImage}')`;
                         
-                        // עדכון הקישורים החברתיים (כפי שביקשת)
                         if(siteConfig['social-fb']) document.getElementById('link-fb').href = siteConfig['social-fb'];
                         if(siteConfig['social-yt']) document.getElementById('link-yt').href = siteConfig['social-yt'];
                         if(siteConfig['social-ig']) document.getElementById('link-ig').href = siteConfig['social-ig'];
@@ -1481,7 +1492,7 @@ if (!isBooked) { window.open(`https://wa.me/972559907076?text=${encodeURICompone
                     if (data.users) users = data.users;
                     
                     bookedDates = events.map(e => e.date);
-                    hideLoader(); // מסתיר
+                    hideLoader(); 
 
                 } catch (error) {
                     hideLoader();
@@ -1498,7 +1509,3 @@ if (!isBooked) { window.open(`https://wa.me/972559907076?text=${encodeURICompone
     </script>
 </body>
 </html>
-
-
-
-
