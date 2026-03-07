@@ -12,7 +12,6 @@
         // *** הקישור לשרת ה-Google Apps Script שלך ***
         const API_URL = "https://script.google.com/macros/s/AKfycbxxLLK5-IMuApks3P24ZLNdXTAC86U6JIalRPqxqAldb97nsuHEP7Xb-Jgd8p3jXQVB_g/exec?mode=api";
     </script>
-
     <style>
         /* --- בסיס --- */
         html { font-size: 14px; }
@@ -812,13 +811,8 @@
                 const u = document.getElementById('uName').value;
                 const p = document.getElementById('uPass').value;
                 
-                let user = users.find(usr => usr.username === u && usr.password == p); 
-
-                // גיבוי תפקידים אם לא הוגדר באקסל
-                if (!user) {
-                    if (u === 'aviv' && p === '1234') user = { role: 'superadmin', name: 'אביב' };
-                    else if (u === 'manager' && p === '1234') user = { role: 'manager', name: 'מנהלת אירועים' };
-                }
+                // חיפוש המשתמש אך ורק מתוך הנתונים שהגיעו מגיליון Users באקסל
+                let user = users.find(usr => usr.username === u && String(usr.password) === p); 
 
                 if (user) { 
                     currentUser = user; 
@@ -1447,8 +1441,8 @@
                         <h3 class="text-xl font-bold text-amber-400 border-b border-slate-700 pb-2 mb-4">${pkg.title}</h3>`;
                     
                     // כולם רואים מחיר בסיס ומקסימום הנחה
-                    html += buildPriceRow(`price${pkg.id}`, 'מחיר סגירה', pricingData[`price${pkg.id}`] || siteConfig[`price${pkg.id}`] || '', isSuper, true);
-                    html += buildPriceRow(`discount${pkg.id}`, 'מקסימום הנחה', pricingData[`discount${pkg.id}`] || '', isSuper, false);
+                    html += buildPriceRow(`price${pkg.id}`, 'מחיר סגירה מומלץ', pricingData[`price${pkg.id}`] || siteConfig[`price${pkg.id}`] || '', isSuper, true);
+                    html += buildPriceRow(`discount${pkg.id}`, 'מקסימום הנחה מותרת', pricingData[`discount${pkg.id}`] || '', isSuper, false);
                     
                     // רק אביב רואה תשלומים לצוות
                     if (isSuper) {
@@ -1456,7 +1450,7 @@
                         html += buildPriceRow(`payKey${pkg.id}`, 'תשלום לקלידן', pricingData[`payKey${pkg.id}`] || '', true, false);
                         html += buildPriceRow(`paySound${pkg.id}`, 'תשלום לסאונד', pricingData[`paySound${pkg.id}`] || '', true, false);
                         html += buildPriceRow(`payMgr${pkg.id}`, 'תשלום למנהלת', pricingData[`payMgr${pkg.id}`] || '', true, false);
-                        html += buildPriceRow(`payAviv${pkg.id}`, 'תשלום לאביב', pricingData[`payAviv${pkg.id}`] || '', true, false);
+                        html += buildPriceRow(`payAviv${pkg.id}`, 'נשאר לאביב', pricingData[`payAviv${pkg.id}`] || '', true, false);
                         html += `</div>`;
                     }
                     html += `</div>`;
