@@ -10,7 +10,7 @@
 
     <script>
         // *** הקישור לשרת ה-Google Apps Script שלך ***
-        const API_URL = "https://script.google.com/macros/s/AKfycbxxLLK5-IMuApks3P24ZLNdXTAC86U6JIalRPqxqAldb97nsuHEP7Xb-Jgd8p3jXQVB_g/exec?mode=api";
+        const API_URL = "https://script.google.com/macros/s/AKfycbwrFUfCULjOj3nG3Nd70IH5cW6CCWOo09W-5TrUjq-pAyhhxgd0-REp4pQaY_C7LFop/exec?mode=api";
     </script>
 
     <style>
@@ -18,36 +18,15 @@
         html { font-size: 14px; }
         body { font-family: 'Heebo', sans-serif; background-color: #051c42; color: #ffffff; min-height: 100vh; overflow-x: hidden; margin: 0; padding: 0; display: flex; flex-direction: column; }
         
-        /* --- תיקון רקע קריטי ל-WIX --- */
-        #fixed-background {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1;
-            background-image: linear-gradient(180deg, #051c42 0%, #021029 100%);
-            pointer-events: none;
-        }
-        #bg-image-layer {
-            width: 100%; height: 100%;
-            background-size: cover; background-position: center top; background-repeat: no-repeat;
-            background-attachment: scroll;
-        }
+        #fixed-background { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; background-image: linear-gradient(180deg, #051c42 0%, #021029 100%); pointer-events: none; }
+        #bg-image-layer { width: 100%; height: 100%; background-size: cover; background-position: center top; background-repeat: no-repeat; background-attachment: scroll; }
 
         body.no-scroll { overflow: hidden !important; height: 100vh; }
         .gold-text { background: linear-gradient(45deg, #fbbf24, #d97706); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 900; text-shadow: 0px 0px 20px rgba(251, 191, 36, 0.3); }
 
         /* --- Loader --- */
-        #globalLoader {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.8); z-index: 9999999;
-            display: none; justify-content: center; align-items: center; flex-direction: column;
-            backdrop-filter: blur(5px);
-        }
-        .spinner {
-            border: 6px solid rgba(255, 255, 255, 0.3);
-            border-top: 6px solid #fbbf24;
-            border-radius: 50%;
-            width: 60px; height: 60px;
-            animation: spin 1s linear infinite;
-            margin-bottom: 20px;
-        }
+        #globalLoader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); z-index: 9999999; display: none; justify-content: center; align-items: center; flex-direction: column; backdrop-filter: blur(5px); }
+        .spinner { border: 6px solid rgba(255, 255, 255, 0.3); border-top: 6px solid #fbbf24; border-radius: 50%; width: 60px; height: 60px; animation: spin 1s linear infinite; margin-bottom: 20px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         /* --- כרטיסיות חבילות --- */
@@ -83,7 +62,7 @@
         .menu-overlay.show { display: block; }
         .menu-item { background: #1e293b; color: white; padding: 15px; border-radius: 12px; text-align: right; cursor: pointer; border: 1px solid #334155; display: flex; align-items: center; gap: 15px; font-weight: bold; font-size: 1.1rem; }
 
-        /* --- כרטיס אירוע מודרני מובהר (הפרדה מהרקע) --- */
+        /* --- כרטיס אירוע מודרני מובהר --- */
         .event-card { 
             background: linear-gradient(145deg, rgba(40, 56, 84, 0.9), rgba(15, 23, 42, 0.95)); 
             backdrop-filter: blur(12px);
@@ -96,12 +75,7 @@
             color: #f8fafc; 
             margin-bottom: 2rem; 
         }
-        .event-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.8), 0 0 20px rgba(251, 191, 36, 0.2);
-            border-top: 1px solid rgba(251, 191, 36, 0.8);
-            border-color: rgba(96, 165, 250, 0.4);
-        }
+        .event-card:hover { transform: translateY(-8px); box-shadow: 0 20px 40px rgba(0,0,0,0.8), 0 0 20px rgba(251, 191, 36, 0.2); border-top: 1px solid rgba(251, 191, 36, 0.8); border-color: rgba(96, 165, 250, 0.4); }
         .next-event-label { position: absolute; top: 0; left: 50%; transform: translateX(-50%); background: linear-gradient(to right, #fbbf24, #f59e0b); color: #000; font-weight: 900; padding: 6px 20px; border-bottom-left-radius: 1rem; border-bottom-right-radius: 1rem; z-index: 10; font-size: 0.9rem; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4); letter-spacing: 0.5px; }
         .card-header { background: transparent; padding: 2.5rem 1.5rem 1rem 1.5rem; display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid rgba(255,255,255,0.08); }
         .date-badge { background: linear-gradient(135deg, #f59e0b, #d97706); border: none; color: #fff; padding: 10px 20px; border-radius: 1rem; text-align: center; font-weight: 900; box-shadow: 0 8px 20px rgba(217, 119, 6, 0.4); }
@@ -143,11 +117,7 @@
         
         /* --- גלריה ויומן --- */
         .marquee-wrapper { overflow: hidden; width: 100%; position: relative; direction: ltr; }
-        
-        .marquee-track { 
-            display: flex; width: max-content; gap: 0; 
-            animation: scroll-loop 200s linear infinite; 
-        }
+        .marquee-track { display: flex; width: max-content; gap: 0; animation: scroll-loop 200s linear infinite; }
         .marquee-track:hover { animation-play-state: paused; }
         @keyframes scroll-loop { 0% { transform: translateX(-50%); } 100% { transform: translateX(0%); } }
         
@@ -162,16 +132,7 @@
         body.admin-mode .calendar-day:hover { transform: scale(1.1); cursor: pointer; border-color: white; }
         
         /* --- וידאו ורקע --- */
-        .promo-video-container { 
-            width: 98%; max-width: 1800px; 
-            margin: 30px auto; 
-            border-radius: 20px; overflow: hidden; 
-            box-shadow: 0 20px 50px rgba(0,0,0,0.7); 
-            border: 2px solid #334155; 
-            position: relative; 
-            background: black;
-            aspect-ratio: 21/9; 
-        }
+        .promo-video-container { width: 98%; max-width: 1800px; margin: 30px auto; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.7); border: 2px solid #334155; position: relative; background: black; aspect-ratio: 21/9; }
         .promo-video-iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
         .sound-toggle-btn { position: absolute; bottom: 15px; left: 15px; background: rgba(0,0,0,0.6); color: white; border: 1px solid rgba(255,255,255,0.5); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 50; }
         
@@ -184,14 +145,7 @@
 
         /* --- מודאלים --- */
         .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 50000; justify-content: center; align-items: center; backdrop-filter: blur(5px); padding: 10px; }
-        .modal-content { 
-            background: #0f172a; padding: 0; border-radius: 1.5rem; border: 1px solid #334155; 
-            width: 95% !important; max-width: 600px; 
-            max-height: 85vh; overflow-y: auto; 
-            overscroll-behavior: contain;
-            position: relative; margin: auto;
-            display: flex; flex-direction: column;
-        }
+        .modal-content { background: #0f172a; padding: 0; border-radius: 1.5rem; border: 1px solid #334155; width: 95% !important; max-width: 600px; max-height: 85vh; overflow-y: auto; overscroll-behavior: contain; position: relative; margin: auto; display: flex; flex-direction: column; }
         #paymentModal .modal-content { max-width: 900px; }
         #proposalSetupModal .modal-content { max-width: 700px; }
         #eventEditor .modal-content { max-width: 800px; }
@@ -207,17 +161,7 @@
         .checkbox-group { display: flex; gap: 15px; align-items: center; background: #1e293b; padding: 10px; border-radius: 8px; border: 1px solid #475569; flex-wrap: wrap; }
         .checkbox-group input { width: 20px; height: 20px; accent-color: #fbbf24; }
         
-        /* חצים לגלריה */
-        .lightbox-nav {
-            position: absolute; top: 50%; transform: translateY(-50%);
-            background: rgba(0,0,0,0.5); color: white;
-            border: none; padding: 15px; cursor: pointer;
-            font-size: 2rem; z-index: 100;
-            transition: 0.3s;
-            border-radius: 50%;
-            width: 60px; height: 60px;
-            display: flex; align-items: center; justify-content: center;
-        }
+        .lightbox-nav { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); color: white; border: none; padding: 15px; cursor: pointer; font-size: 2rem; z-index: 100; transition: 0.3s; border-radius: 50%; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; }
         .lightbox-nav:hover { background: #fbbf24; color: black; }
         .lightbox-prev { left: 20px; }
         .lightbox-next { right: 20px; }
@@ -227,7 +171,6 @@
             html { font-size: 12px; }
             .container { padding-left: 1rem; padding-right: 1rem; }
             .form-grid { grid-template-columns: 1fr; } 
-            
             .gallery-item { width: 300px !important; height: 200px !important; flex-shrink: 0; margin: 0 5px; }
             .gallery-img { height: 100% !important; width: 100% !important; object-fit: cover !important; border-radius: 8px !important; }
             .promo-video-container { width: 100% !important; margin: 10px auto 20px auto !important; aspect-ratio: 1 / 1 !important; border-radius: 0 !important; border-left: none !important; border-right: none !important; }
@@ -266,7 +209,8 @@
     <div id="loggedInMenuBtn" onclick="toggleSideMenu()" class="auth-only"><i class="fas fa-bars"></i></div>
     <div id="menuOverlay" class="menu-overlay" onclick="toggleSideMenu()"></div>
     <div id="sideMenu">
-        <div id="sideMenuHeader"></div> <div class="text-3xl font-bold text-white mb-8 pb-4 border-b border-slate-700 text-center">תפריט ניהול</div>
+        <div id="sideMenuHeader"></div>
+        <div class="text-3xl font-bold text-white mb-8 pb-4 border-b border-slate-700 text-center">תפריט ניהול</div>
         <div id="managerLinks" class="flex flex-col gap-4"></div>
         <div class="mt-auto pt-8">
             <div class="menu-item bg-red-900/50 hover:bg-red-900 border-red-800 justify-center" onclick="logout()"><i class="fas fa-sign-out-alt"></i> יציאה</div>
@@ -544,7 +488,7 @@
                     <div class="bg-slate-800 p-5 rounded-xl mb-6 border border-slate-700 shadow-lg">
                         <h4 class="text-xl font-bold text-amber-400 mb-4 border-b border-slate-600 pb-2"><i class="fas fa-user-tie ml-2"></i>תשלום מלקוח</h4>
                         
-                        <div class="mb-5 bg-slate-900/50 p-4 rounded-lg">
+                        <div class="mb-5 bg-slate-900/50 p-4 rounded-lg border border-slate-700">
                             <label class="flex items-center gap-3 text-white text-lg cursor-pointer mb-3 font-bold">
                                 <input type="checkbox" id="payClientDeposit" class="w-6 h-6 accent-green-500" onchange="document.getElementById('depositDetailsContainer').style.display = this.checked ? 'flex' : 'none'"> 
                                 שולמה מקדמה
@@ -565,10 +509,14 @@
                         </div>
 
                         <div class="mb-4">
-                            <label class="block text-slate-300 mb-2 font-bold"><i class="fas fa-link ml-1"></i> לינק לקבלה דיגיטלית:</label>
+                            <label class="block text-slate-300 mb-2 font-bold"><i class="fas fa-link ml-1"></i> קישורים לקבלות דיגיטליות:</label>
+                            <div class="flex gap-2 mb-2">
+                                <input type="text" id="payReceiptLink1" placeholder="לינק לקבלה 1..." class="w-full bg-slate-900 text-white p-3 rounded border border-slate-600 focus:border-amber-400 outline-none">
+                                <a href="#" id="openReceiptBtn1" target="_blank" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded flex items-center justify-center transition" title="פתח קבלה" style="display:none;"><i class="fas fa-external-link-alt"></i></a>
+                            </div>
                             <div class="flex gap-2">
-                                <input type="text" id="payReceiptLink" placeholder="הדבק קישור לקבלה כאן..." class="w-full bg-slate-900 text-white p-3 rounded border border-slate-600 focus:border-amber-400 outline-none">
-                                <a href="#" id="openReceiptBtn" target="_blank" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded flex items-center justify-center transition" title="פתח קבלה" style="display:none;"><i class="fas fa-external-link-alt"></i></a>
+                                <input type="text" id="payReceiptLink2" placeholder="לינק לקבלה 2 (אם יש)..." class="w-full bg-slate-900 text-white p-3 rounded border border-slate-600 focus:border-amber-400 outline-none">
+                                <a href="#" id="openReceiptBtn2" target="_blank" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded flex items-center justify-center transition" title="פתח קבלה" style="display:none;"><i class="fas fa-external-link-alt"></i></a>
                             </div>
                         </div>
 
@@ -582,13 +530,23 @@
 
                     <div id="staffPaymentsContainer" class="bg-slate-800 p-5 rounded-xl border border-slate-700 shadow-lg hidden">
                         <h4 class="text-xl font-bold text-blue-400 mb-4 border-b border-slate-600 pb-2"><i class="fas fa-users ml-2"></i>תשלומים לאנשי צוות</h4>
-                        
                         <div id="staffPaymentsList" class="flex flex-col gap-4"></div>
                     </div>
 
                     <button type="button" onclick="savePaymentData()" class="w-full bg-green-600 hover:bg-green-500 text-white font-black py-4 rounded-xl mt-6 shadow-[0_0_15px_rgba(34,197,94,0.3)] transition text-lg">שמור נתוני תשלומים</button>
                 </form>
             </div>
+        </div>
+    </div>
+
+    <div id="myPaymentsModal" class="modal-overlay">
+        <div class="modal-content !max-w-2xl bg-slate-900 border border-green-500/50">
+            <div class="modal-header">
+                <h3 class="text-2xl font-bold text-white"><i class="fas fa-wallet text-green-400 ml-2"></i>היסטוריית התשלומים שלי</h3>
+                <button onclick="closeModal('myPaymentsModal')" class="text-white hover:text-green-400 text-2xl"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body" id="myPaymentsBody">
+                </div>
         </div>
     </div>
 
@@ -819,7 +777,7 @@
                 if (!isAdmin || currentUser.role !== 'superadmin') return true;
                 event.preventDefault(); 
                 const currentVal = siteConfig[key] || '';
-                const newVal = prompt("הכנס קישור חדש:", currentVal);
+                const newVal = prompt("הכנס קישור חדש (למשל ספוטיפיי/פייסבוק):", currentVal);
                 
                 if (newVal !== null && newVal !== currentVal) {
                     siteConfig[key] = newVal;
@@ -829,7 +787,7 @@
                         fetch(API_URL, {
                             method: 'POST',
                             body: JSON.stringify({ action: 'updateConfig', key: key, value: newVal })
-                        }).then(() => { loadData(); });
+                        }).then(() => { hideLoader(); customAlert("הלינק עודכן בהצלחה!"); });
                     }
                 }
             }
@@ -866,34 +824,41 @@
                 if(header) header.innerHTML = `<div class="text-amber-400 text-2xl font-black mb-4 pb-4 border-b border-slate-700 text-center">שלום ${currentUser.name}! <i class="fas fa-smile-beam"></i></div>`;
 
                 const links = document.getElementById('managerLinks');
+                let menuHtml = '';
                 
+                // 1. מנהלים - הוסף אירוע
                 if (isAdmin) {
-                    toggleEditMode();
+                    menuHtml += `<div class="menu-item" onclick="openEventEditor()"><i class="fas fa-plus-circle text-green-400 text-2xl"></i> הוסף אירוע</div>`;
                     document.getElementById('filterStatus').classList.remove('hidden'); 
-                    
-                    // בניית התפריט הדינמי לפי הרשאות
-                    let menuHtml = `
-                        <div class="menu-item" onclick="openEventEditor()"><i class="fas fa-plus-circle text-green-400 text-2xl"></i> הוסף אירוע</div>
-                        <div class="menu-item" onclick="scrollToEvents()"><i class="fas fa-th-large text-blue-400 text-2xl"></i> לוח אירועים</div>
-                    `;
-                    
-                    // תשלומים - רק לאביב
-                    if (currentUser.role === 'superadmin') {
-                        document.getElementById('paymentsSection').classList.remove('hidden');
-                        menuHtml += `<div class="menu-item" onclick="scrollToPayments()"><i class="fas fa-shekel-sign text-amber-400 text-2xl"></i> תשלומים</div>`;
-                    }
-                    
+                }
+                
+                // 2. כולם - לוח אירועים
+                menuHtml += `<div class="menu-item" onclick="scrollToEvents()"><i class="fas fa-th-large text-blue-400 text-2xl"></i> לוח אירועים</div>`;
+                
+                // 3. צוות (כולל מנהלת) - פלייליסט אירועים
+                if (currentUser.role !== 'superadmin') {
+                    menuHtml += `<a href="https://livestage.netlify.app/" target="_blank" class="menu-item" style="text-decoration: none;"><i class="fas fa-music text-pink-400 text-2xl"></i> פלייליסט אירועים</a>`;
+                }
+
+                // 4. כולם - היסטוריית תשלומים אישית
+                menuHtml += `<div class="menu-item" onclick="openMyPayments()"><i class="fas fa-wallet text-green-400 text-2xl"></i> היסטוריית התשלומים שלי</div>`;
+                
+                // 5. תשלומים והגדרות אדמין (אביב)
+                if (currentUser.role === 'superadmin') {
+                    document.getElementById('paymentsSection').classList.remove('hidden');
+                    menuHtml += `<div class="menu-item" onclick="scrollToPayments()"><i class="fas fa-shekel-sign text-amber-400 text-2xl"></i> ניהול תשלומים למערכת</div>`;
+                }
+                
+                // 6. מנהלים - כלים
+                if (isAdmin) {
                     menuHtml += `
                         <div class="menu-item" onclick="openWhatsAppTool()"><i class="fab fa-whatsapp text-green-500 text-2xl"></i> שליחת טפסים</div>
                         <div class="menu-item" onclick="openProposalTool()"><i class="fas fa-file-invoice text-amber-400 text-2xl"></i> הצעת מחיר A3</div>
                         <div class="menu-item" onclick="openPriceListEditor()"><i class="fas fa-tags text-purple-400 text-2xl"></i> מחירון המערכת</div>
                     `;
-                    
-                    links.innerHTML = menuHtml;
-
-                } else {
-                    links.innerHTML = `<div class="menu-item" onclick="scrollToEvents()"><i class="fas fa-th-large text-blue-400 text-2xl"></i> לוח אירועים</div>`;
                 }
+                
+                links.innerHTML = menuHtml;
                 
                 document.getElementById('filterTime').value = 'future';
                 filterEvents();
@@ -902,7 +867,7 @@
             }
 
             function toggleEditMode() {
-                if (currentUser.role === 'superadmin') {
+                if (currentUser && currentUser.role === 'superadmin') {
                     document.querySelectorAll('[contenteditable]').forEach(el => {
                         el.contentEditable = true;
                         el.classList.add('editable-active');
@@ -914,6 +879,77 @@
 
             window.scrollToEvents = () => { document.getElementById('eventsBoardSection').scrollIntoView({ behavior: 'smooth' }); window.closeSideMenu(); }
             window.scrollToPayments = () => { document.getElementById('paymentsSection').scrollIntoView({ behavior: 'smooth' }); window.closeSideMenu(); }
+
+            window.openMyPayments = () => {
+                window.closeSideMenu();
+                const body = document.getElementById('myPaymentsBody');
+                body.innerHTML = '';
+
+                let jobKey = null;
+                if(currentUser.role === 'superadmin') {
+                    jobKey = 'aviv';
+                } else if(currentUser.job) {
+                    if(currentUser.job.includes('קלידן')) jobKey = 'keyboard';
+                    else if(currentUser.job.includes('מתופף')) jobKey = 'drummer';
+                    else if(currentUser.job.includes('סאונד')) jobKey = 'sound';
+                    else if(currentUser.job.includes('מנהלת')) jobKey = 'manager';
+                }
+                
+                if(!jobKey) {
+                    body.innerHTML = '<div class="text-center text-red-400 p-6 font-bold">לא הוגדר תפקיד במערכת. אנא ודא שעמודת "תפקיד" באקסל מלאה.</div>';
+                    window.openModal('myPaymentsModal');
+                    return;
+                }
+
+                let total = 0;
+                let html = '<div class="flex flex-col gap-3">';
+                const myPayments = [];
+                
+                events.forEach(evt => {
+                    if(evt.payments && evt.payments.staff && evt.payments.staff[jobKey]) {
+                        const p = evt.payments.staff[jobKey];
+                        if(p.paid && p.amount > 0 && p.attended !== false) {
+                            myPayments.push({
+                                eventName: evt.eventName || evt.location,
+                                date: p.date || evt.date,
+                                amount: Number(p.amount),
+                                method: p.method || 'לא צוין'
+                            });
+                        }
+                    }
+                });
+
+                myPayments.sort((a,b) => new Date(b.date) - new Date(a.date));
+
+                if(myPayments.length === 0) {
+                    html += '<div class="text-center text-slate-400 p-6 text-lg">טרם התקבלו או הוזנו תשלומים עבורך.</div>';
+                } else {
+                    myPayments.forEach(p => {
+                        total += p.amount;
+                        html += `
+                            <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 flex justify-between items-center shadow-md hover:bg-slate-700 transition">
+                                <div>
+                                    <div class="text-white font-bold text-lg mb-1">${p.eventName}</div>
+                                    <div class="text-slate-400 text-sm"><i class="far fa-calendar-alt ml-1"></i> ${p.date} &nbsp;•&nbsp; <i class="fas fa-money-check-alt ml-1"></i> ${p.method}</div>
+                                </div>
+                                <div class="text-green-400 font-black text-2xl">${p.amount} ₪</div>
+                            </div>
+                        `;
+                    });
+                }
+                html += '</div>';
+
+                html = `
+                    <div class="bg-slate-800 p-5 rounded-xl border border-green-500/50 mb-6 text-center shadow-[0_0_15px_rgba(34,197,94,0.2)]">
+                        <div class="text-slate-300 font-bold mb-2">סך הכל שהתקבל</div>
+                        <div class="text-5xl font-black text-green-400">${total} ₪</div>
+                    </div>
+                    ${html}
+                `;
+
+                body.innerHTML = html;
+                window.openModal('myPaymentsModal');
+            }
 
             window.toggleSound = () => {
                 const iframe = document.getElementById('promoIframe');
@@ -1173,14 +1209,15 @@
                     const day = dateObj.getDate();
                     const month = dateObj.toLocaleString('he-IL', { month: 'short' });
                     let statusClass = evt.status === 'סגור' ? 'status-sagoor' : (evt.status === 'הסתיים' ? 'status-done' : 'status-process');
-                    
+                    let displayStatus = evt.status === 'תהליך' ? 'בתהליך סגירה' : evt.status;
+
                     let badgesHtml = `<div class="floating-badges">`;
                     if(evt.packageType && evt.packageType.includes('הכל כלול')) badgesHtml += `<span class="special-badge badge-all-inclusive"><i class="fas fa-gem ml-1"></i> הכל כלול</span>`;
                     
                     let isStudentVal = evt.isStudent === true || String(evt.isStudent).toUpperCase() === 'TRUE';
                     if(isStudentVal) badgesHtml += `<span class="special-badge badge-student"><i class="fas fa-graduation-cap ml-1"></i> תלמיד</span>`;
                     
-                    badgesHtml += `<span class="status-pill ${statusClass}">${evt.status}</span></div>`;
+                    badgesHtml += `<span class="status-pill ${statusClass}">${displayStatus}</span></div>`;
 
                     let nextEventClass = (evt.id === nextEventId) ? 'next-event' : '';
                     let nextEventLabel = (evt.id === nextEventId) ? '<div class="next-event-label">האירוע הבא</div>' : '';
@@ -1249,6 +1286,7 @@
                     } else {
                         const clientOK = client.fullPayment;
                         const staffOK = Object.values(staff).every(s => {
+                            if (s.attended === false) return true; // אם לא נכח, לא מצפים לתשלום
                             if (s.amount && s.amount > 0) return s.paid;
                             return true; 
                         });
@@ -1285,6 +1323,21 @@
                 }
             }
 
+            window.toggleStaffAttendance = (roleKey) => {
+                const isChecked = document.getElementById(`pay_${roleKey}_attended`).checked;
+                const fieldsDiv = document.getElementById(`pay_${roleKey}_fields`);
+                const checkPaid = document.getElementById(`pay_${roleKey}_check`);
+                
+                if(isChecked) {
+                    fieldsDiv.classList.remove('opacity-50', 'pointer-events-none');
+                    checkPaid.disabled = false;
+                } else {
+                    fieldsDiv.classList.add('opacity-50', 'pointer-events-none');
+                    checkPaid.disabled = true;
+                    checkPaid.checked = false;
+                }
+            }
+
             window.openPaymentModal = (eventId) => {
                 const evt = events.find(e => e.id == eventId);
                 if(!evt) return;
@@ -1307,16 +1360,18 @@
                 document.getElementById('payDepositNotes').value = depData.notes || '';
                 togglePayMethodNotes('payDepositMethod', 'payDepositNotes');
                 
-                // קבלה
-                const receiptLinkInput = document.getElementById('payReceiptLink');
-                const openReceiptBtn = document.getElementById('openReceiptBtn');
-                receiptLinkInput.value = client.receiptLink || '';
+                // קבלות
+                document.getElementById('payReceiptLink1').value = client.receiptLink || '';
                 if(client.receiptLink) {
-                    openReceiptBtn.href = client.receiptLink;
-                    openReceiptBtn.style.display = 'flex';
-                } else {
-                    openReceiptBtn.style.display = 'none';
-                }
+                    document.getElementById('openReceiptBtn1').href = client.receiptLink;
+                    document.getElementById('openReceiptBtn1').style.display = 'flex';
+                } else { document.getElementById('openReceiptBtn1').style.display = 'none'; }
+
+                document.getElementById('payReceiptLink2').value = client.receiptLink2 || '';
+                if(client.receiptLink2) {
+                    document.getElementById('openReceiptBtn2').href = client.receiptLink2;
+                    document.getElementById('openReceiptBtn2').style.display = 'flex';
+                } else { document.getElementById('openReceiptBtn2').style.display = 'none'; }
                 
                 const fullPayContainer = document.getElementById('payClientFullContainer');
                 const staffContainer = document.getElementById('staffPaymentsContainer');
@@ -1337,18 +1392,26 @@
                     ];
                     
                     roles.forEach(role => {
-                        const data = staff[role.key] || { paid: false, amount: '', date: '', method: '', notes: '' };
+                        const data = staff[role.key] || { paid: false, amount: '', date: '', method: '', notes: '', attended: true };
+                        const attended = data.attended !== false; // ברירת מחדל true
                         let showNotes = data.method === 'אחר' ? '' : 'hidden';
+                        let disabledState = attended ? '' : 'disabled';
+                        let opacityState = attended ? '' : 'opacity-50 pointer-events-none';
                         
                         staffList.innerHTML += `
-                            <div class="bg-slate-700/40 p-4 rounded-xl border border-slate-600">
+                            <div class="bg-slate-700/40 p-4 rounded-xl border border-slate-600 relative">
                                 <div class="flex justify-between items-center mb-3">
-                                    <span class="font-black text-lg text-amber-400">${role.label}</span>
+                                    <div class="flex items-center gap-4">
+                                        <span class="font-black text-lg text-amber-400">${role.label}</span>
+                                        <label class="flex items-center gap-1 text-sm text-gray-300 cursor-pointer">
+                                            <input type="checkbox" id="pay_${role.key}_attended" onchange="toggleStaffAttendance('${role.key}')" ${attended ? 'checked' : ''} class="w-4 h-4 accent-blue-500"> השתתף באירוע
+                                        </label>
+                                    </div>
                                     <label class="flex items-center gap-2 text-white cursor-pointer font-bold bg-slate-900 px-3 py-1 rounded-lg border border-slate-700">
-                                        <input type="checkbox" class="w-5 h-5 accent-green-500" id="pay_${role.key}_check" ${data.paid ? 'checked' : ''}> שולם
+                                        <input type="checkbox" class="w-5 h-5 accent-green-500" id="pay_${role.key}_check" ${data.paid ? 'checked' : ''} ${disabledState}> שולם
                                     </label>
                                 </div>
-                                <div class="grid grid-cols-2 gap-3">
+                                <div class="grid grid-cols-2 gap-3 ${opacityState}" id="pay_${role.key}_fields">
                                     <input type="number" placeholder="סכום (₪)" class="bg-slate-900 text-white p-2 rounded-lg border border-slate-600 outline-none focus:border-blue-400" id="pay_${role.key}_amount" value="${data.amount || ''}">
                                     <input type="date" class="bg-slate-900 text-white p-2 rounded-lg border border-slate-600 outline-none focus:border-blue-400" id="pay_${role.key}_date" value="${data.date || ''}" title="תאריך">
                                     <select class="bg-slate-900 text-white p-2 rounded-lg border border-slate-600 outline-none focus:border-blue-400 col-span-2 md:col-span-1" id="pay_${role.key}_method" onchange="togglePayMethodNotes('pay_${role.key}_method', 'pay_${role.key}_notes')">
@@ -1386,13 +1449,15 @@
                     method: document.getElementById('payDepositMethod').value,
                     notes: document.getElementById('payDepositNotes').value
                 };
-                evt.payments.client.receiptLink = document.getElementById('payReceiptLink').value;
+                evt.payments.client.receiptLink = document.getElementById('payReceiptLink1').value;
+                evt.payments.client.receiptLink2 = document.getElementById('payReceiptLink2').value;
                 
                 if(evt.status === 'הסתיים') {
                     evt.payments.client.fullPayment = document.getElementById('payClientFull').checked;
                     const roles = ['drummer', 'keyboard', 'sound', 'manager', 'aviv'];
                     roles.forEach(role => {
                         evt.payments.staff[role] = {
+                            attended: document.getElementById(`pay_${role}_attended`).checked,
                             paid: document.getElementById(`pay_${role}_check`).checked,
                             amount: document.getElementById(`pay_${role}_amount`).value,
                             date: document.getElementById(`pay_${role}_date`).value,
@@ -1543,8 +1608,8 @@
                     html += `<div class="bg-slate-800 p-6 rounded-xl border border-slate-600 shadow-lg">
                         <h3 class="text-xl font-bold text-amber-400 border-b border-slate-700 pb-2 mb-4">${pkg.title}</h3>`;
                     
-                    html += buildPriceRow(`price${pkg.id}`, 'מחיר סגירה מומלץ', pricingData[`price${pkg.id}`] || siteConfig[`price${pkg.id}`] || '', isSuper, true);
-                    html += buildPriceRow(`discount${pkg.id}`, 'מקסימום הנחה מותרת', pricingData[`discount${pkg.id}`] || '', isSuper, false);
+                    html += buildPriceRow(`price${pkg.id}`, 'מחיר סופי', pricingData[`price${pkg.id}`] || siteConfig[`price${pkg.id}`] || '', isSuper, true);
+                    html += buildPriceRow(`discount${pkg.id}`, 'מקסימום הנחה מותרת (בתיאום מראש עם אביב)', pricingData[`discount${pkg.id}`] || '', isSuper, false);
                     
                     if (isSuper) {
                         html += `<div class="mt-4 pt-4 border-t border-slate-700">`;
@@ -1580,7 +1645,7 @@
                     </div>`;
                 } else {
                     return `<div class="flex justify-between items-center mb-3 border-b border-slate-700/50 pb-2">
-                        <span class="${textStyle}">${label}</span>
+                        <span class="${textStyle} text-sm">${label}</span>
                         <span class="text-white font-bold bg-slate-900 px-4 py-1 rounded border border-slate-700">${val ? val + ' ₪' : '--'}</span>
                     </div>`;
                 }
@@ -1743,13 +1808,14 @@
                         const todayDate = new Date();
                         todayDate.setHours(0,0,0,0);
                         
-                        // עדכון אוטומטי של סטטוס אירועים שעברו ל-"הסתיים"
                         data.events.forEach(evt => {
                             const evtDateObj = new Date(evt.date);
                             evtDateObj.setHours(0,0,0,0);
                             
+                            // העברה אוטומטית ל"הסתיים" אם התאריך חלף והאירוע היה "סגור"
                             if (evtDateObj < todayDate && evt.status === 'סגור') {
                                 evt.status = 'הסתיים';
+                                // אופציונלי: אפשר גם לשלוח לשרת עדכון סטטוס כאן, אבל כרגע זה ויזואלי/מקומי לתצוגה חכמה
                             }
                         });
                         events = data.events;
