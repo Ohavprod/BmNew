@@ -17,10 +17,8 @@
         /* --- בסיס --- */
         html { font-size: 14px; }
         body { font-family: 'Heebo', sans-serif; background-color: #051c42; color: #ffffff; min-height: 100vh; overflow-x: hidden; margin: 0; padding: 0; display: flex; flex-direction: column; }
-        
         #fixed-background { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; background-image: linear-gradient(180deg, #051c42 0%, #021029 100%); pointer-events: none; }
         #bg-image-layer { width: 100%; height: 100%; background-size: cover; background-position: center top; background-repeat: no-repeat; background-attachment: scroll; }
-
         body.no-scroll { overflow: hidden !important; height: 100vh; }
         .gold-text { background: linear-gradient(45deg, #fbbf24, #d97706); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 900; text-shadow: 0px 0px 20px rgba(251, 191, 36, 0.3); }
 
@@ -39,16 +37,12 @@
         /* --- ניהול והרשאות --- */
         .auth-only { display: none !important; }
         body.is-logged-in .auth-only { display: block !important; }
-        
         .admin-controls { display: none !important; }
         body.admin-mode .admin-controls { display: flex !important; }
-        
         .superadmin-only { display: none !important; }
         body.superadmin-mode .superadmin-only { display: flex !important; }
-        
         #adminPanel { display: none !important; }
         body.admin-mode #adminPanel { display: flex !important; }
-        
         .editable-active { border: 2px dashed #ef4444; background: rgba(0,0,0,0.2); outline: none; cursor: text; }
 
         .footer-login-btn { color: #1e293b; font-size: 1.2rem; cursor: pointer; transition: 0.3s; padding: 10px; }
@@ -68,7 +62,7 @@
         .hover-ig:hover { background: -webkit-linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; transform: translateY(-4px);}
         .hover-sp:hover { color: #1DB954 !important; }
 
-        /* --- כרטיס אירוע מודרני מובהר --- */
+        /* --- כרטיס אירוע מודרני --- */
         .event-card { background: linear-gradient(145deg, rgba(40, 56, 84, 0.9), rgba(15, 23, 42, 0.95)); backdrop-filter: blur(12px); border: 1px solid rgba(96, 165, 250, 0.25); border-top: 1px solid rgba(251, 191, 36, 0.4); border-radius: 1.5rem; padding: 0; overflow: hidden; position: relative; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 15px 35px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.1); color: #f8fafc; margin-bottom: 2rem; }
         .event-card:hover { transform: translateY(-8px); box-shadow: 0 20px 40px rgba(0,0,0,0.8), 0 0 20px rgba(251, 191, 36, 0.2); border-top: 1px solid rgba(251, 191, 36, 0.8); border-color: rgba(96, 165, 250, 0.4); }
         .next-event-label { position: absolute; top: 0; left: 50%; transform: translateX(-50%); background: linear-gradient(to right, #fbbf24, #f59e0b); color: #000; font-weight: 900; padding: 6px 20px; border-bottom-left-radius: 1rem; border-bottom-right-radius: 1rem; z-index: 10; font-size: 0.9rem; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4); letter-spacing: 0.5px; }
@@ -96,7 +90,6 @@
         .btn-edit { background: linear-gradient(135deg, #475569, #334155); color: white; border: 1px solid #64748b; } 
         .btn-wa-green { background: linear-gradient(135deg, #16a34a, #15803d); color: white; border: none; }
         .notes-area { background: rgba(2, 6, 23, 0.4) !important; color: #cbd5e1 !important; border: 1px solid rgba(255,255,255,0.1); font-size: 0.95rem; padding: 15px; border-radius: 12px; line-height: 1.5; box-shadow: inset 0 2px 10px rgba(0,0,0,0.3); }
-        
         .floating-badges { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; }
         .status-pill, .special-badge { padding: 4px 12px; border-radius: 99px; font-weight: 900; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.5px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
         .status-sagoor { background: linear-gradient(to bottom, #10b981, #047857); color: white; } 
@@ -114,7 +107,6 @@
         .payment-card { background: #0f172a; border: 3px solid #334155; border-radius: 1rem; padding: 1rem; margin-bottom: 1rem; position: relative; transition: 0.3s; }
         .payment-ok { border-color: #22c55e !important; box-shadow: 0 0 10px rgba(34, 197, 94, 0.3); }
         .payment-bad { border-color: #ef4444 !important; box-shadow: 0 0 10px rgba(239, 68, 68, 0.3); }
-        
         .lead-card { background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(255,255,255,0.1); border-radius: 1rem; padding: 1rem; margin-bottom: 1rem; }
         .lead-alert { border-color: #ef4444 !important; box-shadow: 0 0 15px rgba(239, 68, 68, 0.4); }
         .lead-warning { border-color: #f59e0b !important; box-shadow: 0 0 15px rgba(245, 158, 11, 0.4); }
@@ -124,7 +116,6 @@
         .marquee-track { display: flex; width: max-content; gap: 0; animation: scroll-loop 200s linear infinite; }
         .marquee-track:hover { animation-play-state: paused; }
         @keyframes scroll-loop { 0% { transform: translateX(-50%); } 100% { transform: translateX(0%); } }
-        
         .gallery-item { margin: 0 5px; }
         .gallery-img { height: 250px; width: auto; aspect-ratio: 3/2; object-fit: cover; border-radius: 16px; cursor: pointer; transition: 0.3s; border: 2px solid transparent; }
         .gallery-img:hover { border-color: #fbbf24; transform: scale(1.05); }
@@ -133,7 +124,6 @@
         .review-stars { color: #fbbf24; font-size: 1.2rem; margin-bottom: 10px; }
         .review-text { color: #cbd5e1; font-size: 1.05rem; line-height: 1.5; margin-bottom: 15px; font-style: italic; }
         .review-author { font-weight: 900; color: #fff; font-size: 1.1rem; }
-
         .blue-card { background: rgba(13, 49, 105, 0.6); border: 1px solid rgba(59, 130, 246, 0.2); backdrop-filter: blur(10px); padding: 1.5rem; }
         .calendar-day { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; border-radius: 0.5rem; font-weight: bold; cursor: pointer; position: relative; font-size: 0.9rem; }
         .day-available { background-color: rgba(251, 191, 36, 0.1); border: 1px solid rgba(251, 191, 36, 0.3); color: #fbbf24; }
@@ -144,7 +134,6 @@
         .promo-video-container { width: 98%; max-width: 1800px; margin: 30px auto; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.7); border: 2px solid #334155; position: relative; background: black; aspect-ratio: 21/9; }
         .promo-video-iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
         .sound-toggle-btn { position: absolute; bottom: 15px; left: 15px; background: rgba(0,0,0,0.6); color: white; border: 1px solid rgba(255,255,255,0.5); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 50; }
-        
         .video-background-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; z-index: 0; }
         .video-background-iframe { position: absolute; top: 50%; left: 50%; width: 100vw; height: 100vh; transform: translate(-50%, -50%); pointer-events: none; }
         #heroOverlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #051c42; opacity: 0.6; z-index: 0; pointer-events: none; }
@@ -159,7 +148,6 @@
         #proposalSetupModal .modal-content { max-width: 700px; }
         #eventEditor .modal-content { max-width: 800px; }
         #leadsModal .modal-content { max-width: 900px; height: 90vh; }
-        
         #loginModal .modal-content { max-width: 480px; padding: 40px 20px; border: 2px solid #fbbf24; }
         #confirmModal .modal-content, #alertModal .modal-content { max-width: 400px; text-align: center; padding: 20px; border: 1px solid #fbbf24; background: #0f172a; height: auto; }
 
@@ -189,7 +177,6 @@
             .lightbox-next { right: 10px; }
             .review-card { width: 280px; padding: 1rem; }
         }
-
         @media (min-width: 769px) { .form-grid { grid-template-columns: 1fr 1fr; } }
         @media print { 
             @page { size: A3 portrait; margin: 0; } 
@@ -203,18 +190,10 @@
 </head>
 <body class="antialiased relative">
 
-    <div id="fixed-background">
-        <div id="bg-image-layer" style="background-image: url('https://i.postimg.cc/8PFH5RRC/BIMG_2271A_(103).jpg');"></div>
-    </div>
+    <div id="fixed-background"><div id="bg-image-layer" style="background-image: url('https://i.postimg.cc/8PFH5RRC/BIMG_2271A_(103).jpg');"></div></div>
+    <div id="globalLoader"><div class="spinner"></div><div class="text-white text-xl font-bold">מעבד נתונים...</div></div>
 
-    <div id="globalLoader">
-        <div class="spinner"></div>
-        <div class="text-white text-xl font-bold">מעבד נתונים...</div>
-    </div>
-
-    <a href="https://wa.me/972559907076" class="whatsapp-float" title="צור קשר בוואטסאפ">
-        <i class="fab fa-whatsapp"></i>
-    </a>
+    <a href="https://wa.me/972559907076" class="whatsapp-float" title="צור קשר בוואטסאפ"><i class="fab fa-whatsapp"></i></a>
 
     <div id="loggedInMenuBtn" onclick="toggleSideMenu()" class="auth-only"><i class="fas fa-bars"></i></div>
     <div id="menuOverlay" class="menu-overlay" onclick="toggleSideMenu()"></div>
@@ -229,16 +208,13 @@
 
     <div id="adminPanel" class="fixed bottom-0 left-0 w-full bg-slate-900/95 border-t border-amber-500/30 p-4 z-[90] justify-between items-center shadow-[0_-5px_20px_rgba(0,0,0,0.5)] backdrop-blur-md">
         <div class="text-amber-400 font-bold flex items-center"><i class="fas fa-user-shield mr-2"></i> מצב עריכה פעיל</div>
-        <div class="flex gap-4">
-            <button onclick="logout()" class="bg-red-600 hover:bg-red-500 text-white px-6 py-2 rounded font-bold shadow-lg transition">יציאה</button>
-        </div>
+        <div class="flex gap-4"><button onclick="logout()" class="bg-red-600 hover:bg-red-500 text-white px-6 py-2 rounded font-bold shadow-lg transition">יציאה</button></div>
     </div>
 
     <nav class="absolute top-0 w-full z-50 p-6 border-b border-blue-800/30 bg-[#051c42]/50 backdrop-blur-sm">
         <div class="container mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
             <div class="text-3xl font-black tracking-wider text-center md:text-right">
-                <span class="gold-text">אביב</span>
-                <span class="text-white drop-shadow-lg">ויצמן</span>
+                <span class="gold-text">אביב</span><span class="text-white drop-shadow-lg">ויצמן</span>
             </div>
             <div class="flex flex-wrap justify-center gap-4 text-lg md:text-lg font-bold text-blue-100 items-center">
                 <a href="#packages" class="hover:text-amber-400 transition">חבילות</a>
@@ -288,7 +264,6 @@
                 <h2 class="text-3xl md:text-5xl font-bold mb-4 text-white">החבילות שלנו</h2>
                 <p class="text-blue-300 max-w-2xl mx-auto">בחרו את ההפקה המתאימה ביותר לאירוע שלכם</p>
             </div>
-            
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <div class="glass-card hover:-translate-y-4">
                     <div class="pkg-header">
@@ -350,9 +325,7 @@
     <section id="calendar" class="py-24 bg-[#051c42] border-y border-blue-900/50 relative">
          <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 pointer-events-none"></div>
         <div class="container mx-auto px-6 max-w-4xl relative z-10">
-            <div class="text-center mb-12">
-                <h2 class="text-3xl md:text-4xl font-bold mb-4 text-white" data-id="cal-title" data-type="text">בדיקת זמינות לאירוע</h2>
-            </div>
+            <div class="text-center mb-12"><h2 class="text-3xl md:text-4xl font-bold mb-4 text-white" data-id="cal-title" data-type="text">בדיקת זמינות לאירוע</h2></div>
             <div class="blue-card p-8 rounded-3xl shadow-2xl backdrop-blur-xl">
                 <div class="flex justify-between items-center mb-8">
                     <button id="prevMonth" class="text-amber-400 text-2xl px-4 hover:scale-125 transition"><i class="fas fa-chevron-right"></i></button>
@@ -385,9 +358,7 @@
 
     <section id="gallery" class="py-24 bg-[#021029] relative overflow-hidden">
         <div class="container mx-auto px-6 relative z-10">
-            <div class="text-center mb-12">
-                 <h2 class="text-3xl md:text-5xl font-bold text-white" data-id="gallery-title" data-type="text"><i class="fas fa-video ml-3 text-amber-400"></i> דוגמאות מאירועים</h2>
-            </div>
+            <div class="text-center mb-12"><h2 class="text-3xl md:text-5xl font-bold text-white" data-id="gallery-title" data-type="text"><i class="fas fa-video ml-3 text-amber-400"></i> דוגמאות מאירועים</h2></div>
             <div class="text-center mb-8 superadmin-only">
                 <button onclick="addNewVideo()" class="bg-green-600 hover:bg-green-500 text-white px-6 py-3 rounded-full font-bold shadow-lg transition items-center flex mx-auto">
                     <i class="fas fa-plus-circle ml-2 text-xl"></i> הוסף סרטון חדש
@@ -404,28 +375,21 @@
                 <i class="fas fa-plus ml-1"></i> הוסף תמונה
             </button>
         </div>
-        <div class="marquee-wrapper relative z-10">
-            <div class="marquee-track" id="imageMarquee"></div>
-        </div>
+        <div class="marquee-wrapper relative z-10"><div class="marquee-track" id="imageMarquee"></div></div>
     </section>
     
     <section id="reviewsSection" class="py-20 bg-[#021029] relative overflow-hidden border-t border-blue-900 z-10" style="display:none;">
         <div class="container mx-auto px-6 relative z-10 mb-10">
-            <div class="text-center">
-                 <h2 class="text-3xl md:text-5xl font-bold text-white mb-2"><i class="fas fa-star text-amber-400 ml-2"></i> מה הלקוחות אומרים</h2>
-            </div>
+            <div class="text-center"><h2 class="text-3xl md:text-5xl font-bold text-white mb-2"><i class="fas fa-star text-amber-400 ml-2"></i> מה הלקוחות אומרים</h2></div>
         </div>
-        <div class="marquee-wrapper relative z-10">
-            <div class="marquee-track" id="reviewsMarquee" style="animation-duration: 80s;"></div>
-        </div>
+        <div class="marquee-wrapper relative z-10"><div class="marquee-track" id="reviewsMarquee" style="animation-duration: 80s;"></div></div>
     </section>
 
     <section id="contact" class="py-20 bg-black text-center border-t border-blue-900 relative z-10">
         <h2 class="text-3xl font-bold mb-8 text-white" data-id="contact-title" data-type="text">צרו קשר</h2>
         <div class="flex flex-col items-center gap-6">
             <a href="tel:0559907076" id="phoneLink" class="flex items-center gap-3 bg-blue-900/50 hover:bg-blue-900 border border-blue-800 px-8 py-4 rounded-2xl text-2xl text-white font-bold transition group">
-                <i class="fas fa-phone-alt text-amber-500 group-hover:rotate-12 transition"></i>
-                <span data-id="phone-text" data-type="text">055-990-7076</span>
+                <i class="fas fa-phone-alt text-amber-500 group-hover:rotate-12 transition"></i><span data-id="phone-text" data-type="text">055-990-7076</span>
             </a>
             <div class="flex gap-6 text-4xl text-slate-400 mt-4 bg-blue-950/50 p-4 rounded-full px-8">
                 <a href="#" id="link-fb" onclick="editLink('social-fb')" class="hover-fb transition hover:-translate-y-1"><i class="fab fa-facebook"></i></a>
@@ -452,8 +416,7 @@
 
     <div id="confirmModal" class="modal-overlay">
         <div class="modal-content bg-slate-900 border border-amber-500/50 p-6 rounded-2xl text-center max-w-sm">
-            <i class="fas fa-exclamation-triangle text-4xl text-amber-400 mb-4"></i>
-            <h3 class="text-2xl font-bold text-white mb-2">האם אתה בטוח?</h3>
+            <i class="fas fa-exclamation-triangle text-4xl text-amber-400 mb-4"></i><h3 class="text-2xl font-bold text-white mb-2">האם אתה בטוח?</h3>
             <p id="confirmMsg" class="text-gray-300 mb-6"></p>
             <div class="flex gap-4 justify-center">
                 <button id="btnNo" class="bg-slate-700 text-white px-6 py-2 rounded-lg font-bold hover:bg-slate-600 transition">ביטול</button>
@@ -464,8 +427,7 @@
     
     <div id="alertModal" class="modal-overlay" onclick="this.style.display='none'">
         <div class="modal-content bg-slate-900 border border-green-500/50 p-6 rounded-2xl text-center max-w-sm" onclick="event.stopPropagation()">
-            <i class="fas fa-check-circle text-4xl text-green-400 mb-4"></i>
-            <h3 class="text-2xl font-bold text-white mb-2">הודעה</h3>
+            <i class="fas fa-check-circle text-4xl text-green-400 mb-4"></i><h3 class="text-2xl font-bold text-white mb-2">הודעה</h3>
             <p id="alertMsg" class="text-gray-300 mb-6"></p>
             <button onclick="document.getElementById('alertModal').style.display='none'" class="bg-green-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-green-500 transition">אישור</button>
         </div>
@@ -478,9 +440,7 @@
                 <button onclick="closeModal('leadsModal')" class="text-white hover:text-blue-400 text-2xl"><i class="fas fa-times"></i></button>
             </div>
             <div class="modal-body p-4 flex flex-col gap-6 bg-slate-950">
-                
                 <div id="leadsNotificationsArea" class="hidden flex-col gap-2"></div>
-                
                 <div class="bg-slate-800 p-5 rounded-xl border border-slate-700 shadow-lg">
                     <h4 class="text-lg font-bold text-amber-400 mb-4 border-b border-slate-600 pb-2"><i class="fas fa-plus-circle ml-2"></i>פנייה חדשה</h4>
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
@@ -497,17 +457,12 @@
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                         <select id="newLeadStatus" class="bg-slate-900 text-white p-2 rounded border border-slate-600 outline-none focus:border-amber-400">
-                            <option value="פניה חדשה">פניה חדשה</option>
-                            <option value="נשלח פירוט">נשלח פירוט מחירים</option>
-                            <option value="נשלחה הצעת מחיר">נשלחה הצעת מחיר</option>
-                            <option value="במשא ומתן">במשא ומתן</option>
-                            <option value="ממתין לתשובה">ממתין לתשובה מהלקוח</option>
+                            <option value="פניה חדשה">פניה חדשה</option><option value="נשלח פירוט">נשלח פירוט מחירים</option><option value="נשלחה הצעת מחיר">נשלחה הצעת מחיר</option><option value="במשא ומתן">במשא ומתן</option><option value="ממתין לתשובה">ממתין לתשובה מהלקוח</option>
                         </select>
                         <input type="text" id="newLeadNotes" placeholder="הערות (אופציונלי)..." class="bg-slate-900 text-white p-2 rounded border border-slate-600 outline-none focus:border-amber-400 md:col-span-2">
                         <button onclick="createNewLead(this)" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 rounded shadow-lg transition">שמור פנייה</button>
                     </div>
                 </div>
-
                 <div>
                     <div class="flex gap-4 mb-4 border-b border-slate-700 pb-2">
                         <button id="tabActiveLeads" onclick="switchLeadTab('active')" class="text-lg font-bold text-amber-400 border-b-2 border-amber-400 px-2 pb-1">פניות פתוחות</button>
@@ -539,12 +494,8 @@
                      </div>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
-                    <a href="https://forms.gle/yYLCZtynqt664iF86" target="_blank" class="bg-slate-700 text-white py-4 rounded-xl font-bold hover:bg-slate-600 transition shadow-lg block border border-slate-600">
-                        <i class="fas fa-file-alt block text-2xl mb-2 text-blue-400"></i> טופס הזמנה
-                    </a>
-                    <a href="https://drive.google.com/drive/folders/15IEoTiyuEM71DmVzpqFtWcu8FdI9opUz?usp=sharing" target="_blank" class="bg-slate-700 text-white py-4 rounded-xl font-bold hover:bg-slate-600 transition shadow-lg block border border-slate-600">
-                        <i class="fas fa-folder-open block text-2xl mb-2 text-amber-400"></i> תיקיית אישורים
-                    </a>
+                    <a href="https://forms.gle/yYLCZtynqt664iF86" target="_blank" class="bg-slate-700 text-white py-4 rounded-xl font-bold hover:bg-slate-600 transition shadow-lg block border border-slate-600"><i class="fas fa-file-alt block text-2xl mb-2 text-blue-400"></i> טופס הזמנה</a>
+                    <a href="https://drive.google.com/drive/folders/15IEoTiyuEM71DmVzpqFtWcu8FdI9opUz?usp=sharing" target="_blank" class="bg-slate-700 text-white py-4 rounded-xl font-bold hover:bg-slate-600 transition shadow-lg block border border-slate-600"><i class="fas fa-folder-open block text-2xl mb-2 text-amber-400"></i> תיקיית אישורים</a>
                 </div>
             </div>
         </div>
@@ -559,13 +510,11 @@
             <div class="modal-body p-4">
                 <form id="paymentForm">
                     <input type="hidden" id="payEventId">
-                    
                     <div class="bg-slate-800 p-5 rounded-xl mb-6 border border-slate-700 shadow-lg">
                         <h4 class="text-xl font-bold text-amber-400 mb-4 border-b border-slate-600 pb-2"><i class="fas fa-user-tie ml-2"></i>תשלום מלקוח</h4>
                         <div class="mb-5 bg-slate-900/50 p-4 rounded-lg border border-slate-700">
                             <label class="flex items-center gap-3 text-white text-lg cursor-pointer mb-3 font-bold">
-                                <input type="checkbox" id="payClientDeposit" class="w-6 h-6 accent-green-500" onchange="document.getElementById('depositDetailsContainer').style.display = this.checked ? 'flex' : 'none'"> 
-                                שולמה מקדמה
+                                <input type="checkbox" id="payClientDeposit" class="w-6 h-6 accent-green-500" onchange="document.getElementById('depositDetailsContainer').style.display = this.checked ? 'flex' : 'none'"> שולמה מקדמה
                             </label>
                             <div id="depositDetailsContainer" class="flex-wrap gap-3" style="display:none;">
                                 <input type="date" id="payDepositDate" class="bg-slate-800 text-white p-2 rounded border border-slate-600 flex-1 min-w-[140px]">
@@ -605,20 +554,14 @@
 
     <div id="myPaymentsModal" class="modal-overlay">
         <div class="modal-content !max-w-2xl bg-slate-900 border border-green-500/50">
-            <div class="modal-header">
-                <h3 class="text-2xl font-bold text-white"><i class="fas fa-wallet text-green-400 ml-2"></i>היסטוריית התשלומים שלי</h3>
-                <button onclick="closeModal('myPaymentsModal')" class="text-white hover:text-green-400 text-2xl"><i class="fas fa-times"></i></button>
-            </div>
+            <div class="modal-header"><h3 class="text-2xl font-bold text-white"><i class="fas fa-wallet text-green-400 ml-2"></i>היסטוריית התשלומים שלי</h3><button onclick="closeModal('myPaymentsModal')" class="text-white hover:text-green-400 text-2xl"><i class="fas fa-times"></i></button></div>
             <div class="modal-body" id="myPaymentsBody"></div>
         </div>
     </div>
     
     <div id="usefulLinksModal" class="modal-overlay">
         <div class="modal-content !max-w-2xl bg-slate-900 border border-cyan-400/50">
-            <div class="modal-header">
-                <h3 class="text-2xl font-bold text-white"><i class="fas fa-link text-cyan-400 ml-2"></i>לינקים שימושיים</h3>
-                <button onclick="closeModal('usefulLinksModal')" class="text-white hover:text-cyan-400 text-2xl"><i class="fas fa-times"></i></button>
-            </div>
+            <div class="modal-header"><h3 class="text-2xl font-bold text-white"><i class="fas fa-link text-cyan-400 ml-2"></i>לינקים שימושיים</h3><button onclick="closeModal('usefulLinksModal')" class="text-white hover:text-cyan-400 text-2xl"><i class="fas fa-times"></i></button></div>
             <div class="modal-body">
                 <div class="flex gap-2 mb-6">
                     <input type="text" id="newUsefulName" placeholder="שם הלינק..." class="w-1/3 bg-slate-800 text-white p-2 rounded border border-slate-600 outline-none">
@@ -632,10 +575,7 @@
     
     <div id="checklistModal" class="modal-overlay">
         <div class="modal-content !max-w-2xl bg-slate-900 border border-orange-400/50">
-            <div class="modal-header">
-                <h3 class="text-2xl font-bold text-white"><i class="fas fa-clipboard-check text-orange-400 ml-2"></i>צ'קליסט ציוד משותף</h3>
-                <button onclick="closeModal('checklistModal')" class="text-white hover:text-orange-400 text-2xl"><i class="fas fa-times"></i></button>
-            </div>
+            <div class="modal-header"><h3 class="text-2xl font-bold text-white"><i class="fas fa-clipboard-check text-orange-400 ml-2"></i>צ'קליסט ציוד משותף</h3><button onclick="closeModal('checklistModal')" class="text-white hover:text-orange-400 text-2xl"><i class="fas fa-times"></i></button></div>
             <div class="modal-body">
                 <div class="admin-controls flex gap-2 mb-6 pb-6 border-b border-slate-700">
                     <input type="text" id="newChecklistItem" placeholder="הוסף פריט חדש לרשימה..." class="w-3/4 bg-slate-800 text-white p-3 rounded border border-slate-600 outline-none">
@@ -649,27 +589,21 @@
     
     <div id="reviewsManagerModal" class="modal-overlay">
         <div class="modal-content !max-w-2xl bg-slate-900 border border-yellow-400/50">
-            <div class="modal-header">
-                <h3 class="text-2xl font-bold text-white"><i class="fas fa-star text-yellow-400 ml-2"></i>ניהול המלצות</h3>
-                <button onclick="closeModal('reviewsManagerModal')" class="text-white hover:text-yellow-400 text-2xl"><i class="fas fa-times"></i></button>
-            </div>
+            <div class="modal-header"><h3 class="text-2xl font-bold text-white"><i class="fas fa-star text-yellow-400 ml-2"></i>ניהול המלצות</h3><button onclick="closeModal('reviewsManagerModal')" class="text-white hover:text-yellow-400 text-2xl"><i class="fas fa-times"></i></button></div>
             <div class="modal-body">
                 <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 mb-6">
-                    <h4 class="text-amber-400 font-bold mb-2">לינק לגוגל ביקורות (לשליחה ללקוחות):</h4>
+                    <h4 class="text-amber-400 font-bold mb-2">לינק לגוגל ביקורות:</h4>
                     <div class="flex gap-2">
                         <input type="text" id="googleReviewLinkInput" placeholder="הדבק פה את הלינק..." class="w-full bg-slate-900 text-white p-2 rounded border border-slate-600 outline-none direction-ltr text-left">
                         <button onclick="saveGoogleReviewLink(this)" class="bg-amber-500 text-black px-4 py-2 rounded font-bold hover:bg-amber-400">שמור</button>
                     </div>
                 </div>
-                <h4 class="text-white font-bold mb-4 border-b border-slate-700 pb-2">הוסף ביקורת חדשה שתוצג באתר:</h4>
+                <h4 class="text-white font-bold mb-4 border-b border-slate-700 pb-2">הוסף ביקורת חדשה:</h4>
                 <div class="flex flex-col gap-3 mb-6 border-b border-slate-700 pb-6">
                     <input type="text" id="newRevName" placeholder="שם הלקוח" class="bg-slate-800 text-white p-2 rounded border border-slate-600 outline-none">
                     <textarea id="newRevText" placeholder="תוכן ההמלצה..." class="bg-slate-800 text-white p-2 rounded border border-slate-600 outline-none h-20"></textarea>
-                    <select id="newRevStars" class="bg-slate-800 text-white p-2 rounded border border-slate-600 outline-none">
-                        <option value="5">5 כוכבים ⭐⭐⭐⭐⭐</option>
-                        <option value="4">4 כוכבים ⭐⭐⭐⭐</option>
-                    </select>
-                    <button onclick="addReview(this)" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 rounded">הוסף המלצה לאתר</button>
+                    <select id="newRevStars" class="bg-slate-800 text-white p-2 rounded border border-slate-600 outline-none"><option value="5">5 כוכבים ⭐⭐⭐⭐⭐</option><option value="4">4 כוכבים ⭐⭐⭐⭐</option></select>
+                    <button onclick="addReview(this)" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 rounded">הוסף המלצה</button>
                 </div>
                 <div id="reviewsListAdmin" class="flex flex-col gap-3"></div>
             </div>
@@ -678,14 +612,11 @@
 
     <div id="eventEditor" class="modal-overlay">
         <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="text-3xl font-black text-white">פרטי אירוע</h3>
-                <button onclick="closeModal('eventEditor')" class="text-slate-400 hover:text-white text-2xl"><i class="fas fa-times"></i></button>
-            </div>
+            <div class="modal-header"><h3 class="text-3xl font-black text-white">פרטי אירוע</h3><button onclick="closeModal('eventEditor')" class="text-slate-400 hover:text-white text-2xl"><i class="fas fa-times"></i></button></div>
             <div class="modal-body">
                 <form id="eventForm" class="form-grid">
                     <input type="hidden" name="id" id="eventIdField">
-                    <div class="input-group col-span-1 md:col-span-2"><label>שם האירוע (כותרת)</label><input type="text" name="eventName" placeholder="לדוגמה: בר מצווה - משפחת כהן"></div>
+                    <div class="input-group col-span-1 md:col-span-2"><label>שם האירוע</label><input type="text" name="eventName" placeholder="לדוגמה: בר מצווה - משפחת כהן"></div>
                     <div class="input-group"><label>תאריך לועזי</label><input type="date" name="date" required></div>
                     <div class="input-group"><label>תאריך עברי</label><input type="text" name="hebrewDate"></div>
                     <div class="input-group"><label>שם הלקוח</label><input type="text" name="clientName"></div>
@@ -693,26 +624,12 @@
                     <div class="input-group"><label>טלפון</label><input type="tel" name="phone" dir="ltr"></div>
                     <div class="input-group"><label>מיקום האירוע</label><input type="text" name="location"></div>
                     <div class="input-group"><label>לינק ל-Waze</label><input type="text" name="wazeLink" dir="ltr"></div>
-                    <div class="input-group">
-                        <label>סוג חבילה</label>
-                        <select name="packageType">
-                            <option>לימוד לבר מצווה</option><option>בסיס</option><option>חגיגית</option><option>הכל כלול</option><option>מותאמת אישית</option>
-                        </select>
-                    </div>
+                    <div class="input-group"><label>סוג חבילה</label><select name="packageType"><option>לימוד לבר מצווה</option><option>בסיס</option><option>חגיגית</option><option>הכל כלול</option><option>מותאמת אישית</option></select></div>
                     <div class="input-group"><label>שעת הזמנת אורחים</label><input type="time" name="guestTime"></div>
                     <div class="input-group"><label>שעת תחילת אירוע</label><input type="time" name="startTime"></div>
                     <div class="input-group"><label>מחיר סגירה</label><input type="text" name="price"></div>
-                    <div class="input-group">
-                        <label>סטטוס</label>
-                        <select name="status">
-                            <option value="תהליך">בתהליך סגירה</option><option value="סגור">סגור (מאושר)</option><option value="הסתיים">הסתיים</option>
-                        </select>
-                    </div>
-                    <div class="checkbox-group col-span-2">
-                        <label class="flex items-center gap-2 text-white font-bold"><input type="checkbox" name="hasKeyboard"> כולל קלידן</label>
-                        <label class="flex items-center gap-2 text-white font-bold"><input type="checkbox" name="hasDrummers"> כולל מתופפים</label>
-                        <label class="flex items-center gap-2 text-white font-bold text-pink-400"><input type="checkbox" name="isStudent"> תלמיד</label>
-                    </div>
+                    <div class="input-group"><label>סטטוס</label><select name="status"><option value="תהליך">בתהליך סגירה</option><option value="סגור">סגור (מאושר)</option><option value="הסתיים">הסתיים</option></select></div>
+                    <div class="checkbox-group col-span-2"><label class="flex items-center gap-2 text-white font-bold"><input type="checkbox" name="hasKeyboard"> כולל קלידן</label><label class="flex items-center gap-2 text-white font-bold"><input type="checkbox" name="hasDrummers"> כולל מתופפים</label><label class="flex items-center gap-2 text-white font-bold text-pink-400"><input type="checkbox" name="isStudent"> תלמיד</label></div>
                     <div class="input-group col-span-1 md:col-span-2"><label>לינק למדיה</label><input type="text" name="mediaLink" dir="ltr"></div>
                     <div class="input-group col-span-1 md:col-span-2"><label>הערות לצוות (למנהלים בלבד)</label><textarea name="notes" class="h-32 notes-area"></textarea></div>
                 </form>
@@ -726,10 +643,7 @@
     
     <div id="priceListEditorModal" class="modal-overlay">
         <div class="modal-content !max-w-2xl bg-slate-900 border border-purple-500/50">
-            <div class="modal-header">
-                <h3 class="text-2xl font-bold text-white">מחירון המערכת</h3>
-                <button onclick="closeModal('priceListEditorModal')" class="text-white text-2xl hover:text-purple-400"><i class="fas fa-times"></i></button>
-            </div>
+            <div class="modal-header"><h3 class="text-2xl font-bold text-white">מחירון המערכת</h3><button onclick="closeModal('priceListEditorModal')" class="text-white text-2xl hover:text-purple-400"><i class="fas fa-times"></i></button></div>
             <div class="modal-body" id="priceListBody"></div>
         </div>
     </div>
@@ -747,15 +661,11 @@
                     </div>
                     <div><label class="text-xs font-bold text-gray-500">מיקום האירוע</label><input type="text" id="propLocation" class="w-full bg-gray-100 p-3 rounded border border-gray-300 text-black"></div>
                     <div><label class="text-xs font-bold text-gray-500">חבילה נבחרת</label>
-                        <select id="propType" onchange="updateProposalFields()" class="w-full bg-gray-100 p-3 rounded border border-gray-300 text-black">
-                            <option value="VIP">הכל כלול VIP</option><option value="FESTIVE">חבילה חגיגית</option><option value="BASIC">חבילה בסיסית</option><option value="SOLO">חבילת לימוד לבר מצווה</option><option value="CUSTOM">התאמה אישית</option>
-                        </select>
+                        <select id="propType" onchange="updateProposalFields()" class="w-full bg-gray-100 p-3 rounded border border-gray-300 text-black"><option value="VIP">הכל כלול VIP</option><option value="FESTIVE">חבילה חגיגית</option><option value="BASIC">חבילה בסיסית</option><option value="SOLO">חבילת לימוד לבר מצווה</option><option value="CUSTOM">התאמה אישית</option></select>
                     </div>
                     <div id="proposalEditArea" class="border p-4 rounded bg-gray-50 mt-2">
-                        <label class="text-xs font-bold text-gray-500">פירוט השירותים</label>
-                        <textarea id="propCustomDetails" class="w-full bg-white p-2 rounded border border-gray-300 h-32 mb-2 text-black"></textarea>
-                        <label class="text-xs font-bold text-gray-500">מחיר כולל</label>
-                        <input type="text" id="propCustomPrice" class="w-full bg-white p-2 rounded border border-gray-300 font-bold text-lg text-green-600">
+                        <label class="text-xs font-bold text-gray-500">פירוט השירותים</label><textarea id="propCustomDetails" class="w-full bg-white p-2 rounded border border-gray-300 h-32 mb-2 text-black"></textarea>
+                        <label class="text-xs font-bold text-gray-500">מחיר כולל</label><input type="text" id="propCustomPrice" class="w-full bg-white p-2 rounded border border-gray-300 font-bold text-lg text-green-600">
                     </div>
                     <button onclick="generateProposal()" class="bg-blue-600 text-white font-bold py-4 rounded-xl text-lg shadow hover:bg-blue-700 mt-4 w-full">הפק מסמך להדפסה</button>
                 </div>
@@ -779,7 +689,7 @@
             let reviewsData = [];
             let currentLeadTab = 'active';
             
-            let isProcessing = false; // הגנה מלחיצות כפולות
+            let isProcessing = false; 
             let currentLightboxIndex = 0;
             let lightboxImageUrls = [];
 
@@ -810,6 +720,79 @@
             window.toggleSideMenu = () => { document.getElementById('sideMenu').classList.toggle('open'); document.getElementById('menuOverlay').classList.toggle('show'); }
             window.closeSideMenu = () => { document.getElementById('sideMenu').classList.remove('open'); document.getElementById('menuOverlay').classList.remove('show'); }
             window.logout = () => { location.reload(); }
+
+            // -- שחזור הפונקציות החסרות --
+            window.addNewVideo = () => {
+                const url = prompt("הכנס קישור ליוטיוב או Vimeo או קובץ MP4:");
+                if (!url) return;
+                const title = prompt("הכנס כותרת לסרטון (לדוגמה: ליווי חתן בר המצווה):");
+                if(API_URL.includes("http")) {
+                    showLoader();
+                    fetch(API_URL, {
+                        method: 'POST',
+                        body: JSON.stringify({ action: 'addToGallery', type: 'video', url: url, title: title || '' })
+                    }).then(() => { loadData(); });
+                }
+            }
+
+            window.addNewImage = () => { 
+                const u = prompt("קישור לתמונה:"); 
+                if(u) { 
+                    if(API_URL.includes("http")) {
+                        showLoader();
+                        fetch(API_URL, {
+                            method: 'POST',
+                            body: JSON.stringify({ action: 'addToGallery', type: 'image', url: u })
+                        }).then(() => { loadData(); });
+                    } else {
+                        galleryImages.push({type: 'image', url: u}); renderGallery(); 
+                    }
+                } 
+            }
+
+            window.deleteImage = async (url) => { 
+                if(!await customConfirm("למחוק את התמונה/וידאו מהגלריה?")) return;
+                if(API_URL.includes("http")) {
+                    showLoader();
+                    fetch(API_URL, {
+                        method: 'POST',
+                        body: JSON.stringify({ action: 'deleteFromGallery', url: url })
+                    }).then(() => { loadData(); });
+                }
+            }
+            
+            window.editGalleryItem = (oldUrl) => {
+                 const newUrl = prompt("הכנס קישור חדש (או השאר כמו שהוא כדי לערוך רק כותרת):", oldUrl);
+                 if (newUrl !== null) {
+                     const newTitle = prompt("הכנס כותרת לסרטון (השאר ריק ללא כותרת):");
+                     if(API_URL.includes("http")) {
+                        showLoader();
+                        fetch(API_URL, {
+                            method: 'POST',
+                            body: JSON.stringify({ action: 'updateGallery', oldUrl: oldUrl, newUrl: newUrl, title: newTitle || '' })
+                        }).then(() => { loadData(); });
+                     }
+                 }
+            }
+
+            window.openLightbox = (src) => { 
+                currentLightboxIndex = lightboxImageUrls.indexOf(src);
+                document.getElementById('lightboxImage').src = src; 
+                window.openModal('lightboxModal'); 
+            }
+            
+            window.nextImage = (e) => {
+                if(e) e.stopPropagation(); 
+                currentLightboxIndex = (currentLightboxIndex + 1) % lightboxImageUrls.length;
+                document.getElementById('lightboxImage').src = lightboxImageUrls[currentLightboxIndex];
+            }
+            
+            window.prevImage = (e) => {
+                if(e) e.stopPropagation(); 
+                currentLightboxIndex = (currentLightboxIndex - 1 + lightboxImageUrls.length) % lightboxImageUrls.length;
+                document.getElementById('lightboxImage').src = lightboxImageUrls[currentLightboxIndex];
+            }
+            // -- סוף שחזור --
 
             window.login = () => {
                 const u = document.getElementById('uName').value;
@@ -884,14 +867,161 @@
                     document.querySelectorAll('[contenteditable]').forEach(el => { el.contentEditable = true; el.classList.add('editable-active'); });
                 }
                 renderGallery(); 
-                renderCalendar(); // <-- שוחזר!
+                renderCalendar();
             }
 
-            // --- הפונקציות שהיו חסרות ושוחזרו במלואן ---
-            
+            window.scrollToEvents = () => { document.getElementById('eventsBoardSection').scrollIntoView({ behavior: 'smooth' }); window.closeSideMenu(); }
+            window.scrollToPayments = () => { document.getElementById('paymentsSection').scrollIntoView({ behavior: 'smooth' }); window.closeSideMenu(); }
+
+            window.deleteEvent = async () => {
+                const form = document.getElementById('eventForm');
+                const id = form.elements['id'].value;
+                if(!id || id === "") return;
+                
+                if(!await customConfirm("האם אתה בטוח שברצונך למחוק את האירוע?")) return;
+                
+                if(API_URL.includes("http")) {
+                    showLoader();
+                    fetch(API_URL, {
+                        method: 'POST',
+                        body: JSON.stringify({ action: 'deleteEvent', id: id })
+                    }).then(() => {
+                        window.closeModal('eventEditor');
+                        loadData(); 
+                    });
+                }
+            }
+
+            window.editLink = (key) => {
+                if (!isAdmin || currentUser.role !== 'superadmin') return true;
+                event.preventDefault(); 
+                const currentVal = siteConfig[key] || '';
+                const newVal = prompt("הכנס קישור חדש (למשל ספוטיפיי/פייסבוק):", currentVal);
+                
+                if (newVal !== null && newVal !== currentVal) {
+                    siteConfig[key] = newVal;
+                    document.getElementById(`link-${key.split('-')[1]}`).href = newVal;
+                    if(API_URL.includes("http")) {
+                        showLoader();
+                        fetch(API_URL, {
+                            method: 'POST',
+                            body: JSON.stringify({ action: 'updateConfig', key: key, value: newVal })
+                        }).then(() => { hideLoader(); customAlert("הלינק עודכן בהצלחה!"); });
+                    }
+                }
+            }
+
+            window.editHeroMedia = () => {
+                 const u = prompt("הכנס קישור לתמונת רקע חדשה:");
+                 if(u && API_URL.includes("http")) {
+                     showLoader();
+                     fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'updateConfig', key: 'heroImage', value: u }) })
+                     .then(() => { hideLoader(); document.getElementById('bg-image-layer').style.backgroundImage = `url('${u}')`; });
+                 }
+            }
+
+            function renderGallery() {
+                const c = document.getElementById('imageMarquee'); 
+                const v = document.getElementById('videoContainer');
+                if(!c || !v) return;
+                
+                c.innerHTML = '';
+                v.innerHTML = '';
+
+                const images = galleryImages.filter(item => typeof item === 'string' || item.type === 'image');
+                const videos = galleryImages.filter(item => item.type === 'video');
+
+                lightboxImageUrls = images.map(i => (typeof i === 'string' ? i : i.url));
+
+                const isSuper = (currentUser && currentUser.role === 'superadmin');
+
+                const createSet = (clone) => {
+                    const w = document.createElement('div'); w.className = clone ? 'clone-set flex' : 'flex';
+                    lightboxImageUrls.forEach((src, idx) => {
+                        let btns = '';
+                        if (isSuper && !clone) {
+                             btns = `
+                                <div class="absolute top-2 right-2 flex gap-2 z-50">
+                                    <button class="bg-blue-600/80 text-white p-2 rounded-full hover:bg-blue-500" onclick="editGalleryItem('${src}')"><i class="fas fa-pencil-alt"></i></button>
+                                    <button class="bg-red-600/80 text-white p-2 rounded-full hover:bg-red-500" onclick="deleteImage('${src}')"><i class="fas fa-trash"></i></button>
+                                </div>`;
+                        }
+                        w.innerHTML += `<div class="gallery-item relative">${btns}<img src="${src}" class="gallery-img" onclick="openLightbox('${src}')"></div>`;
+                    });
+                    return w;
+                };
+                if(lightboxImageUrls.length > 0) {
+                    c.appendChild(createSet(false)); 
+                    c.appendChild(createSet(true));
+                }
+
+                videos.forEach(vid => {
+                    let embedUrl = vid.url;
+                    let isDirectFile = false;
+                    let poster = ''; 
+
+                    if (vid.url.match(/\.(mp4|webm|ogg)$/i) || vid.url.includes('drive.google.com/file')) {
+                        isDirectFile = true;
+                        if(vid.url.includes('drive.google.com/file')) {
+                            const fileId = vid.url.match(/d\/([a-zA-Z0-9_-]+)/)?.[1];
+                            if(fileId) embedUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
+                        }
+                    } 
+                    else if (vid.url.includes('vimeo')) {
+                        const vimeoId = vid.url.match(/vimeo\.com\/(?:.*#|.*\/videos\/)?([0-9]+)/);
+                        if (vimeoId && vimeoId[1]) {
+                             embedUrl = `https://player.vimeo.com/video/${vimeoId[1]}?title=0&byline=0&portrait=0&badge=0&autopause=0&player_id=0&app_id=58479`; 
+                        }
+                    } 
+                    else if (vid.url.includes('youtu')) {
+                        let id = vid.url.includes('v=') ? vid.url.split('v=')[1].split('&')[0] : vid.url.split('youtu.be/')[1].split('?')[0];
+                        embedUrl = `https://www.youtube.com/embed/${id}?autoplay=1&rel=0`;
+                        poster = `https://img.youtube.com/vi/${id}/maxresdefault.jpg`;
+                    }
+
+                    const div = document.createElement('div');
+                    div.className = "rounded-2xl overflow-hidden border border-slate-700 bg-slate-900 relative group shadow-2xl flex flex-col";
+                    
+                    let delBtn = '';
+                    if (isSuper) {
+                        delBtn = `
+                            <div class="absolute top-2 right-2 flex gap-2 z-50">
+                                <button class="bg-blue-600/80 text-white p-2 rounded-full hover:bg-blue-500" onclick="editGalleryItem('${vid.url}')"><i class="fas fa-pencil-alt"></i></button>
+                                <button class="bg-red-600/80 text-white p-2 rounded-full hover:bg-red-500" onclick="deleteImage('${vid.url}')"><i class="fas fa-trash"></i></button>
+                            </div>`;
+                    }
+                    
+                    let videoHtml = '';
+                    if (isDirectFile) {
+                        videoHtml = `${delBtn}<div class="bg-black aspect-video relative w-full"><video src="${embedUrl}" class="w-full h-full" controls playsinline controlsList="nodownload"></video></div>`;
+                    } 
+                    else if (poster) { 
+                        videoHtml = `
+                            ${delBtn}
+                            <div class="bg-black aspect-video relative cursor-pointer group w-full" onclick="this.innerHTML='<iframe class=\\'w-full h-full\\' src=\\'${embedUrl}\\' frameborder=\\'0\\' allowfullscreen allow=\\'autoplay\\'></iframe>'">
+                                <img src="${poster}" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition duration-500">
+                                <div class="absolute inset-0 flex items-center justify-center">
+                                    <div class="bg-red-600 text-white rounded-full w-16 h-16 flex items-center justify-center shadow-lg group-hover:scale-110 transition"><i class="fas fa-play text-2xl ml-1"></i></div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                    else { 
+                        videoHtml = `${delBtn}<div class="bg-black aspect-video relative w-full"><iframe class="w-full h-full" src="${embedUrl}" frameborder="0" allowfullscreen allow="autoplay; fullscreen; picture-in-picture"></iframe></div>`;
+                    }
+
+                    let titleHtml = '';
+                    if(vid.title) {
+                        titleHtml = `<div class="p-4 text-center font-bold text-amber-400 text-lg tracking-wide border-t border-slate-800 bg-slate-900/50">${vid.title}</div>`;
+                    }
+
+                    div.innerHTML = videoHtml + titleHtml;
+                    v.appendChild(div);
+                });
+            }
+
             let currentDate = new Date();
-            
-            window.renderCalendar = () => {
+             function renderCalendar() {
                 const g = document.getElementById('calendarGrid'); 
                 if(!g) return;
                 g.innerHTML = '';
@@ -1068,10 +1198,265 @@
                 });
             }
 
-            // --- המשך כל שאר הפונקציות שכבר היו בקוד שלך ---
+            window.togglePayMethodNotes = (selectId, notesId) => {
+                const val = document.getElementById(selectId).value;
+                const notesEl = document.getElementById(notesId);
+                if(val === 'אחר') {
+                    notesEl.classList.remove('hidden');
+                } else {
+                    notesEl.classList.add('hidden');
+                }
+            }
 
-            window.scrollToEvents = () => { document.getElementById('eventsBoardSection').scrollIntoView({ behavior: 'smooth' }); window.closeSideMenu(); }
-            window.scrollToPayments = () => { document.getElementById('paymentsSection').scrollIntoView({ behavior: 'smooth' }); window.closeSideMenu(); }
+            window.toggleStaffAttendance = (roleKey) => {
+                const isChecked = document.getElementById(`pay_${roleKey}_attended`).checked;
+                const fieldsDiv = document.getElementById(`pay_${roleKey}_fields`);
+                const checkPaid = document.getElementById(`pay_${roleKey}_check`);
+                
+                if(isChecked) {
+                    fieldsDiv.classList.remove('opacity-50', 'pointer-events-none');
+                    checkPaid.disabled = false;
+                } else {
+                    fieldsDiv.classList.add('opacity-50', 'pointer-events-none');
+                    checkPaid.disabled = true;
+                    checkPaid.checked = false;
+                }
+            }
+
+            window.openPaymentModal = (eventId) => {
+                const evt = events.find(e => e.id == eventId);
+                if(!evt) return;
+                
+                if (!evt.payments) evt.payments = { client: {}, staff: {} };
+                const client = evt.payments.client || {};
+                const staff = evt.payments.staff || {};
+                const depData = client.deposit || {};
+
+                document.getElementById('payEventName').innerText = evt.eventName || 'אירוע';
+                document.getElementById('payEventId').value = evt.id;
+                
+                const isDepositChecked = client.downPayment || false;
+                document.getElementById('payClientDeposit').checked = isDepositChecked;
+                document.getElementById('depositDetailsContainer').style.display = isDepositChecked ? 'flex' : 'none';
+                
+                document.getElementById('payDepositDate').value = depData.date || '';
+                document.getElementById('payDepositMethod').value = depData.method || '';
+                document.getElementById('payDepositNotes').value = depData.notes || '';
+                togglePayMethodNotes('payDepositMethod', 'payDepositNotes');
+                
+                document.getElementById('payReceiptLink1').value = client.receiptLink || '';
+                if(client.receiptLink) {
+                    document.getElementById('openReceiptBtn1').href = client.receiptLink;
+                    document.getElementById('openReceiptBtn1').style.display = 'flex';
+                } else { document.getElementById('openReceiptBtn1').style.display = 'none'; }
+
+                document.getElementById('payReceiptLink2').value = client.receiptLink2 || '';
+                if(client.receiptLink2) {
+                    document.getElementById('openReceiptBtn2').href = client.receiptLink2;
+                    document.getElementById('openReceiptBtn2').style.display = 'flex';
+                } else { document.getElementById('openReceiptBtn2').style.display = 'none'; }
+                
+                const fullPayContainer = document.getElementById('payClientFullContainer');
+                const staffContainer = document.getElementById('staffPaymentsContainer');
+                const staffList = document.getElementById('staffPaymentsList');
+                
+                if(evt.status === 'הסתיים') {
+                    fullPayContainer.classList.remove('hidden');
+                    staffContainer.classList.remove('hidden');
+                    document.getElementById('payClientFull').checked = client.fullPayment || false;
+                    
+                    staffList.innerHTML = '';
+                    const roles = [ 
+                        { key: 'keyboard', label: 'קלידן' }, 
+                        { key: 'drummer', label: 'מתופפים' }, 
+                        { key: 'sound', label: 'סאונד' }, 
+                        { key: 'manager', label: 'מנהלת אירועים' },
+                        { key: 'aviv', label: 'אביב' } 
+                    ];
+                    
+                    roles.forEach(role => {
+                        const data = staff[role.key] || { paid: false, amount: '', date: '', method: '', notes: '', attended: true };
+                        const attended = data.attended !== false; 
+                        let showNotes = data.method === 'אחר' ? '' : 'hidden';
+                        let disabledState = attended ? '' : 'disabled';
+                        let opacityState = attended ? '' : 'opacity-50 pointer-events-none';
+                        
+                        staffList.innerHTML += `
+                            <div class="bg-slate-700/40 p-4 rounded-xl border border-slate-600 relative">
+                                <div class="flex justify-between items-center mb-3">
+                                    <div class="flex items-center gap-4">
+                                        <span class="font-black text-lg text-amber-400">${role.label}</span>
+                                        <label class="flex items-center gap-1 text-sm text-gray-300 cursor-pointer">
+                                            <input type="checkbox" id="pay_${role.key}_attended" onchange="toggleStaffAttendance('${role.key}')" ${attended ? 'checked' : ''} class="w-4 h-4 accent-blue-500"> השתתף באירוע
+                                        </label>
+                                    </div>
+                                    <label class="flex items-center gap-2 text-white cursor-pointer font-bold bg-slate-900 px-3 py-1 rounded-lg border border-slate-700">
+                                        <input type="checkbox" class="w-5 h-5 accent-green-500" id="pay_${role.key}_check" ${data.paid ? 'checked' : ''} ${disabledState}> שולם
+                                    </label>
+                                </div>
+                                <div class="grid grid-cols-2 gap-3 ${opacityState}" id="pay_${role.key}_fields">
+                                    <input type="number" placeholder="סכום (₪)" class="bg-slate-900 text-white p-2 rounded-lg border border-slate-600 outline-none focus:border-blue-400" id="pay_${role.key}_amount" value="${data.amount || ''}">
+                                    <input type="date" class="bg-slate-900 text-white p-2 rounded-lg border border-slate-600 outline-none focus:border-blue-400" id="pay_${role.key}_date" value="${data.date || ''}" title="תאריך">
+                                    <select class="bg-slate-900 text-white p-2 rounded-lg border border-slate-600 outline-none focus:border-blue-400 col-span-2 md:col-span-1" id="pay_${role.key}_method" onchange="togglePayMethodNotes('pay_${role.key}_method', 'pay_${role.key}_notes')">
+                                        <option value="" ${!data.method ? 'selected' : ''}>אופן תשלום...</option>
+                                        <option value="מזומן" ${data.method==='מזומן' ? 'selected' : ''}>מזומן</option>
+                                        <option value="העברה בנקאית" ${data.method==='העברה בנקאית' ? 'selected' : ''}>העברה בנקאית</option>
+                                        <option value="Bit" ${data.method==='Bit' ? 'selected' : ''}>Bit</option>
+                                        <option value="Paybox" ${data.method==='Paybox' ? 'selected' : ''}>Paybox</option>
+                                        <option value="אחר" ${data.method==='אחר' ? 'selected' : ''}>אחר</option>
+                                    </select>
+                                    <input type="text" placeholder="פירוט הערה..." class="bg-slate-900 text-white p-2 rounded-lg border border-slate-600 outline-none focus:border-blue-400 col-span-2 md:col-span-1 ${showNotes}" id="pay_${role.key}_notes" value="${data.notes || ''}">
+                                </div>
+                            </div>
+                        `;
+                    });
+                } else {
+                    fullPayContainer.classList.add('hidden');
+                    staffContainer.classList.add('hidden');
+                }
+                window.openModal('paymentModal');
+            }
+
+            window.savePaymentData = (btn) => {
+                if(isProcessing) return;
+                const eventId = document.getElementById('payEventId').value;
+                const evt = events.find(e => e.id == eventId);
+                if(!evt) return;
+
+                isProcessing = true;
+                if(btn) btn.disabled = true;
+
+                if(!evt.payments) evt.payments = { client: {}, staff: {} };
+                if(!evt.payments.client) evt.payments.client = {};
+                if(!evt.payments.staff) evt.payments.staff = {};
+
+                evt.payments.client.downPayment = document.getElementById('payClientDeposit').checked;
+                evt.payments.client.deposit = {
+                    date: document.getElementById('payDepositDate').value,
+                    method: document.getElementById('payDepositMethod').value,
+                    notes: document.getElementById('payDepositNotes').value
+                };
+                evt.payments.client.receiptLink = document.getElementById('payReceiptLink1').value;
+                evt.payments.client.receiptLink2 = document.getElementById('payReceiptLink2').value;
+                
+                if(evt.status === 'הסתיים') {
+                    evt.payments.client.fullPayment = document.getElementById('payClientFull').checked;
+                    const roles = ['drummer', 'keyboard', 'sound', 'manager', 'aviv'];
+                    roles.forEach(role => {
+                        evt.payments.staff[role] = {
+                            attended: document.getElementById(`pay_${role}_attended`).checked,
+                            paid: document.getElementById(`pay_${role}_check`).checked,
+                            amount: document.getElementById(`pay_${role}_amount`).value,
+                            date: document.getElementById(`pay_${role}_date`).value,
+                            method: document.getElementById(`pay_${role}_method`).value,
+                            notes: document.getElementById(`pay_${role}_notes`).value
+                        };
+                    });
+                }
+
+                if(API_URL.includes("http")) {
+                    showLoader();
+                    fetch(API_URL, {
+                        method: 'POST',
+                        body: JSON.stringify({ action: 'savePayment', id: eventId, client: evt.payments.client, staff: evt.payments.staff })
+                    }).then(() => { 
+                        isProcessing = false;
+                        if(btn) btn.disabled = false;
+                        hideLoader(); 
+                        window.closeModal('paymentModal'); 
+                        renderPaymentsBoard(); 
+                    }).catch(()=>{ isProcessing=false; if(btn) btn.disabled=false; hideLoader(); });
+                } else {
+                    isProcessing = false;
+                    if(btn) btn.disabled = false;
+                    window.closeModal('paymentModal');
+                    renderPaymentsBoard();
+                }
+            }
+
+            window.openEventEditor = (id) => {
+                const form = document.getElementById('eventForm');
+                form.reset();
+                form.elements['id'].value = ""; 
+
+                if (id && typeof id !== 'object') {
+                    const evt = events.find(e => e.id == id);
+                    if(evt) {
+                        form.elements['id'].value = evt.id; 
+                        form.eventName.value = evt.eventName || ''; 
+                        for (let key in evt) { 
+                            if(form.elements[key]) {
+                                if(form.elements[key].type === 'checkbox') {
+                                    form.elements[key].checked = (evt[key] === true || String(evt[key]).toUpperCase() === 'TRUE');
+                                }
+                                else if(key !== 'eventName' && key !== 'id') {
+                                    form.elements[key].value = evt[key];
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                const delBtn = document.getElementById('deleteEventBtn');
+                if (currentUser && currentUser.role === 'superadmin') delBtn.style.display = 'block';
+                else delBtn.style.display = 'none';
+
+                window.closeSideMenu();
+                window.openModal('eventEditor');
+            }
+
+            window.saveEvent = (btn) => {
+                if(isProcessing) return;
+                const form = document.getElementById('eventForm');
+                const id = form.elements['id'].value;
+                
+                isProcessing = true;
+                if(btn) btn.disabled = true;
+
+                const eventData = {
+                    eventName: form.eventName.value, 
+                    date: form.date.value,
+                    hebrewDate: form.hebrewDate.value,
+                    clientName: form.clientName.value,
+                    childName: form.childName.value,
+                    phone: form.phone.value,
+                    location: form.location.value,
+                    wazeLink: form.wazeLink.value,
+                    packageType: form.packageType.value,
+                    guestTime: form.guestTime.value,
+                    startTime: form.startTime.value,
+                    price: form.price.value,
+                    status: form.status.value,
+                    mediaLink: form.mediaLink.value,
+                    notes: form.notes.value,
+                    hasKeyboard: form.hasKeyboard.checked,
+                    hasDrummers: form.hasDrummers.checked,
+                    isStudent: form.isStudent.checked 
+                };
+
+                if (id && id !== "") {
+                    eventData.action = 'saveEvent';
+                    eventData.id = id;
+                } else {
+                    eventData.action = 'createEvent';
+                    eventData.id = 'evt-' + Date.now(); 
+                    eventData.payments = { client: {}, staff: {} }; 
+                }
+                
+                if(API_URL.includes("http")) {
+                    showLoader();
+                    fetch(API_URL, { method: 'POST', body: JSON.stringify(eventData) })
+                    .then(() => {
+                        isProcessing = false;
+                        if(btn) btn.disabled = false;
+                        hideLoader();
+                        loadData(); 
+                        window.closeModal('eventEditor');
+                    }).catch(()=>{ isProcessing=false; if(btn) btn.disabled=false; hideLoader(); });
+                } else {
+                    isProcessing = false; if(btn) btn.disabled = false; window.closeModal('eventEditor');
+                }
+            }
 
             // --- CRM ולידים ---
             window.openLeadsManager = () => {
@@ -1261,373 +1646,6 @@
                     form.notes.value = "הגיע מפנייה (ליד) - " + lead.notes;
                     toggleArchiveLead(id, true);
                     closeModal('leadsModal');
-                }
-            }
-
-            // --- צ'קליסט ציוד ---
-            window.openChecklist = () => {
-                window.closeSideMenu();
-                renderChecklist();
-                window.openModal('checklistModal');
-            }
-            function renderChecklist() {
-                const list = document.getElementById('checklistList');
-                list.innerHTML = '';
-                const isSuper = (currentUser && currentUser.role === 'superadmin');
-                
-                checklistData.forEach((item, index) => {
-                    const checkedClass = item.checked ? 'line-through text-slate-500' : 'text-white';
-                    let html = `
-                        <div class="bg-slate-800 p-3 rounded-lg border border-slate-700 flex justify-between items-center">
-                            <label class="flex items-center gap-3 cursor-pointer flex-1">
-                                <input type="checkbox" class="w-5 h-5 accent-orange-500" ${item.checked ? 'checked' : ''} onchange="toggleChecklistItem(${index})">
-                                <span class="text-lg font-bold ${checkedClass}">${item.text}</span>
-                            </label>
-                    `;
-                    if(isAdmin) {
-                        html += `<button onclick="deleteChecklistItem(${index})" class="text-red-500 hover:text-red-400 p-2"><i class="fas fa-trash"></i></button>`;
-                    }
-                    html += `</div>`;
-                    list.innerHTML += html;
-                });
-                if(checklistData.length === 0) list.innerHTML = '<div class="text-slate-400 text-center">אין ציוד ברשימה כרגע.</div>';
-            }
-            window.addChecklistItem = (btn) => {
-                if(isProcessing) return;
-                const text = document.getElementById('newChecklistItem').value;
-                if(!text) return;
-                
-                isProcessing = true;
-                if(btn) btn.disabled = true;
-
-                checklistData.push({ text: text, checked: false });
-                document.getElementById('newChecklistItem').value = '';
-                saveConfigToDB('checklistDB', JSON.stringify(checklistData), () => {
-                    isProcessing = false;
-                    if(btn) btn.disabled = false;
-                    renderChecklist();
-                });
-            }
-            window.toggleChecklistItem = (index) => {
-                checklistData[index].checked = !checklistData[index].checked;
-                saveConfigToDB('checklistDB', JSON.stringify(checklistData), () => {});
-                renderChecklist();
-            }
-            window.deleteChecklistItem = (index) => {
-                checklistData.splice(index, 1);
-                saveConfigToDB('checklistDB', JSON.stringify(checklistData), renderChecklist);
-            }
-
-            // --- לינקים שימושיים ---
-            window.openUsefulLinks = () => {
-                window.closeSideMenu();
-                renderUsefulLinks();
-                window.openModal('usefulLinksModal');
-            }
-            function renderUsefulLinks() {
-                const list = document.getElementById('usefulLinksList');
-                list.innerHTML = '';
-                usefulLinksData.forEach((link, index) => {
-                    list.innerHTML += `
-                        <div class="bg-slate-800 p-3 rounded-lg border border-slate-700 flex justify-between items-center">
-                            <a href="${link.url}" target="_blank" class="text-cyan-400 font-bold text-lg hover:underline flex items-center gap-2 flex-1"><i class="fas fa-external-link-alt text-sm"></i> ${link.name}</a>
-                            <button onclick="deleteUsefulLink(${index})" class="text-red-500 hover:text-red-400 p-2"><i class="fas fa-trash"></i></button>
-                        </div>
-                    `;
-                });
-                if(usefulLinksData.length === 0) list.innerHTML = '<div class="text-slate-400 text-center">אין לינקים שמורים.</div>';
-            }
-            window.addUsefulLink = (btn) => {
-                if(isProcessing) return;
-                const name = document.getElementById('newUsefulName').value;
-                let url = document.getElementById('newUsefulUrl').value;
-                if(!name || !url) return;
-
-                isProcessing = true;
-                if(btn) btn.disabled = true;
-
-                if(!url.startsWith('http')) url = 'https://' + url;
-                usefulLinksData.push({ name, url });
-                document.getElementById('newUsefulName').value = '';
-                document.getElementById('newUsefulUrl').value = '';
-                saveConfigToDB('usefulLinksDB', JSON.stringify(usefulLinksData), () => {
-                    isProcessing = false;
-                    if(btn) btn.disabled = false;
-                    renderUsefulLinks();
-                });
-            }
-            window.deleteUsefulLink = (index) => {
-                usefulLinksData.splice(index, 1);
-                saveConfigToDB('usefulLinksDB', JSON.stringify(usefulLinksData), renderUsefulLinks);
-            }
-
-            // --- ניהול המלצות ---
-            window.openReviewsManager = () => {
-                window.closeSideMenu();
-                document.getElementById('googleReviewLinkInput').value = siteConfig.googleReviewLink || '';
-                renderReviewsManager();
-                window.openModal('reviewsManagerModal');
-            }
-            function renderReviewsManager() {
-                const list = document.getElementById('reviewsListAdmin');
-                list.innerHTML = '';
-                reviewsData.forEach((rev, index) => {
-                    let starsHtml = '⭐'.repeat(rev.stars || 5);
-                    list.innerHTML += `
-                        <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 relative">
-                            <div class="text-amber-400 mb-1">${starsHtml}</div>
-                            <div class="text-white font-bold mb-2">${rev.name}</div>
-                            <div class="text-slate-400 text-sm mb-3">"${rev.text}"</div>
-                            <button onclick="deleteReview(${index})" class="absolute top-4 left-4 text-red-500 hover:text-red-400"><i class="fas fa-trash"></i></button>
-                        </div>
-                    `;
-                });
-            }
-            window.addReview = (btn) => {
-                if(isProcessing) return;
-                const name = document.getElementById('newRevName').value;
-                const text = document.getElementById('newRevText').value;
-                const stars = document.getElementById('newRevStars').value;
-                if(!name || !text) return;
-
-                isProcessing = true;
-                if(btn) btn.disabled = true;
-
-                reviewsData.unshift({ name, text, stars: parseInt(stars) });
-                document.getElementById('newRevName').value = '';
-                document.getElementById('newRevText').value = '';
-                saveConfigToDB('reviewsDB', JSON.stringify(reviewsData), () => { 
-                    isProcessing = false;
-                    if(btn) btn.disabled = false;
-                    renderReviewsManager(); 
-                    renderPublicReviews(); 
-                });
-            }
-            window.deleteReview = (index) => {
-                reviewsData.splice(index, 1);
-                saveConfigToDB('reviewsDB', JSON.stringify(reviewsData), () => { renderReviewsManager(); renderPublicReviews(); });
-            }
-            window.saveGoogleReviewLink = (btn) => {
-                if(isProcessing) return;
-                const url = document.getElementById('googleReviewLinkInput').value;
-                siteConfig.googleReviewLink = url;
-                isProcessing = true;
-                if(btn) btn.disabled = true;
-                saveConfigToDB('googleReviewLink', url, () => {
-                    isProcessing = false;
-                    if(btn) btn.disabled = false;
-                    customAlert('לינק לביקורות נשמר בהצלחה!');
-                });
-            }
-            function renderPublicReviews() {
-                const track = document.getElementById('reviewsMarquee');
-                if(!track) return;
-                track.innerHTML = '';
-                if(!Array.isArray(reviewsData) || reviewsData.length === 0) {
-                    document.getElementById('reviewsSection').style.display = 'none';
-                    return;
-                }
-                document.getElementById('reviewsSection').style.display = 'block';
-                
-                const createSet = () => {
-                    let html = '';
-                    reviewsData.forEach(rev => {
-                        let starsHtml = '⭐'.repeat(rev.stars || 5);
-                        html += `
-                            <div class="review-card">
-                                <div class="review-stars">${starsHtml}</div>
-                                <div class="review-text">"${rev.text}"</div>
-                                <div class="review-author">- ${rev.name}</div>
-                            </div>
-                        `;
-                    });
-                    return html;
-                }
-                
-                track.innerHTML = createSet() + createSet() + createSet();
-            }
-
-            function saveConfigToDB(key, value, callback) {
-                if(API_URL.includes("http")) {
-                    showLoader();
-                    fetch(API_URL, {
-                        method: 'POST',
-                        body: JSON.stringify({ action: 'updateConfig', key: key, value: value })
-                    }).then(() => {
-                        hideLoader();
-                        if(callback) callback();
-                    }).catch(()=>{ hideLoader(); });
-                }
-            }
-
-            window.openMyPayments = () => {
-                window.closeSideMenu();
-                const body = document.getElementById('myPaymentsBody');
-                body.innerHTML = '';
-
-                let jobKey = null;
-                if(currentUser.role === 'superadmin') {
-                    jobKey = 'aviv';
-                } else if(currentUser.job) {
-                    if(currentUser.job.includes('קלידן')) jobKey = 'keyboard';
-                    else if(currentUser.job.includes('מתופף')) jobKey = 'drummer';
-                    else if(currentUser.job.includes('סאונד')) jobKey = 'sound';
-                    else if(currentUser.job.includes('מנהלת')) jobKey = 'manager';
-                }
-                
-                if(!jobKey) {
-                    body.innerHTML = '<div class="text-center text-red-400 p-6 font-bold">לא הוגדר תפקיד במערכת. אנא ודא שעמודת "תפקיד" (עמודה E בגיליון Users) מלאה.</div>';
-                    window.openModal('myPaymentsModal');
-                    return;
-                }
-
-                let total = 0;
-                let html = '<div class="flex flex-col gap-3">';
-                const myPayments = [];
-                
-                if(Array.isArray(events)) {
-                    events.forEach(evt => {
-                        if(evt.payments && evt.payments.staff && evt.payments.staff[jobKey]) {
-                            const p = evt.payments.staff[jobKey];
-                            if(p.paid && p.amount > 0 && p.attended !== false) {
-                                myPayments.push({
-                                    eventName: evt.eventName || evt.location,
-                                    date: p.date || evt.date,
-                                    amount: Number(p.amount),
-                                    method: p.method || 'לא צוין'
-                                });
-                            }
-                        }
-                    });
-                }
-
-                myPayments.sort((a,b) => new Date(b.date) - new Date(a.date));
-
-                if(myPayments.length === 0) {
-                    html += '<div class="text-center text-slate-400 p-6 text-lg">טרם התקבלו תשלומים.</div>';
-                } else {
-                    myPayments.forEach(p => {
-                        total += p.amount;
-                        html += `
-                            <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 flex justify-between items-center shadow-md hover:bg-slate-700 transition">
-                                <div>
-                                    <div class="text-white font-bold text-lg mb-1">${p.eventName}</div>
-                                    <div class="text-slate-400 text-sm"><i class="far fa-calendar-alt ml-1"></i> ${p.date} &nbsp;•&nbsp; <i class="fas fa-money-check-alt ml-1"></i> ${p.method}</div>
-                                </div>
-                                <div class="text-green-400 font-black text-2xl">${p.amount} ₪</div>
-                            </div>
-                        `;
-                    });
-                }
-                html += '</div>';
-
-                html = `
-                    <div class="bg-slate-800 p-5 rounded-xl border border-green-500/50 mb-6 text-center shadow-[0_0_15px_rgba(34,197,94,0.2)]">
-                        <div class="text-slate-300 font-bold mb-2">סך הכל שהתקבל</div>
-                        <div class="text-5xl font-black text-green-400">${total} ₪</div>
-                    </div>
-                    ${html}
-                `;
-
-                body.innerHTML = html;
-                window.openModal('myPaymentsModal');
-            }
-
-            window.editGalleryItem = (oldUrl) => {
-                 const newUrl = prompt("הכנס קישור חדש (או השאר כמו שהוא כדי לערוך רק כותרת):", oldUrl);
-                 if (newUrl !== null) {
-                     const newTitle = prompt("הכנס כותרת לסרטון (השאר ריק ללא כותרת):");
-                     if(API_URL.includes("http")) {
-                        showLoader();
-                        fetch(API_URL, {
-                            method: 'POST',
-                            body: JSON.stringify({ action: 'updateGallery', oldUrl: oldUrl, newUrl: newUrl, title: newTitle || '' })
-                        }).then(() => { loadData(); });
-                     }
-                 }
-            }
-
-            window.openEventEditor = (id) => {
-                const form = document.getElementById('eventForm');
-                form.reset();
-                form.elements['id'].value = ""; 
-
-                if (id && typeof id !== 'object') {
-                    const evt = events.find(e => e.id == id);
-                    if(evt) {
-                        form.elements['id'].value = evt.id; 
-                        form.eventName.value = evt.eventName || ''; 
-                        for (let key in evt) { 
-                            if(form.elements[key]) {
-                                if(form.elements[key].type === 'checkbox') {
-                                    form.elements[key].checked = (evt[key] === true || String(evt[key]).toUpperCase() === 'TRUE');
-                                }
-                                else if(key !== 'eventName' && key !== 'id') {
-                                    form.elements[key].value = evt[key];
-                                }
-                            }
-                        }
-                    }
-                }
-                
-                const delBtn = document.getElementById('deleteEventBtn');
-                if (currentUser && currentUser.role === 'superadmin') delBtn.style.display = 'block';
-                else delBtn.style.display = 'none';
-
-                window.closeSideMenu();
-                window.openModal('eventEditor');
-            }
-
-            window.saveEvent = (btn) => {
-                if(isProcessing) return;
-                const form = document.getElementById('eventForm');
-                const id = form.elements['id'].value;
-                
-                isProcessing = true;
-                if(btn) btn.disabled = true;
-
-                const eventData = {
-                    eventName: form.eventName.value, 
-                    date: form.date.value,
-                    hebrewDate: form.hebrewDate.value,
-                    clientName: form.clientName.value,
-                    childName: form.childName.value,
-                    phone: form.phone.value,
-                    location: form.location.value,
-                    wazeLink: form.wazeLink.value,
-                    packageType: form.packageType.value,
-                    guestTime: form.guestTime.value,
-                    startTime: form.startTime.value,
-                    price: form.price.value,
-                    status: form.status.value,
-                    mediaLink: form.mediaLink.value,
-                    notes: form.notes.value,
-                    hasKeyboard: form.hasKeyboard.checked,
-                    hasDrummers: form.hasDrummers.checked,
-                    isStudent: form.isStudent.checked 
-                };
-
-                if (id && id !== "") {
-                    eventData.action = 'saveEvent';
-                    eventData.id = id;
-                } else {
-                    eventData.action = 'createEvent';
-                    eventData.id = 'evt-' + Date.now(); 
-                    eventData.payments = { client: {}, staff: {} }; 
-                }
-                
-                if(API_URL.includes("http")) {
-                    showLoader();
-                    fetch(API_URL, { method: 'POST', body: JSON.stringify(eventData) })
-                    .then(() => {
-                        isProcessing = false;
-                        if(btn) btn.disabled = false;
-                        hideLoader();
-                        loadData(); 
-                        window.closeModal('eventEditor');
-                    }).catch(()=>{ isProcessing=false; if(btn) btn.disabled=false; hideLoader(); });
-                } else {
-                    isProcessing = false; if(btn) btn.disabled = false; window.closeModal('eventEditor');
                 }
             }
 
@@ -1835,191 +1853,146 @@
                 printWindow.document.close();
             }
             
-            window.toggleStaffAttendance = (roleKey) => {
-                const isChecked = document.getElementById(`pay_${roleKey}_attended`).checked;
-                const fieldsDiv = document.getElementById(`pay_${roleKey}_fields`);
-                const checkPaid = document.getElementById(`pay_${roleKey}_check`);
-                
-                if(isChecked) {
-                    fieldsDiv.classList.remove('opacity-50', 'pointer-events-none');
-                    checkPaid.disabled = false;
-                } else {
-                    fieldsDiv.classList.add('opacity-50', 'pointer-events-none');
-                    checkPaid.disabled = true;
-                    checkPaid.checked = false;
-                }
+             // --- לינקים שימושיים ---
+            window.openUsefulLinks = () => {
+                window.closeSideMenu();
+                renderUsefulLinks();
+                window.openModal('usefulLinksModal');
             }
-
-            window.openPaymentModal = (eventId) => {
-                const evt = events.find(e => e.id == eventId);
-                if(!evt) return;
-                
-                if (!evt.payments) evt.payments = { client: {}, staff: {} };
-                const client = evt.payments.client || {};
-                const staff = evt.payments.staff || {};
-                const depData = client.deposit || {};
-
-                document.getElementById('payEventName').innerText = evt.eventName || 'אירוע';
-                document.getElementById('payEventId').value = evt.id;
-                
-                const isDepositChecked = client.downPayment || false;
-                document.getElementById('payClientDeposit').checked = isDepositChecked;
-                document.getElementById('depositDetailsContainer').style.display = isDepositChecked ? 'flex' : 'none';
-                
-                document.getElementById('payDepositDate').value = depData.date || '';
-                document.getElementById('payDepositMethod').value = depData.method || '';
-                document.getElementById('payDepositNotes').value = depData.notes || '';
-                togglePayMethodNotes('payDepositMethod', 'payDepositNotes');
-                
-                document.getElementById('payReceiptLink1').value = client.receiptLink || '';
-                if(client.receiptLink) {
-                    document.getElementById('openReceiptBtn1').href = client.receiptLink;
-                    document.getElementById('openReceiptBtn1').style.display = 'flex';
-                } else { document.getElementById('openReceiptBtn1').style.display = 'none'; }
-
-                document.getElementById('payReceiptLink2').value = client.receiptLink2 || '';
-                if(client.receiptLink2) {
-                    document.getElementById('openReceiptBtn2').href = client.receiptLink2;
-                    document.getElementById('openReceiptBtn2').style.display = 'flex';
-                } else { document.getElementById('openReceiptBtn2').style.display = 'none'; }
-                
-                const fullPayContainer = document.getElementById('payClientFullContainer');
-                const staffContainer = document.getElementById('staffPaymentsContainer');
-                const staffList = document.getElementById('staffPaymentsList');
-                
-                if(evt.status === 'הסתיים') {
-                    fullPayContainer.classList.remove('hidden');
-                    staffContainer.classList.remove('hidden');
-                    document.getElementById('payClientFull').checked = client.fullPayment || false;
-                    
-                    staffList.innerHTML = '';
-                    const roles = [ 
-                        { key: 'keyboard', label: 'קלידן' }, 
-                        { key: 'drummer', label: 'מתופפים' }, 
-                        { key: 'sound', label: 'סאונד' }, 
-                        { key: 'manager', label: 'מנהלת אירועים' },
-                        { key: 'aviv', label: 'אביב' } 
-                    ];
-                    
-                    roles.forEach(role => {
-                        const data = staff[role.key] || { paid: false, amount: '', date: '', method: '', notes: '', attended: true };
-                        const attended = data.attended !== false; 
-                        let showNotes = data.method === 'אחר' ? '' : 'hidden';
-                        let disabledState = attended ? '' : 'disabled';
-                        let opacityState = attended ? '' : 'opacity-50 pointer-events-none';
-                        
-                        staffList.innerHTML += `
-                            <div class="bg-slate-700/40 p-4 rounded-xl border border-slate-600 relative">
-                                <div class="flex justify-between items-center mb-3">
-                                    <div class="flex items-center gap-4">
-                                        <span class="font-black text-lg text-amber-400">${role.label}</span>
-                                        <label class="flex items-center gap-1 text-sm text-gray-300 cursor-pointer">
-                                            <input type="checkbox" id="pay_${role.key}_attended" onchange="toggleStaffAttendance('${role.key}')" ${attended ? 'checked' : ''} class="w-4 h-4 accent-blue-500"> השתתף באירוע
-                                        </label>
-                                    </div>
-                                    <label class="flex items-center gap-2 text-white cursor-pointer font-bold bg-slate-900 px-3 py-1 rounded-lg border border-slate-700">
-                                        <input type="checkbox" class="w-5 h-5 accent-green-500" id="pay_${role.key}_check" ${data.paid ? 'checked' : ''} ${disabledState}> שולם
-                                    </label>
-                                </div>
-                                <div class="grid grid-cols-2 gap-3 ${opacityState}" id="pay_${role.key}_fields">
-                                    <input type="number" placeholder="סכום (₪)" class="bg-slate-900 text-white p-2 rounded-lg border border-slate-600 outline-none focus:border-blue-400" id="pay_${role.key}_amount" value="${data.amount || ''}">
-                                    <input type="date" class="bg-slate-900 text-white p-2 rounded-lg border border-slate-600 outline-none focus:border-blue-400" id="pay_${role.key}_date" value="${data.date || ''}" title="תאריך">
-                                    <select class="bg-slate-900 text-white p-2 rounded-lg border border-slate-600 outline-none focus:border-blue-400 col-span-2 md:col-span-1" id="pay_${role.key}_method" onchange="togglePayMethodNotes('pay_${role.key}_method', 'pay_${role.key}_notes')">
-                                        <option value="" ${!data.method ? 'selected' : ''}>אופן תשלום...</option>
-                                        <option value="מזומן" ${data.method==='מזומן' ? 'selected' : ''}>מזומן</option>
-                                        <option value="העברה בנקאית" ${data.method==='העברה בנקאית' ? 'selected' : ''}>העברה בנקאית</option>
-                                        <option value="Bit" ${data.method==='Bit' ? 'selected' : ''}>Bit</option>
-                                        <option value="Paybox" ${data.method==='Paybox' ? 'selected' : ''}>Paybox</option>
-                                        <option value="אחר" ${data.method==='אחר' ? 'selected' : ''}>אחר</option>
-                                    </select>
-                                    <input type="text" placeholder="פירוט הערה..." class="bg-slate-900 text-white p-2 rounded-lg border border-slate-600 outline-none focus:border-blue-400 col-span-2 md:col-span-1 ${showNotes}" id="pay_${role.key}_notes" value="${data.notes || ''}">
-                                </div>
-                            </div>
-                        `;
-                    });
-                } else {
-                    fullPayContainer.classList.add('hidden');
-                    staffContainer.classList.add('hidden');
-                }
-                window.openModal('paymentModal');
+            function renderUsefulLinks() {
+                const list = document.getElementById('usefulLinksList');
+                list.innerHTML = '';
+                usefulLinksData.forEach((link, index) => {
+                    list.innerHTML += `
+                        <div class="bg-slate-800 p-3 rounded-lg border border-slate-700 flex justify-between items-center">
+                            <a href="${link.url}" target="_blank" class="text-cyan-400 font-bold text-lg hover:underline flex items-center gap-2 flex-1"><i class="fas fa-external-link-alt text-sm"></i> ${link.name}</a>
+                            <button onclick="deleteUsefulLink(${index})" class="text-red-500 hover:text-red-400 p-2"><i class="fas fa-trash"></i></button>
+                        </div>
+                    `;
+                });
+                if(usefulLinksData.length === 0) list.innerHTML = '<div class="text-slate-400 text-center">אין לינקים שמורים.</div>';
             }
-
-            window.savePaymentData = (btn) => {
+            window.addUsefulLink = (btn) => {
                 if(isProcessing) return;
-                const eventId = document.getElementById('payEventId').value;
-                const evt = events.find(e => e.id == eventId);
-                if(!evt) return;
+                const name = document.getElementById('newUsefulName').value;
+                let url = document.getElementById('newUsefulUrl').value;
+                if(!name || !url) return;
 
                 isProcessing = true;
                 if(btn) btn.disabled = true;
 
-                if(!evt.payments) evt.payments = { client: {}, staff: {} };
-                if(!evt.payments.client) evt.payments.client = {};
-                if(!evt.payments.staff) evt.payments.staff = {};
+                if(!url.startsWith('http')) url = 'https://' + url;
+                usefulLinksData.push({ name, url });
+                document.getElementById('newUsefulName').value = '';
+                document.getElementById('newUsefulUrl').value = '';
+                saveConfigToDB('usefulLinksDB', JSON.stringify(usefulLinksData), () => {
+                    isProcessing = false;
+                    if(btn) btn.disabled = false;
+                    renderUsefulLinks();
+                });
+            }
+            window.deleteUsefulLink = (index) => {
+                usefulLinksData.splice(index, 1);
+                saveConfigToDB('usefulLinksDB', JSON.stringify(usefulLinksData), renderUsefulLinks);
+            }
 
-                evt.payments.client.downPayment = document.getElementById('payClientDeposit').checked;
-                evt.payments.client.deposit = {
-                    date: document.getElementById('payDepositDate').value,
-                    method: document.getElementById('payDepositMethod').value,
-                    notes: document.getElementById('payDepositNotes').value
-                };
-                evt.payments.client.receiptLink = document.getElementById('payReceiptLink1').value;
-                evt.payments.client.receiptLink2 = document.getElementById('payReceiptLink2').value;
-                
-                if(evt.status === 'הסתיים') {
-                    evt.payments.client.fullPayment = document.getElementById('payClientFull').checked;
-                    const roles = ['drummer', 'keyboard', 'sound', 'manager', 'aviv'];
-                    roles.forEach(role => {
-                        evt.payments.staff[role] = {
-                            attended: document.getElementById(`pay_${role}_attended`).checked,
-                            paid: document.getElementById(`pay_${role}_check`).checked,
-                            amount: document.getElementById(`pay_${role}_amount`).value,
-                            date: document.getElementById(`pay_${role}_date`).value,
-                            method: document.getElementById(`pay_${role}_method`).value,
-                            notes: document.getElementById(`pay_${role}_notes`).value
-                        };
-                    });
+            // --- ניהול המלצות ---
+            window.openReviewsManager = () => {
+                window.closeSideMenu();
+                document.getElementById('googleReviewLinkInput').value = siteConfig.googleReviewLink || '';
+                renderReviewsManager();
+                window.openModal('reviewsManagerModal');
+            }
+            function renderReviewsManager() {
+                const list = document.getElementById('reviewsListAdmin');
+                list.innerHTML = '';
+                reviewsData.forEach((rev, index) => {
+                    let starsHtml = '⭐'.repeat(rev.stars || 5);
+                    list.innerHTML += `
+                        <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 relative">
+                            <div class="text-amber-400 mb-1">${starsHtml}</div>
+                            <div class="text-white font-bold mb-2">${rev.name}</div>
+                            <div class="text-slate-400 text-sm mb-3">"${rev.text}"</div>
+                            <button onclick="deleteReview(${index})" class="absolute top-4 left-4 text-red-500 hover:text-red-400"><i class="fas fa-trash"></i></button>
+                        </div>
+                    `;
+                });
+            }
+            window.addReview = (btn) => {
+                if(isProcessing) return;
+                const name = document.getElementById('newRevName').value;
+                const text = document.getElementById('newRevText').value;
+                const stars = document.getElementById('newRevStars').value;
+                if(!name || !text) return;
+
+                isProcessing = true;
+                if(btn) btn.disabled = true;
+
+                reviewsData.unshift({ name, text, stars: parseInt(stars) });
+                document.getElementById('newRevName').value = '';
+                document.getElementById('newRevText').value = '';
+                saveConfigToDB('reviewsDB', JSON.stringify(reviewsData), () => { 
+                    isProcessing = false;
+                    if(btn) btn.disabled = false;
+                    renderReviewsManager(); 
+                    renderPublicReviews(); 
+                });
+            }
+            window.deleteReview = (index) => {
+                reviewsData.splice(index, 1);
+                saveConfigToDB('reviewsDB', JSON.stringify(reviewsData), () => { renderReviewsManager(); renderPublicReviews(); });
+            }
+            window.saveGoogleReviewLink = (btn) => {
+                if(isProcessing) return;
+                const url = document.getElementById('googleReviewLinkInput').value;
+                siteConfig.googleReviewLink = url;
+                isProcessing = true;
+                if(btn) btn.disabled = true;
+                saveConfigToDB('googleReviewLink', url, () => {
+                    isProcessing = false;
+                    if(btn) btn.disabled = false;
+                    customAlert('לינק לביקורות נשמר בהצלחה!');
+                });
+            }
+            function renderPublicReviews() {
+                const track = document.getElementById('reviewsMarquee');
+                if(!track) return;
+                track.innerHTML = '';
+                if(!Array.isArray(reviewsData) || reviewsData.length === 0) {
+                    document.getElementById('reviewsSection').style.display = 'none';
+                    return;
                 }
+                document.getElementById('reviewsSection').style.display = 'block';
+                
+                const createSet = () => {
+                    let html = '';
+                    reviewsData.forEach(rev => {
+                        let starsHtml = '⭐'.repeat(rev.stars || 5);
+                        html += `
+                            <div class="review-card">
+                                <div class="review-stars">${starsHtml}</div>
+                                <div class="review-text">"${rev.text}"</div>
+                                <div class="review-author">- ${rev.name}</div>
+                            </div>
+                        `;
+                    });
+                    return html;
+                }
+                
+                track.innerHTML = createSet() + createSet() + createSet();
+            }
 
+            function saveConfigToDB(key, value, callback) {
                 if(API_URL.includes("http")) {
                     showLoader();
                     fetch(API_URL, {
                         method: 'POST',
-                        body: JSON.stringify({ action: 'savePayment', id: eventId, client: evt.payments.client, staff: evt.payments.staff })
-                    }).then(() => { 
-                        isProcessing = false;
-                        if(btn) btn.disabled = false;
-                        hideLoader(); 
-                        window.closeModal('paymentModal'); 
-                        renderPaymentsBoard(); 
-                    }).catch(()=>{ isProcessing=false; if(btn) btn.disabled=false; hideLoader(); });
-                } else {
-                    isProcessing = false;
-                    if(btn) btn.disabled = false;
-                    window.closeModal('paymentModal');
-                    renderPaymentsBoard();
+                        body: JSON.stringify({ action: 'updateConfig', key: key, value: value })
+                    }).then(() => {
+                        hideLoader();
+                        if(callback) callback();
+                    }).catch(()=>{ hideLoader(); });
                 }
-            }
-
-            window.generateCalendarLink = (evt) => {
-                 return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(evt.eventName || 'אירוע')}&dates=${evt.date.replace(/-/g,'')}T120000/`;
-            }
-
-            window.sendWaToClient = () => {
-                 const p = document.getElementById('waPhone').value;
-                 if(!p) return alert('נא להזין מספר טלפון');
-                 const msg = "היי :) שמחתי לשוחח, מצורף הצעת המחיר ופרטים נוספים...";
-                 window.open(`https://wa.me/972${p.replace(/-/g,'').substring(1)}?text=${encodeURIComponent(msg)}`, '_blank');
-            }
-
-            window.sendReviewRequest = () => {
-                const p = document.getElementById('waPhone').value;
-                if(!p) return alert('נא להזין מספר טלפון קודם בחלונית.');
-                
-                const link = siteConfig.googleReviewLink || '';
-                const msg = `היי! שמחנו לקחת חלק בבר המצווה שלכם 💫\n\nנשמח מאוד אם תוכלו להקדיש דקה לכתוב לנו המלצה חמה בגוגל דרך הקישור הבא:\n${link}\n\nתודה רבה מראש,\nצוות אביב ויצמן`;
-                
-                window.open(`https://wa.me/972${p.replace(/-/g,'').substring(1)}?text=${encodeURIComponent(msg)}`, '_blank');
             }
 
             // Init Load
@@ -2079,7 +2052,6 @@
                     console.log("Error loading data", error);
                 }
                 
-                // הבטחה שכל הפונקציות האלו רצות בסיום השליפה כדי לבנות את האתר!
                 renderCalendar();
                 filterEvents();
                 renderGallery();
