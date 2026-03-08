@@ -108,7 +108,8 @@
         .payment-ok { border-color: #22c55e !important; box-shadow: 0 0 10px rgba(34, 197, 94, 0.3); }
         .payment-bad { border-color: #ef4444 !important; box-shadow: 0 0 10px rgba(239, 68, 68, 0.3); }
         
-        .lead-card { background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(255,255,255,0.1); border-radius: 1rem; padding: 1rem; margin-bottom: 1rem; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+        /* סגנונות חדשים למערכת הפניות (CRM) */
+        .lead-card { background: rgba(30, 41, 59, 0.9); border: 1px solid rgba(255,255,255,0.1); border-radius: 1rem; padding: 1rem; margin-bottom: 1rem; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
         .lead-alert { border-color: #ef4444 !important; box-shadow: 0 0 15px rgba(239, 68, 68, 0.4); }
         .lead-warning { border-color: #f59e0b !important; box-shadow: 0 0 15px rgba(245, 158, 11, 0.4); }
 
@@ -208,7 +209,7 @@
     <div id="sideMenu">
         <div class="text-3xl font-bold text-white mb-8 pb-4 border-b border-slate-700 text-center">תפריט ניהול</div>
         <div id="managerLinks" class="flex flex-col gap-4"></div>
-        <div class="mt-auto pt-8">
+        <div class="mt-auto pt-8 border-t border-slate-700">
             <div class="menu-item bg-red-900/50 hover:bg-red-900 border-red-800 justify-center" onclick="logout()"><i class="fas fa-sign-out-alt"></i> יציאה</div>
         </div>
     </div>
@@ -449,7 +450,9 @@
                 <button onclick="closeModal('leadsModal')" class="text-white hover:text-blue-400 text-2xl"><i class="fas fa-times"></i></button>
             </div>
             <div class="modal-body p-4 flex flex-col gap-6 bg-slate-950">
+                
                 <div id="leadsNotificationsArea" class="hidden flex-col gap-2"></div>
+                
                 <div class="bg-slate-800 p-5 rounded-xl border border-slate-700 shadow-lg">
                     <h4 class="text-lg font-bold text-amber-400 mb-4 border-b border-slate-600 pb-2"><i class="fas fa-plus-circle ml-2"></i>פנייה חדשה</h4>
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
@@ -683,7 +686,7 @@
             let siteConfig = {}; 
             let users = []; 
             
-            // משתנים למערכת ה-CRM
+            // משתנים עבור מערכת ה-CRM
             let leadsData = [];
             let currentLeadTab = 'active';
             let isProcessing = false;
@@ -698,6 +701,11 @@
                 'SOLO': { t: 'חבילת לימוד לבר מצווה', p: '₪1,500', d: 'לימוד יסודי של קריאת התורה בטעמי המקרא\nליווי אישי צמוד' },
                 'CUSTOM': { t: 'התאמה אישית', p: '', d: '' }
             };
+
+            window.generateCalendarLink = (evt) => {
+                 if(!evt || !evt.date) return '#';
+                 return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(evt.eventName || 'אירוע')}&dates=${evt.date.replace(/-/g,'')}T120000/${evt.date.replace(/-/g,'')}T150000/`;
+            }
             
             document.getElementById('uName').addEventListener('keypress', function(e) { if(e.key === 'Enter') login(); });
             document.getElementById('uPass').addEventListener('keypress', function(e) { if(e.key === 'Enter') login(); });
@@ -749,7 +757,7 @@
                     document.getElementById('filterStatus').classList.remove('hidden'); 
                     document.getElementById('paymentsSection').classList.remove('hidden');
                     
-                    // כפתור CRM החדש למנהל
+                    // --- כאן הוספנו את כפתור ניהול הפניות ---
                     menuHtml += `<div class="menu-item" onclick="openLeadsManager()"><i class="fas fa-headset text-blue-400 text-2xl"></i> ניהול פניות (CRM)</div>`;
                     
                     menuHtml += `<div class="menu-item" onclick="openEventEditor()"><i class="fas fa-plus-circle text-green-400 text-2xl"></i> הוסף אירוע</div>`;
@@ -784,8 +792,10 @@
             // ==========================================
             // --- מערכת CRM (ניהול לידים ופניות) ---
             // ==========================================
+            
             window.openLeadsManager = () => {
                 window.closeSideMenu();
+                // הגדרת תאריך פנייה להיום כברירת מחדל
                 document.getElementById('newLeadDate').value = new Date().toISOString().split('T')[0];
                 autoSetReminderDate();
                 renderLeads();
@@ -796,13 +806,14 @@
                 const inqDate = document.getElementById('newLeadDate').value;
                 if(inqDate) {
                     let d = new Date(inqDate);
-                    d.setDate(d.getDate() + 7);
+                    d.setDate(d.getDate() + 7); // תזכורת לעוד שבוע
                     document.getElementById('newLeadReminder').value = d.toISOString().split('T')[0];
                 }
             }
 
+            // נעילת הכפתור לאחר לחיצה (למניעת כפילויות)
             window.createNewLead = (btn) => {
-                if(isProcessing) return;
+                if(isProcessing) return; // הגנה
                 const name = document.getElementById('newLeadName').value;
                 if(!name) return customAlert("חובה להזין שם לקוח");
                 
@@ -810,14 +821,17 @@
                 if(btn) btn.disabled = true;
 
                 const newLead = {
-                    action: 'createLead', id: 'lead-' + Date.now(),
-                    name: name, phone: document.getElementById('newLeadPhone').value,
+                    action: 'createLead', 
+                    id: 'lead-' + Date.now(),
+                    name: name, 
+                    phone: document.getElementById('newLeadPhone').value,
                     inquiryDate: document.getElementById('newLeadDate').value,
                     status: document.getElementById('newLeadStatus').value,
                     reminderDate: document.getElementById('newLeadReminder').value,
                     notes: document.getElementById('newLeadNotes').value
                 };
                 
+                // הוספה מידית לזיכרון
                 leadsData.push({ ...newLead, isArchived: false });
                 
                 if(API_URL.includes("http")) {
@@ -828,12 +842,20 @@
                         if(btn) btn.disabled = false;
                         hideLoader(); 
                         renderLeads(); 
-                        document.getElementById('newLeadName').value=''; 
-                        document.getElementById('newLeadPhone').value=''; 
-                        document.getElementById('newLeadNotes').value=''; 
-                    }).catch(()=> { isProcessing = false; if(btn) btn.disabled = false; hideLoader(); });
+                        // איפוס הטופס
+                        document.getElementById('newLeadName').value = ''; 
+                        document.getElementById('newLeadPhone').value = ''; 
+                        document.getElementById('newLeadNotes').value = ''; 
+                    })
+                    .catch(() => { 
+                        isProcessing = false; 
+                        if(btn) btn.disabled = false; 
+                        hideLoader(); 
+                    });
                 } else { 
-                    isProcessing = false; if(btn) btn.disabled = false; renderLeads(); 
+                    isProcessing = false; 
+                    if(btn) btn.disabled = false; 
+                    renderLeads(); 
                 }
             }
 
@@ -864,13 +886,17 @@
                 today.setHours(0,0,0,0);
                 
                 let notifications = [];
+
                 let filteredLeads = leadsData.filter(l => currentLeadTab === 'active' ? !l.isArchived : l.isArchived);
+                
+                // מיון פניות לפי תאריך תזכורת (הקרוב ביותר קודם)
                 filteredLeads.sort((a,b) => new Date(a.reminderDate) - new Date(b.reminderDate));
 
                 if(filteredLeads.length === 0) {
                     container.innerHTML = '<div class="col-span-2 text-center text-slate-400 p-6 font-bold">אין פניות להצגה.</div>';
                 }
 
+                // בניית התראות חכמות רק לפניות שפתוחות
                 leadsData.filter(l => !l.isArchived).forEach(l => {
                     if(!l.reminderDate) return;
                     const remDate = new Date(l.reminderDate);
@@ -924,8 +950,8 @@
                             
                             <div class="flex gap-2 border-t border-slate-700 pt-3">
                                 ${!l.isArchived ? `
-                                    <button onclick="convertLeadToEvent('${l.id}')" class="flex-1 bg-green-600 hover:bg-green-500 text-white font-bold py-2 rounded text-sm"><i class="fas fa-check-circle ml-1"></i> נסגר!</button>
-                                    <button onclick="toggleArchiveLead('${l.id}', true)" class="bg-slate-600 hover:bg-slate-500 text-white px-3 py-2 rounded text-sm" title="לארכיון"><i class="fas fa-archive"></i></button>
+                                    <button onclick="convertLeadToEvent('${l.id}')" class="flex-1 bg-green-600 hover:bg-green-500 text-white font-bold py-2 rounded text-sm"><i class="fas fa-check-circle ml-1"></i> נסגר אירוע!</button>
+                                    <button onclick="toggleArchiveLead('${l.id}', true)" class="bg-slate-600 hover:bg-slate-500 text-white px-3 py-2 rounded text-sm" title="העבר לארכיון"><i class="fas fa-archive"></i></button>
                                     <a href="https://wa.me/972${(l.phone||'').replace(/-/g,'').substring(1)}" target="_blank" class="bg-blue-600 hover:bg-blue-500 text-white px-3 py-2 rounded text-sm"><i class="fab fa-whatsapp"></i></a>
                                 ` : `
                                     <button onclick="toggleArchiveLead('${l.id}', false)" class="flex-1 bg-amber-600 hover:bg-amber-500 text-white font-bold py-2 rounded text-sm"><i class="fas fa-undo ml-1"></i> החזר לפעילים</button>
@@ -953,14 +979,25 @@
                 }
             }
 
+            window.deleteLeadFinal = async (id) => {
+                if(!await customConfirm("למחוק את הפנייה הזו לצמיתות?")) return;
+                leadsData = leadsData.filter(l => l.id !== id);
+                renderLeads();
+                if(API_URL.includes("http")) { fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'deleteLead', id: id }) }); }
+            }
+
             window.convertLeadToEvent = (id) => {
                 const lead = leadsData.find(l => l.id === id);
                 if(lead) {
+                    // פתיחת מודאל אירוע חדש ומילוי פרטים אוטומטי מהליד!
                     openEventEditor();
                     const form = document.getElementById('eventForm');
-                    form.clientName.value = lead.name;
-                    form.phone.value = lead.phone;
-                    form.notes.value = "הגיע מפנייה (ליד) - " + lead.notes;
+                    
+                    if(form.clientName) form.clientName.value = lead.name || '';
+                    if(form.phone) form.phone.value = lead.phone || '';
+                    if(form.notes) form.notes.value = "הגיע מפנייה ב-CRM - " + (lead.notes || '');
+                    
+                    // מעביר אוטומטית את הליד לארכיון
                     toggleArchiveLead(id, true);
                     closeModal('leadsModal');
                 }
@@ -1177,11 +1214,6 @@
             document.getElementById('prevMonth').onclick = () => { currentDate.setMonth(currentDate.getMonth()-1); renderCalendar(); };
             document.getElementById('nextMonth').onclick = () => { currentDate.setMonth(currentDate.getMonth()+1); renderCalendar(); };
 
-            window.generateCalendarLink = (evt) => {
-                 if(!evt || !evt.date) return '#';
-                 return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(evt.eventName || 'אירוע')}&dates=${evt.date.replace(/-/g,'')}T120000/`;
-            }
-
             window.filterEvents = () => {
                 const timeFilter = document.getElementById('filterTime').value;
                 const typeFilter = document.getElementById('filterType').value;
@@ -1217,15 +1249,14 @@
                     const day = dateObj.getDate();
                     const month = dateObj.toLocaleString('he-IL', { month: 'short' });
                     let statusClass = evt.status === 'סגור' ? 'status-sagoor' : (evt.status === 'הסתיים' ? 'status-done' : 'status-process');
-                    let displayStatus = evt.status === 'תהליך' ? 'בתהליך סגירה' : evt.status;
-
+                    
                     let badgesHtml = `<div class="floating-badges">`;
                     if(evt.packageType && evt.packageType.includes('הכל כלול')) badgesHtml += `<span class="special-badge badge-all-inclusive"><i class="fas fa-gem ml-1"></i> הכל כלול</span>`;
                     
                     let isStudentVal = evt.isStudent === true || String(evt.isStudent).toUpperCase() === 'TRUE';
                     if(isStudentVal) badgesHtml += `<span class="special-badge badge-student"><i class="fas fa-graduation-cap ml-1"></i> תלמיד</span>`;
                     
-                    badgesHtml += `<span class="status-pill ${statusClass}">${displayStatus}</span></div>`;
+                    badgesHtml += `<span class="status-pill ${statusClass}">${evt.status}</span></div>`;
 
                     let nextEventClass = (evt.id === nextEventId) ? 'next-event' : '';
                     let nextEventLabel = (evt.id === nextEventId) ? '<div class="next-event-label">האירוע הבא</div>' : '';
@@ -1252,7 +1283,7 @@
                         cardHtml += `
                                 <div class="info-bubble"><i class="fas fa-user"></i> ${evt.clientName}</div>
                                 <div class="info-bubble"><i class="fas fa-child"></i> חתן: ${evt.childName}</div>
-                                <div class="info-bubble"><i class="fas fa-phone"></i> <a href="tel:${evt.phone}">${evt.phone}</a></div>
+                                <div class="info-bubble"><i class="fas fa-phone"></i> <a href="tel:${evt.phone}" dir="ltr">${evt.phone}</a></div>
                                 <div class="info-bubble" style="border-color: rgba(251, 191, 36, 0.4);"><i class="fas fa-tag"></i> ${evt.packageType} | ${evt.price} ₪</div>
                                 ${evt.notes ? `<div class="mt-4 p-4 rounded-xl text-lg italic notes-area">"${evt.notes}"</div>` : ''}
                             </div>
