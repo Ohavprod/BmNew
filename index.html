@@ -1013,7 +1013,7 @@
 
                 // כולם למעט מנהלת יראו את הצ'קליסט
                 if (currentUser.role !== 'manager') {
-                    menuHtml += `<div class="menu-item" onclick="openChecklist()"><i class="fas fa-clipboard-check text-orange-400 text-2xl"></i> צ'קליסט ציוד למחר</div>`;
+                    menuHtml += `<div class="menu-item" onclick="openChecklist()"><i class="fas fa-clipboard-check text-orange-400 text-2xl"></i>צ'קליסט ציוד</div>`;
                 }
                 
                 // היסטוריית תשלומים לכולם
@@ -1054,7 +1054,117 @@
                 if(siteConfig.priceSOLO) packagesData['SOLO'].p = '₪' + siteConfig.priceSOLO;
             }
 
-            // --- מערכת ניהול פניות (CRM) מחוברת לגיליון ---
+            // --- עריכת והוספת אירוע ---
+            window.openQuickEventModal = (dateStr) => {
+                document.getElementById('qeDateDisplay').innerText = dateStr;
+                document.getElementById('qeDate').value = dateStr;
+                window.openModal('quickEventModal');
+            }
+
+            window.saveQuickEvent = () => {
+                const date = document.getElementById('qeDate').value;
+                const name = document.getElementById('qeName').value;
+                if(!name) return; 
+
+                const newEvent = {
+                    action: 'createEvent', id: 'evt-' + Date.now(), date: date, eventName: name,
+                    location: document.getElementById('qeLocation').value,
+                    startTime: document.getElementById('qeStart').value,
+                    packageType: document.getElementById('qeType').value,
+                    status: 'סגור', notes: document.getElementById('qeNotes').value,
+                    phone: '', price: '0',
+                    payments: { client: { downPayment: false, fullPayment: false }, staff: {} }
+                };
+                
+                events.push(newEvent); bookedDates.push(date); 
+                if(API_URL.includes("http")) {
+                    showLoader();
+                    fetch(API_URL, { method: 'POST', body: JSON.stringify(newEvent) }).then(()=> { hideLoader(); window.closeModal('quickEventModal'); renderCalendar(); filterEvents(); loadData(); });
+                } else {
+                     window.closeModal('quickEventModal'); renderCalendar(); filterEvents();
+                }
+            }
+
+            window.openEventEditor = (id) => {
+                const form = document.getElementById('eventForm');
+                form.reset();
+                form.elements['id'].value = ""; 
+
+                if (id && typeof id !== 'object') {
+                    const evt = events.find(e => e.id == id);
+                    if(evt) {
+                        form.elements['id'].value = evt.id; 
+                        form.eventName.value = evt.eventName || ''; 
+                        for (let key in evt) { 
+                            if(form.elements[key]) {
+                                if(form.elements[key].type === 'checkbox') {
+                                    form.elements[key].checked = (evt[key] === true || String(evt[key]).toUpperCase() === 'TRUE');
+                                }
+                                else if(key !== 'eventName' && key !== 'id') {
+                                    form.elements[key].value = evt[key];
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                const delBtn = document.getElementById('deleteEventBtn');
+                if (currentUser && currentUser.role === 'superadmin') delBtn.style.display = 'block';
+                else delBtn.style.display = 'none';
+
+                window.closeSideMenu();
+                window.openModal('eventEditor');
+            }
+
+            window.saveEvent = () => {
+                const form = document.getElementById('eventForm');
+                const id = form.elements['id'].value;
+                
+                const eventData = {
+                    eventName: form.eventName.value, 
+                    date: form.date.value,
+                    hebrewDate: form.hebrewDate.value,
+                    clientName: form.clientName.value,
+                    childName: form.childName.value,
+                    phone: form.phone.value,
+                    location: form.location.value,
+                    wazeLink: form.wazeLink.value,
+                    packageType: form.packageType.value,
+                    guestTime: form.guestTime.value,
+                    startTime: form.startTime.value,
+                    price: form.price.value,
+                    status: form.status.value,
+                    mediaLink: form.mediaLink.value,
+                    notes: form.notes.value,
+                    hasKeyboard: form.hasKeyboard.checked,
+                    hasDrummers: form.hasDrummers.checked,
+                    isStudent: form.isStudent.checked 
+                };
+
+                if (id && id !== "") {
+                    eventData.action = 'saveEvent';
+                    eventData.id = id;
+                } else {
+                    eventData.action = 'createEvent';
+                    eventData.id = 'evt-' + Date.now(); 
+                    eventData.payments = { client: {}, staff: {} }; 
+                }
+                
+                if(API_URL.includes("http")) {
+                    showLoader();
+                    fetch(API_URL, { method: 'POST', body: JSON.stringify(eventData) })
+                    .then(() => {
+                        hideLoader();
+                        loadData(); 
+                        window.closeModal('eventEditor');
+                    });
+                } else {
+                    window.closeModal('eventEditor');
+                }
+            }
+
+
+            // --- מערכת ניהול פניות (CRM) ---
             
             window.toggleLeadStatusOther = () => {
                 const status = document.getElementById('newLeadStatus').value;
@@ -1472,11 +1582,14 @@
             window.saveGoogleReviewLink = () => {
                 const url = document.getElementById('googleReviewLinkInput').value;
                 siteConfig.googleReviewLink = url;
-                saveConfigToDB('googleReviewLink', url, () => customAlert('לינק לביקורות נשמר בהצלחה! הלינק ישמש לבקשת המלצות בוואטסאפ.'));
+                saveConfigToDB('googleReviewLink', url, () => {
+                    customAlert('לינק לביקורות נשמר בהצלחה! הלינק ישמש לבקשת המלצות בוואטסאפ.');
+                });
             }
             
             function renderPublicReviews() {
                 const track = document.getElementById('reviewsMarquee');
+                
                 if(!track) return;
                 track.innerHTML = '';
                 if(reviewsData.length === 0) {
@@ -2336,7 +2449,6 @@
                 const p = document.getElementById('waPhone').value;
                 if(!p) return alert('נא להזין מספר טלפון קודם בחלונית.');
                 
-                // הלינק לשליחה בוואטסאפ (לבקשת ביקורת) נמשך מההגדרות של המערכת
                 const link = siteConfig.googleReviewLink || 'https://g.page/r/your-link';
                 const msg = `היי! שמחנו לקחת חלק בבר המצווה שלכם 💫\n\nנשמח מאוד אם תוכלו להקדיש דקה לכתוב לנו המלצה חמה בגוגל דרך הקישור הבא:\n${link}\n\nתודה רבה מראש,\nצוות אביב ויצמן`;
                 
