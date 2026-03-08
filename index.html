@@ -405,7 +405,7 @@
         <div class="container mx-auto px-6 relative z-10 mb-10">
             <div class="text-center">
                  <h2 class="text-3xl md:text-5xl font-bold text-white mb-4"><i class="fab fa-google text-amber-400 ml-2"></i> מה הלקוחות אומרים עלינו בגוגל</h2>
-                 <a href="#" id="publicGoogleReviewBtn" target="_blank" class="inline-block bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-6 rounded-full transition shadow-lg text-sm border border-blue-400 hidden"><i class="fas fa-external-link-alt ml-2"></i> צפו בכל הביקורות האותנטיות ב-Google</a>
+                 <a href="https://www.google.co.il/search?ibp=gwp;0,7&q=%D7%90%D7%91%D7%99%D7%91+%D7%95%D7%99%D7%A6%D7%9E%D7%9F-+%D7%A4%D7%99%D7%99%D7%98%D7%9F+%D7%9C%D7%91%D7%A8+%D7%9E%D7%A6%D7%95%D7%95%D7%94,+%D7%9B%D7%A0%D7%99%D7%A1%D7%94+%D7%9C%D7%91%D7%A8+%D7%9E%D7%A6%D7%95%D7%95%D7%94&ludocid=4364726394594746498&lsig=AB86z5UNqc4mpbU8PscoIx1xtirt#lkt=LocalPoiReviews&lpg=cid:CgIgAQ%3D%3D" target="_blank" class="inline-block bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-6 rounded-full transition shadow-lg text-sm border border-blue-400"><i class="fas fa-external-link-alt ml-2"></i> צפו בכל הביקורות האותנטיות ב-Google</a>
             </div>
         </div>
         <div class="marquee-wrapper relative z-10">
@@ -683,11 +683,12 @@
             </div>
             <div class="modal-body">
                 <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 mb-6">
-                    <h4 class="text-amber-400 font-bold mb-2">לינק לגוגל ביקורות (לשליחה ללקוחות ויופיע באתר):</h4>
+                    <h4 class="text-amber-400 font-bold mb-2">לינק לבקשת ביקורת מהלקוח בוואטסאפ:</h4>
                     <div class="flex gap-2">
                         <input type="text" id="googleReviewLinkInput" placeholder="הדבק פה את הלינק שלך מה-Google Business..." class="w-full bg-slate-900 text-white p-2 rounded border border-slate-600 outline-none direction-ltr text-left">
                         <button onclick="saveGoogleReviewLink()" class="bg-amber-500 text-black px-4 py-2 rounded font-bold hover:bg-amber-400">שמור</button>
                     </div>
+                    <p class="text-slate-400 text-xs mt-2">* הלינק הזה יישלח כשתלחץ על "בקש המלצה" בתקשורת מול הלקוח.</p>
                 </div>
             
                 <h4 class="text-white font-bold mb-4 border-b border-slate-700 pb-2">הוסף ביקורת חדשה שתוצג באתר:</h4>
@@ -1015,7 +1016,7 @@
                     menuHtml += `<div class="menu-item" onclick="openChecklist()"><i class="fas fa-clipboard-check text-orange-400 text-2xl"></i> צ'קליסט ציוד למחר</div>`;
                 }
                 
-                // היסטוריית תשלומים
+                // היסטוריית תשלומים לכולם
                 menuHtml += `<div class="menu-item" onclick="openMyPayments()"><i class="fas fa-wallet text-green-400 text-2xl"></i> היסטוריית התשלומים שלי</div>`;
                 
                 // תשלומים והגדרות סופר אדמין (אביב)
@@ -1471,22 +1472,11 @@
             window.saveGoogleReviewLink = () => {
                 const url = document.getElementById('googleReviewLinkInput').value;
                 siteConfig.googleReviewLink = url;
-                saveConfigToDB('googleReviewLink', url, () => {
-                    customAlert('לינק לביקורות גוגל נשמר בהצלחה!');
-                    renderPublicReviews(); // מרענן את הכפתור באתר
-                });
+                saveConfigToDB('googleReviewLink', url, () => customAlert('לינק לביקורות נשמר בהצלחה! הלינק ישמש לבקשת המלצות בוואטסאפ.'));
             }
+            
             function renderPublicReviews() {
                 const track = document.getElementById('reviewsMarquee');
-                const linkBtn = document.getElementById('publicGoogleReviewBtn');
-                
-                if (siteConfig.googleReviewLink) {
-                    linkBtn.href = siteConfig.googleReviewLink;
-                    linkBtn.classList.remove('hidden');
-                } else {
-                    linkBtn.classList.add('hidden');
-                }
-
                 if(!track) return;
                 track.innerHTML = '';
                 if(reviewsData.length === 0) {
@@ -2223,7 +2213,7 @@
                 const detailsArea = document.getElementById('propCustomDetails');
                 const priceInput = document.getElementById('propCustomPrice');
                 const pkg = packagesData[type];
-                if (pkg) { detailsArea.value = pkg.d; priceInput.value = pkg.p.replace('₪', '').trim(); } // מסיר את סימן השקל אם קיים כדי לא להכפיל בהדפסה
+                if (pkg) { detailsArea.value = pkg.d; priceInput.value = pkg.p.replace('₪', '').trim(); }
             }
 
             window.generateProposal = () => {
@@ -2237,7 +2227,6 @@
                 const details = document.getElementById('propCustomDetails').value;
                 let price = document.getElementById('propCustomPrice').value.trim();
                 
-                // הוספת סימון ₪ אוטומטית אם חסר
                 if(price && !price.includes('₪')) {
                     price = price + ' ₪';
                 }
@@ -2245,7 +2234,6 @@
                 const isBarMitzvah = eventType === 'barmitzvah';
                 const docTitle = isBarMitzvah ? 'הצעת מחיר לבר מצווה' : 'הצעת מחיר לאירוע';
                 
-                // יצירת שורות דינמיות
                 const childRow = isBarMitzvah ? `<div class="row"><strong>שם חתן בר המצווה:</strong> <span>${child}</span></div>` : '';
                 const sabbathRow = isBarMitzvah && hebDateSabbath ? `<div class="row"><strong>תאריך שבת חתן:</strong> <span>${hebDateSabbath}</span></div>` : '';
                 const hebDateRow = hebDateGen ? `<div class="row"><strong>תאריך עברי:</strong> <span>${hebDateGen}</span></div>` : '';
@@ -2348,6 +2336,7 @@
                 const p = document.getElementById('waPhone').value;
                 if(!p) return alert('נא להזין מספר טלפון קודם בחלונית.');
                 
+                // הלינק לשליחה בוואטסאפ (לבקשת ביקורת) נמשך מההגדרות של המערכת
                 const link = siteConfig.googleReviewLink || 'https://g.page/r/your-link';
                 const msg = `היי! שמחנו לקחת חלק בבר המצווה שלכם 💫\n\nנשמח מאוד אם תוכלו להקדיש דקה לכתוב לנו המלצה חמה בגוגל דרך הקישור הבא:\n${link}\n\nתודה רבה מראש,\nצוות אביב ויצמן`;
                 
