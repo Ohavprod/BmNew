@@ -9,7 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&family=Raleway:wght@400;700&display=swap" rel="stylesheet">
 
     <script>
-        // *** הקישור לשרת ה-Google Apps Script המעודכן ***
+        // הקישור לשרת ה-Google Apps Script שלך
         const API_URL = "https://script.google.com/macros/s/AKfycbzEYh6FZhvd0Mlh1LbL-oRWhSE7F-1MPNtlxD6C0-BBsvvlHQ1I9FMwGDUJ3rmr7VPlzw/exec?mode=api";
     </script>
 
@@ -1024,6 +1024,14 @@
             window.scrollToEvents = () => { document.getElementById('eventsBoardSection').scrollIntoView({ behavior: 'smooth' }); window.closeSideMenu(); }
             window.scrollToPayments = () => { document.getElementById('paymentsSection').scrollIntoView({ behavior: 'smooth' }); window.closeSideMenu(); }
 
+            // --- הפונקציה שהייתה חסרה במחירון ---
+            function updatePackagesFromConfig() {
+                if(siteConfig.priceVIP) packagesData['VIP'].p = '₪' + siteConfig.priceVIP;
+                if(siteConfig.priceFESTIVE) packagesData['FESTIVE'].p = '₪' + siteConfig.priceFESTIVE;
+                if(siteConfig.priceBASIC) packagesData['BASIC'].p = '₪' + siteConfig.priceBASIC;
+                if(siteConfig.priceSOLO) packagesData['SOLO'].p = '₪' + siteConfig.priceSOLO;
+            }
+
             // --- מערכת ניהול פניות (CRM) מחוברת לגיליון ---
             
             window.toggleLeadStatusOther = () => {
@@ -1098,7 +1106,7 @@
                         customAlert('הפנייה נשמרה בהצלחה!');
                         loadData().then(() => {
                             if(document.getElementById('leadsManagerModal').style.display === 'flex') {
-                                openLeadsManager(); // מנקה שדות ומרנדר מחדש
+                                openLeadsManager(); 
                             }
                         });
                     });
@@ -1183,7 +1191,6 @@
                         reminderDate.setHours(0,0,0,0);
                         const diffDays = Math.floor((today - reminderDate) / (1000 * 60 * 60 * 24));
 
-                        // התראה אם הגיע יום התזכורת או עבר
                         if (diffDays >= 0) {
                             alerts.push({ id: lead.id, msg: `יש לשלוח תזכורת ל<b>${lead.name}</b> (איחור של ${diffDays} ימים מתאריך התזכורת)` });
                             isAlert = true;
@@ -1228,7 +1235,6 @@
                 const lead = leadsData.find(l => l.id === id);
                 if(!lead) return;
                 
-                // הופך אותו לארכיון כי העסקה נסגרה
                 lead.isArchived = true;
                 lead.action = 'updateLead';
                 
@@ -1240,7 +1246,6 @@
                 
                 window.closeModal('leadsManagerModal');
                 
-                // פתיחת עורך אירוע עם הפרטים
                 const form = document.getElementById('eventForm');
                 form.reset();
                 form.elements['id'].value = ""; 
@@ -1283,7 +1288,7 @@
                     .then(() => {
                         hideLoader();
                         loadData().then(() => {
-                            window.openArchiveModal(); // מרענן את הארכיון
+                            window.openArchiveModal(); 
                             customAlert('הפנייה שוחזרה בהצלחה ללוח הפעיל.');
                         });
                     });
@@ -1564,17 +1569,732 @@
                 window.openModal('myPaymentsModal');
             }
 
-            // פונקציות סרטונים, תמונות, קלנדר (נותרו ללא שינוי, דילגתי על כפילות לשם הקיצור)
-            // ... (ממליץ להשאיר כאן את addNewVideo, renderGallery, renderCalendar מהקוד המקורי, כיוון שלא נגענו בהן)
-            
-            // לקיצור ההודעה אדלג כאן בחזרה עד ל- Init Load. כמובן שכל הפונקציות צריכות להישאר בקובץ הסופי שלך.
-            
-            /* ... (כל שאר הפונקציות כגון renderEventsBoard, renderPaymentsBoard, payment logic, generateProposal נשארות כרגיל) ... */
+            window.addNewVideo = () => {
+                const url = prompt("הכנס קישור ליוטיוב או Vimeo או קובץ MP4:");
+                if (!url) return;
+                const title = prompt("הכנס כותרת לסרטון (לדוגמה: ליווי חתן בר המצווה):");
+                
+                if(API_URL.includes("http")) {
+                    showLoader();
+                    fetch(API_URL, {
+                        method: 'POST',
+                        body: JSON.stringify({ action: 'addToGallery', type: 'video', url: url, title: title || '' })
+                    }).then(() => { loadData(); });
+                }
+            }
 
-            // רק למען השלמות - הפונקציות שחייבות להישאר (הושמטו זמנית להקלת הקריאה, אבל מועתקות במלואן במידה ותדביק בקובץ שלך).
-            // הוספתי את loadData המעודכנת:
+            window.addNewImage = () => { 
+                const u = prompt("קישור לתמונה:"); 
+                if(u) { 
+                    if(API_URL.includes("http")) {
+                        showLoader();
+                        fetch(API_URL, {
+                            method: 'POST',
+                            body: JSON.stringify({ action: 'addToGallery', type: 'image', url: u })
+                        }).then(() => { loadData(); });
+                    } else {
+                        galleryImages.push({type: 'image', url: u}); renderGallery(); 
+                    }
+                } 
+            }
 
-            // Init Load
+            window.deleteImage = async (url) => { 
+                if(!await customConfirm("למחוק את התמונה/וידאו מהגלריה?")) return;
+                if(API_URL.includes("http")) {
+                    showLoader();
+                    fetch(API_URL, {
+                        method: 'POST',
+                        body: JSON.stringify({ action: 'deleteFromGallery', url: url })
+                    }).then(() => { loadData(); });
+                }
+            }
+            
+            window.editGalleryItem = (oldUrl) => {
+                 const newUrl = prompt("הכנס קישור חדש (או השאר כמו שהוא כדי לערוך רק כותרת):", oldUrl);
+                 if (newUrl !== null) {
+                     const newTitle = prompt("הכנס כותרת לסרטון (השאר ריק ללא כותרת):");
+                     if(API_URL.includes("http")) {
+                        showLoader();
+                        fetch(API_URL, {
+                            method: 'POST',
+                            body: JSON.stringify({ action: 'updateGallery', oldUrl: oldUrl, newUrl: newUrl, title: newTitle || '' })
+                        }).then(() => { loadData(); });
+                     }
+                 }
+            }
+
+            function renderGallery() {
+                const c = document.getElementById('imageMarquee'); 
+                const v = document.getElementById('videoContainer');
+                if(!c || !v) return;
+                
+                c.innerHTML = '';
+                v.innerHTML = '';
+
+                const images = galleryImages.filter(item => typeof item === 'string' || item.type === 'image');
+                const videos = galleryImages.filter(item => item.type === 'video');
+
+                lightboxImageUrls = images.map(i => (typeof i === 'string' ? i : i.url));
+
+                const isSuper = (currentUser && currentUser.role === 'superadmin');
+
+                const createSet = (clone) => {
+                    const w = document.createElement('div'); w.className = clone ? 'clone-set flex' : 'flex';
+                    lightboxImageUrls.forEach((src, idx) => {
+                        let btns = '';
+                        if (isSuper && !clone) {
+                             btns = `
+                                <div class="absolute top-2 right-2 flex gap-2 z-50">
+                                    <button class="bg-red-600/80 text-white p-2 rounded-full hover:bg-red-500" onclick="deleteImage('${src}')"><i class="fas fa-trash"></i></button>
+                                </div>`;
+                        }
+                        w.innerHTML += `<div class="gallery-item relative">${btns}<img src="${src}" class="gallery-img" onclick="openLightbox('${src}')"></div>`;
+                    });
+                    return w;
+                };
+                if(lightboxImageUrls.length > 0) {
+                    c.appendChild(createSet(false)); 
+                    c.appendChild(createSet(true));
+                }
+
+                videos.forEach(vid => {
+                    let embedUrl = vid.url;
+                    let isDirectFile = false;
+                    let poster = ''; 
+
+                    if (vid.url.match(/\.(mp4|webm|ogg)$/i) || vid.url.includes('drive.google.com/file')) {
+                        isDirectFile = true;
+                        if(vid.url.includes('drive.google.com/file')) {
+                            const fileId = vid.url.match(/d\/([a-zA-Z0-9_-]+)/)?.[1];
+                            if(fileId) embedUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
+                        }
+                    } 
+                    else if (vid.url.includes('vimeo')) {
+                        const vimeoId = vid.url.match(/vimeo\.com\/(?:.*#|.*\/videos\/)?([0-9]+)/);
+                        if (vimeoId && vimeoId[1]) {
+                             embedUrl = `https://player.vimeo.com/video/${vimeoId[1]}?title=0&byline=0&portrait=0&badge=0&autopause=0&player_id=0&app_id=58479`; 
+                        }
+                    } 
+                    else if (vid.url.includes('youtu')) {
+                        let id = vid.url.includes('v=') ? vid.url.split('v=')[1].split('&')[0] : vid.url.split('youtu.be/')[1].split('?')[0];
+                        embedUrl = `https://www.youtube.com/embed/${id}?autoplay=1&rel=0`;
+                        poster = `https://img.youtube.com/vi/${id}/maxresdefault.jpg`;
+                    }
+
+                    const div = document.createElement('div');
+                    div.className = "rounded-2xl overflow-hidden border border-slate-700 bg-slate-900 relative group shadow-2xl flex flex-col";
+                    
+                    let delBtn = '';
+                    if (isSuper) {
+                        delBtn = `
+                            <div class="absolute top-2 right-2 flex gap-2 z-50">
+                                <button class="bg-blue-600/80 text-white p-2 rounded-full hover:bg-blue-500" onclick="editGalleryItem('${vid.url}')"><i class="fas fa-pencil-alt"></i></button>
+                                <button class="bg-red-600/80 text-white p-2 rounded-full hover:bg-red-500" onclick="deleteImage('${vid.url}')"><i class="fas fa-trash"></i></button>
+                            </div>`;
+                    }
+                    
+                    let videoHtml = '';
+                    if (isDirectFile) {
+                        videoHtml = `${delBtn}<div class="bg-black aspect-video relative w-full"><video src="${embedUrl}" class="w-full h-full" controls playsinline controlsList="nodownload"></video></div>`;
+                    } 
+                    else if (poster) { 
+                        videoHtml = `
+                            ${delBtn}
+                            <div class="bg-black aspect-video relative cursor-pointer group w-full" onclick="this.innerHTML='<iframe class=\\'w-full h-full\\' src=\\'${embedUrl}\\' frameborder=\\'0\\' allowfullscreen allow=\\'autoplay\\'></iframe>'">
+                                <img src="${poster}" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition duration-500">
+                                <div class="absolute inset-0 flex items-center justify-center">
+                                    <div class="bg-red-600 text-white rounded-full w-16 h-16 flex items-center justify-center shadow-lg group-hover:scale-110 transition"><i class="fas fa-play text-2xl ml-1"></i></div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                    else { 
+                        videoHtml = `${delBtn}<div class="bg-black aspect-video relative w-full"><iframe class="w-full h-full" src="${embedUrl}" frameborder="0" allowfullscreen allow="autoplay; fullscreen; picture-in-picture"></iframe></div>`;
+                    }
+
+                    let titleHtml = '';
+                    if(vid.title) {
+                        titleHtml = `<div class="p-4 text-center font-bold text-amber-400 text-lg tracking-wide border-t border-slate-800 bg-slate-900/50">${vid.title}</div>`;
+                    }
+
+                    div.innerHTML = videoHtml + titleHtml;
+                    v.appendChild(div);
+                });
+            }
+
+            window.openLightbox = (src) => { 
+                currentLightboxIndex = lightboxImageUrls.indexOf(src);
+                document.getElementById('lightboxImage').src = src; 
+                window.openModal('lightboxModal'); 
+            }
+            
+            window.nextImage = (e) => {
+                if(e) e.stopPropagation(); 
+                currentLightboxIndex = (currentLightboxIndex + 1) % lightboxImageUrls.length;
+                document.getElementById('lightboxImage').src = lightboxImageUrls[currentLightboxIndex];
+            }
+            
+            window.prevImage = (e) => {
+                if(e) e.stopPropagation(); 
+                currentLightboxIndex = (currentLightboxIndex - 1 + lightboxImageUrls.length) % lightboxImageUrls.length;
+                document.getElementById('lightboxImage').src = lightboxImageUrls[currentLightboxIndex];
+            }
+
+            let currentDate = new Date();
+             function renderCalendar() {
+                const g = document.getElementById('calendarGrid'); 
+                if(!g) return;
+                g.innerHTML = '';
+                document.getElementById('monthYearDisplay').innerText = (currentDate.getMonth()+1) + '/' + currentDate.getFullYear();
+                
+                const daysInMonth = new Date(currentDate.getFullYear(), currentDate.getMonth()+1, 0).getDate();
+                const firstDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).getDay();
+
+                for(let i=0; i<firstDay; i++) g.appendChild(document.createElement('div'));
+                
+                for(let i=1; i<=daysInMonth; i++) {
+                    const d = document.createElement('div'); 
+                    d.innerText = i; 
+                    d.className = 'calendar-day';
+                    const year = currentDate.getFullYear();
+                    const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+                    const day = String(i).padStart(2, '0');
+                    const dateString = `${year}-${month}-${day}`;
+                    const isBooked = bookedDates.includes(dateString);
+
+                    if (isBooked) d.classList.add('day-booked');
+                    else d.classList.add('day-available');
+
+                    d.onclick = () => {
+                        if (isAdmin) {
+                            if (!isBooked) { window.openQuickEventModal(dateString); } 
+                        } else {
+                            if (!isBooked) { window.open(`https://wa.me/972559907076?text=${encodeURIComponent('היי,מעוניינים לסגור אירוע בר מצווה בתאריך ' + dateString + '  האם התאריך פנוי? תודה!')}`, '_blank'); }                        
+                        }
+                    };
+                    g.appendChild(d);
+                }
+            }
+            document.getElementById('prevMonth').onclick = () => { currentDate.setMonth(currentDate.getMonth()-1); renderCalendar(); };
+            document.getElementById('nextMonth').onclick = () => { currentDate.setMonth(currentDate.getMonth()+1); renderCalendar(); };
+
+            window.filterEvents = () => {
+                const timeFilter = document.getElementById('filterTime').value;
+                const typeFilter = document.getElementById('filterType').value;
+                const statusFilter = document.getElementById('filterStatus').value;
+                const todayTime = new Date().setHours(0,0,0,0);
+
+                const filtered = events.filter(evt => {
+                    if (evt.status === 'תהליך' && (!currentUser || !isAdmin)) return false;
+                    if (statusFilter !== 'all' && evt.status !== statusFilter) return false;
+                    if (statusFilter === 'תהליך' && evt.status !== 'תהליך') return false;
+                    const evtDate = new Date(evt.date).getTime();
+                    if (timeFilter === 'future' && evtDate < todayTime) return false;
+                    if (timeFilter === 'past' && evtDate >= todayTime) return false;
+                    if (typeFilter === 'keyboard' && !(evt.hasKeyboard === true || String(evt.hasKeyboard).toUpperCase() === 'TRUE')) return false;
+                    if (typeFilter === 'drummers' && !(evt.hasDrummers === true || String(evt.hasDrummers).toUpperCase() === 'TRUE')) return false;
+                    return true;
+                });
+                renderEventsBoard(filtered);
+            }
+            
+            function renderEventsBoard(dataToRender) {
+                const board = document.getElementById('eventsBoard');
+                if(!board) return;
+                board.innerHTML = '';
+                const list = dataToRender || events;
+                const sortedList = [...list].sort((a,b) => new Date(a.date) - new Date(b.date));
+                const todayTime = new Date().setHours(0,0,0,0);
+                let nextEventId = null;
+                for(let e of sortedList) { if(new Date(e.date).getTime() >= todayTime) { nextEventId = e.id; break; } }
+
+                sortedList.forEach(evt => {
+                     const dateObj = new Date(evt.date);
+                    const day = dateObj.getDate();
+                    const month = dateObj.toLocaleString('he-IL', { month: 'short' });
+                    let statusClass = evt.status === 'סגור' ? 'status-sagoor' : (evt.status === 'הסתיים' ? 'status-done' : 'status-process');
+                    let displayStatus = evt.status === 'תהליך' ? 'בתהליך סגירה' : evt.status;
+
+                    let badgesHtml = `<div class="floating-badges">`;
+                    if(evt.packageType && evt.packageType.includes('הכל כלול')) badgesHtml += `<span class="special-badge badge-all-inclusive"><i class="fas fa-gem ml-1"></i> הכל כלול</span>`;
+                    
+                    let isStudentVal = evt.isStudent === true || String(evt.isStudent).toUpperCase() === 'TRUE';
+                    if(isStudentVal) badgesHtml += `<span class="special-badge badge-student"><i class="fas fa-graduation-cap ml-1"></i> תלמיד</span>`;
+                    
+                    badgesHtml += `<span class="status-pill ${statusClass}">${displayStatus}</span></div>`;
+
+                    let nextEventClass = (evt.id === nextEventId) ? 'next-event' : '';
+                    let nextEventLabel = (evt.id === nextEventId) ? '<div class="next-event-label">האירוע הבא</div>' : '';
+
+                    let compBadges = '';
+                    if(evt.hasKeyboard === true || String(evt.hasKeyboard).toUpperCase() === 'TRUE') compBadges += `<span class="comp-badge comp-badge-key"><i class="fas fa-music"></i> קלידן</span>`;
+                    if(evt.hasDrummers === true || String(evt.hasDrummers).toUpperCase() === 'TRUE') compBadges += `<span class="comp-badge comp-badge-drum"><i class="fas fa-drum"></i> מתופפים</span>`;
+
+                    let cardHtml = `
+                        <div class="event-card ${nextEventClass}">
+                            ${nextEventLabel}
+                            <div class="card-header">
+                                <div class="date-badge"><div class="day">${day}</div><div class="month">${month}</div></div>
+                                ${badgesHtml}
+                            </div>
+                            <div class="card-body">
+                                <div class="location-title">${evt.eventName || evt.location}</div>
+                                <div class="info-bubble"><i class="fas fa-map-marker-alt"></i> ${evt.location}</div>
+                                <div class="info-bubble"><i class="far fa-clock"></i> ${evt.startTime || '--:--'} <span style="color:#94a3b8; font-size:0.9em; margin-right:5px;">(הגעה: ${evt.guestTime || '--:--'})</span></div>
+                                <div class="comp-badges">${compBadges}</div>
+                    `;
+                    
+                    if (isAdmin) {
+                        cardHtml += `
+                                <div class="info-bubble"><i class="fas fa-user"></i> ${evt.clientName}</div>
+                                <div class="info-bubble"><i class="fas fa-child"></i> חתן: ${evt.childName}</div>
+                                <div class="info-bubble"><i class="fas fa-phone"></i> <a href="tel:${evt.phone}">${evt.phone}</a></div>
+                                <div class="info-bubble" style="border-color: rgba(251, 191, 36, 0.4);"><i class="fas fa-tag"></i> ${evt.packageType} | ${evt.price} ₪</div>
+                                ${evt.notes ? `<div class="mt-4 p-4 rounded-xl text-lg italic notes-area">"${evt.notes}"</div>` : ''}
+                            </div>
+                            <div class="card-actions">
+                                <button onclick="openEventEditor('${evt.id}')" class="action-btn btn-edit"><i class="fas fa-edit"></i> ערוך</button>
+                                <button onclick="sendWaToClient('${evt.phone}')" class="action-btn btn-wa-green"><i class="fab fa-whatsapp"></i> תקשורת</button>
+                            </div>
+                        `;
+                    } 
+                    else {
+                        cardHtml += `
+                            </div>
+                            <div class="card-actions">
+                                <a href="${evt.wazeLink || '#'}" target="_blank" class="action-btn btn-waze"><i class="fab fa-waze"></i> נווט</a>
+                                <a href="${window.generateCalendarLink(evt)}" target="_blank" class="action-btn btn-cal"><i class="far fa-calendar-plus"></i> יומן</a>
+                                ${evt.mediaLink ? `<a href="${evt.mediaLink}" target="_blank" class="action-btn btn-media"><i class="fas fa-camera"></i> גלריה</a>` : ''}
+                            </div>
+                        `;
+                    }
+                    cardHtml += `</div>`;
+                    board.innerHTML += cardHtml;
+                });
+            }
+
+            function renderPaymentsBoard() {
+                const board = document.getElementById('paymentsBoard');
+                if(!board) return;
+                board.innerHTML = '';
+                
+                events.forEach(evt => {
+                    let payments = evt.payments || {};
+                    let client = payments.client || { downPayment: false, fullPayment: false };
+                    let staff = payments.staff || {};
+
+                    const isFinished = evt.status === 'הסתיים';
+                    let isFullyPaid = false;
+                    
+                    if (!isFinished) {
+                        isFullyPaid = client.downPayment; 
+                    } else {
+                        const clientOK = client.fullPayment;
+                        const staffOK = Object.values(staff).every(s => {
+                            if (s.attended === false) return true; 
+                            if (s.amount && s.amount > 0) return s.paid;
+                            return true; 
+                        });
+                        isFullyPaid = clientOK && staffOK;
+                    }
+
+                    const borderClass = isFullyPaid ? 'payment-ok' : 'payment-bad';
+                    const depositIcon = client.downPayment ? '<i class="fas fa-check text-green-500"></i>' : '<i class="fas fa-times text-red-500"></i>';
+
+                    let cardHtml = `
+                        <div class="payment-card ${borderClass}">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-xl font-bold text-white">${evt.eventName || 'אירוע'}</h3>
+                                <span class="text-sm text-gray-400">${evt.date}</span>
+                            </div>
+                            <div class="mb-4 text-right text-gray-300">
+                                 <div>מקדמה: ${depositIcon}</div>
+                                 ${isFinished ? `<div>גמר חשבון: ${client.fullPayment ? '<i class="fas fa-check text-green-500"></i>' : '<i class="fas fa-times text-red-500"></i>'}</div>` : ''}
+                            </div>
+                            <button onclick="openPaymentModal('${evt.id}')" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 rounded">ניהול תשלומים</button>
+                        </div>
+                    `;
+                    board.innerHTML += cardHtml;
+                });
+            }
+
+            window.togglePayMethodNotes = (selectId, notesId) => {
+                const val = document.getElementById(selectId).value;
+                const notesEl = document.getElementById(notesId);
+                if(val === 'אחר') {
+                    notesEl.classList.remove('hidden');
+                } else {
+                    notesEl.classList.add('hidden');
+                }
+            }
+
+            window.toggleStaffAttendance = (roleKey) => {
+                const isChecked = document.getElementById(`pay_${roleKey}_attended`).checked;
+                const fieldsDiv = document.getElementById(`pay_${roleKey}_fields`);
+                const checkPaid = document.getElementById(`pay_${roleKey}_check`);
+                
+                if(isChecked) {
+                    fieldsDiv.classList.remove('opacity-50', 'pointer-events-none');
+                    checkPaid.disabled = false;
+                } else {
+                    fieldsDiv.classList.add('opacity-50', 'pointer-events-none');
+                    checkPaid.disabled = true;
+                    checkPaid.checked = false;
+                }
+            }
+
+            window.openPaymentModal = (eventId) => {
+                const evt = events.find(e => e.id == eventId);
+                if(!evt) return;
+                
+                if (!evt.payments) evt.payments = { client: {}, staff: {} };
+                const client = evt.payments.client || {};
+                const staff = evt.payments.staff || {};
+                const depData = client.deposit || {};
+
+                document.getElementById('payEventName').innerText = evt.eventName || 'אירוע';
+                document.getElementById('payEventId').value = evt.id;
+                
+                const isDepositChecked = client.downPayment || false;
+                document.getElementById('payClientDeposit').checked = isDepositChecked;
+                document.getElementById('depositDetailsContainer').style.display = isDepositChecked ? 'flex' : 'none';
+                
+                document.getElementById('payDepositDate').value = depData.date || '';
+                document.getElementById('payDepositMethod').value = depData.method || '';
+                document.getElementById('payDepositNotes').value = depData.notes || '';
+                togglePayMethodNotes('payDepositMethod', 'payDepositNotes');
+                
+                document.getElementById('payReceiptLink1').value = client.receiptLink || '';
+                if(client.receiptLink) {
+                    document.getElementById('openReceiptBtn1').href = client.receiptLink;
+                    document.getElementById('openReceiptBtn1').style.display = 'flex';
+                } else { document.getElementById('openReceiptBtn1').style.display = 'none'; }
+
+                document.getElementById('payReceiptLink2').value = client.receiptLink2 || '';
+                if(client.receiptLink2) {
+                    document.getElementById('openReceiptBtn2').href = client.receiptLink2;
+                    document.getElementById('openReceiptBtn2').style.display = 'flex';
+                } else { document.getElementById('openReceiptBtn2').style.display = 'none'; }
+                
+                const fullPayContainer = document.getElementById('payClientFullContainer');
+                const staffContainer = document.getElementById('staffPaymentsContainer');
+                const staffList = document.getElementById('staffPaymentsList');
+                
+                if(evt.status === 'הסתיים') {
+                    fullPayContainer.classList.remove('hidden');
+                    staffContainer.classList.remove('hidden');
+                    document.getElementById('payClientFull').checked = client.fullPayment || false;
+                    
+                    staffList.innerHTML = '';
+                    const roles = [ 
+                        { key: 'keyboard', label: 'קלידן' }, 
+                        { key: 'drummer', label: 'מתופפים' }, 
+                        { key: 'sound', label: 'סאונד' }, 
+                        { key: 'manager', label: 'מנהלת אירועים' },
+                        { key: 'aviv', label: 'אביב' } 
+                    ];
+                    
+                    roles.forEach(role => {
+                        const data = staff[role.key] || { paid: false, amount: '', date: '', method: '', notes: '', attended: true };
+                        const attended = data.attended !== false; 
+                        let showNotes = data.method === 'אחר' ? '' : 'hidden';
+                        let disabledState = attended ? '' : 'disabled';
+                        let opacityState = attended ? '' : 'opacity-50 pointer-events-none';
+                        
+                        staffList.innerHTML += `
+                            <div class="bg-slate-700/40 p-4 rounded-xl border border-slate-600 relative">
+                                <div class="flex justify-between items-center mb-3">
+                                    <div class="flex items-center gap-4">
+                                        <span class="font-black text-lg text-amber-400">${role.label}</span>
+                                        <label class="flex items-center gap-1 text-sm text-gray-300 cursor-pointer">
+                                            <input type="checkbox" id="pay_${role.key}_attended" onchange="toggleStaffAttendance('${role.key}')" ${attended ? 'checked' : ''} class="w-4 h-4 accent-blue-500"> השתתף באירוע
+                                        </label>
+                                    </div>
+                                    <label class="flex items-center gap-2 text-white cursor-pointer font-bold bg-slate-900 px-3 py-1 rounded-lg border border-slate-700">
+                                        <input type="checkbox" class="w-5 h-5 accent-green-500" id="pay_${role.key}_check" ${data.paid ? 'checked' : ''} ${disabledState}> שולם
+                                    </label>
+                                </div>
+                                <div class="grid grid-cols-2 gap-3 ${opacityState}" id="pay_${role.key}_fields">
+                                    <input type="number" placeholder="סכום (₪)" class="bg-slate-900 text-white p-2 rounded-lg border border-slate-600 outline-none focus:border-blue-400" id="pay_${role.key}_amount" value="${data.amount || ''}">
+                                    <input type="date" class="bg-slate-900 text-white p-2 rounded-lg border border-slate-600 outline-none focus:border-blue-400" id="pay_${role.key}_date" value="${data.date || ''}" title="תאריך">
+                                    <select class="bg-slate-900 text-white p-2 rounded-lg border border-slate-600 outline-none focus:border-blue-400 col-span-2 md:col-span-1" id="pay_${role.key}_method" onchange="togglePayMethodNotes('pay_${role.key}_method', 'pay_${role.key}_notes')">
+                                        <option value="" ${!data.method ? 'selected' : ''}>אופן תשלום...</option>
+                                        <option value="מזומן" ${data.method==='מזומן' ? 'selected' : ''}>מזומן</option>
+                                        <option value="העברה בנקאית" ${data.method==='העברה בנקאית' ? 'selected' : ''}>העברה בנקאית</option>
+                                        <option value="Bit" ${data.method==='Bit' ? 'selected' : ''}>Bit</option>
+                                        <option value="Paybox" ${data.method==='Paybox' ? 'selected' : ''}>Paybox</option>
+                                        <option value="אחר" ${data.method==='אחר' ? 'selected' : ''}>אחר</option>
+                                    </select>
+                                    <input type="text" placeholder="פירוט הערה..." class="bg-slate-900 text-white p-2 rounded-lg border border-slate-600 outline-none focus:border-blue-400 col-span-2 md:col-span-1 ${showNotes}" id="pay_${role.key}_notes" value="${data.notes || ''}">
+                                </div>
+                            </div>
+                        `;
+                    });
+                } else {
+                    fullPayContainer.classList.add('hidden');
+                    staffContainer.classList.add('hidden');
+                }
+                window.openModal('paymentModal');
+            }
+
+            window.savePaymentData = () => {
+                const eventId = document.getElementById('payEventId').value;
+                const evt = events.find(e => e.id == eventId);
+                if(!evt) return;
+
+                if(!evt.payments) evt.payments = { client: {}, staff: {} };
+                if(!evt.payments.client) evt.payments.client = {};
+                if(!evt.payments.staff) evt.payments.staff = {};
+
+                evt.payments.client.downPayment = document.getElementById('payClientDeposit').checked;
+                evt.payments.client.deposit = {
+                    date: document.getElementById('payDepositDate').value,
+                    method: document.getElementById('payDepositMethod').value,
+                    notes: document.getElementById('payDepositNotes').value
+                };
+                evt.payments.client.receiptLink = document.getElementById('payReceiptLink1').value;
+                evt.payments.client.receiptLink2 = document.getElementById('payReceiptLink2').value;
+                
+                if(evt.status === 'הסתיים') {
+                    evt.payments.client.fullPayment = document.getElementById('payClientFull').checked;
+                    const roles = ['drummer', 'keyboard', 'sound', 'manager', 'aviv'];
+                    roles.forEach(role => {
+                        evt.payments.staff[role] = {
+                            attended: document.getElementById(`pay_${role}_attended`).checked,
+                            paid: document.getElementById(`pay_${role}_check`).checked,
+                            amount: document.getElementById(`pay_${role}_amount`).value,
+                            date: document.getElementById(`pay_${role}_date`).value,
+                            method: document.getElementById(`pay_${role}_method`).value,
+                            notes: document.getElementById(`pay_${role}_notes`).value
+                        };
+                    });
+                }
+
+                if(API_URL.includes("http")) {
+                    showLoader();
+                    fetch(API_URL, {
+                        method: 'POST',
+                        body: JSON.stringify({ action: 'savePayment', id: eventId, client: evt.payments.client, staff: evt.payments.staff })
+                    }).then(() => { hideLoader(); window.closeModal('paymentModal'); renderPaymentsBoard(); });
+                } else {
+                    window.closeModal('paymentModal');
+                    renderPaymentsBoard();
+                }
+            }
+
+            window.openPriceListEditor = () => { 
+                const body = document.getElementById('priceListBody');
+                body.innerHTML = '';
+                
+                const pkgs = [
+                    { id: 'VIP', title: 'חבילת הכל כלול VIP' },
+                    { id: 'FESTIVE', title: 'חבילה חגיגית' },
+                    { id: 'BASIC', title: 'חבילת בסיס' },
+                    { id: 'SOLO', title: 'חבילת לימוד לבר מצווה' }
+                ];
+
+                let html = '<div class="grid gap-6">';
+                const isSuper = (currentUser && currentUser.role === 'superadmin');
+
+                pkgs.forEach(pkg => {
+                    html += `<div class="bg-slate-800 p-6 rounded-xl border border-slate-600 shadow-lg">
+                        <h3 class="text-xl font-bold text-amber-400 border-b border-slate-700 pb-2 mb-4">${pkg.title}</h3>`;
+                    
+                    html += buildPriceRow(`price${pkg.id}`, 'מחיר סופי', pricingData[`price${pkg.id}`] || siteConfig[`price${pkg.id}`] || '', isSuper, true);
+                    html += buildPriceRow(`discount${pkg.id}`, 'מקסימום הנחה (בתיאום מראש עם אביב)', pricingData[`discount${pkg.id}`] || '', isSuper, false);
+                    
+                    if (isSuper) {
+                        html += `<div class="mt-4 pt-4 border-t border-slate-700">`;
+                        html += buildPriceRow(`payKey${pkg.id}`, 'תשלום לקלידן', pricingData[`payKey${pkg.id}`] || '', true, false);
+                        html += buildPriceRow(`payDrum${pkg.id}`, 'תשלום למתופפים', pricingData[`payDrum${pkg.id}`] || '', true, false);
+                        html += buildPriceRow(`paySound${pkg.id}`, 'תשלום לסאונד', pricingData[`paySound${pkg.id}`] || '', true, false);
+                        html += buildPriceRow(`payMgr${pkg.id}`, 'תשלום למנהלת', pricingData[`payMgr${pkg.id}`] || '', true, false);
+                        html += buildPriceRow(`payAviv${pkg.id}`, 'נשאר לאביב', pricingData[`payAviv${pkg.id}`] || '', true, false);
+                        html += `</div>`;
+                    }
+                    html += `</div>`;
+                });
+                
+                html += '</div>';
+
+                if (isSuper) {
+                    html += `<div class="mt-8 text-center border-t border-slate-700 pt-6">
+                        <button onclick="savePricesFull()" class="bg-green-600 hover:bg-green-500 text-white font-bold py-3 px-12 rounded-full shadow-[0_0_15px_rgba(34,197,94,0.4)] transition text-lg">שמור מחירון</button>
+                    </div>`;
+                }
+
+                body.innerHTML = html;
+                window.closeSideMenu();
+                window.openModal('priceListEditorModal');
+            }
+
+            function buildPriceRow(id, label, val, isEditable, isMain) {
+                const textStyle = isMain ? 'text-amber-400 font-bold' : 'text-slate-300';
+                if (isEditable) {
+                    return `<div class="flex justify-between items-center mb-3">
+                        <label class="${textStyle} w-1/2">${label}</label>
+                        <input type="number" id="${id}" value="${val}" class="w-1/3 bg-slate-900 border border-slate-600 p-2 rounded text-white text-center font-bold outline-none focus:border-amber-400">
+                    </div>`;
+                } else {
+                    return `<div class="flex justify-between items-center mb-3 border-b border-slate-700/50 pb-2">
+                        <span class="${textStyle} text-sm">${label}</span>
+                        <span class="text-white font-bold bg-slate-900 px-4 py-1 rounded border border-slate-700">${val ? val + ' ₪' : '--'}</span>
+                    </div>`;
+                }
+            }
+
+            window.savePricesFull = () => {
+                const pkgs = ['VIP', 'FESTIVE', 'BASIC', 'SOLO'];
+                const fields = ['price', 'discount', 'payKey', 'payDrum', 'paySound', 'payMgr', 'payAviv'];
+                
+                pkgs.forEach(id => {
+                    fields.forEach(f => {
+                        const key = `${f}${id}`;
+                        const el = document.getElementById(key);
+                        if (el) pricingData[key] = el.value;
+                    });
+                });
+
+                ['VIP', 'FESTIVE', 'BASIC', 'SOLO'].forEach(id => { siteConfig[`price${id}`] = pricingData[`price${id}`]; });
+                updatePackagesFromConfig(); 
+
+                if(API_URL.includes("http")) {
+                    showLoader();
+                    fetch(API_URL, {
+                        method: 'POST',
+                        body: JSON.stringify({ action: 'updateConfig', key: 'pricingDB', value: JSON.stringify(pricingData) })
+                    }).then(() => {
+                        hideLoader();
+                        window.closeModal('priceListEditorModal');
+                        customAlert('המחירון עודכן ושמור בהצלחה!');
+                    });
+                }
+            }
+
+            window.updateProposalFields = () => {
+                const type = document.getElementById('propType').value;
+                const detailsArea = document.getElementById('propCustomDetails');
+                const priceInput = document.getElementById('propCustomPrice');
+                const pkg = packagesData[type];
+                if (pkg) { detailsArea.value = pkg.d; priceInput.value = pkg.p; }
+            }
+
+            window.generateProposal = () => {
+                 const name = document.getElementById('propName').value;
+                const child = document.getElementById('propChild').value;
+                const date = document.getElementById('propDate').value;
+                const hebDate = document.getElementById('propHebDate').value;
+                const loc = document.getElementById('propLocation').value;
+                const details = document.getElementById('propCustomDetails').value;
+                const price = document.getElementById('propCustomPrice').value;
+
+                const printWindow = window.open('', '_blank');
+                
+                printWindow.document.write(`
+                    <html lang="he" dir="rtl">
+                    <head>
+                        <title>הצעת מחיר - אביב ויצמן</title>
+                        <style>
+                            @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&display=swap');
+                            body { font-family: 'Heebo', sans-serif; padding: 40px; max-width: 800px; margin: 0 auto; direction: rtl; color: black; }
+                            .header { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 4px solid #0056b3; padding-bottom: 15px; margin-bottom: 30px; }
+                            .logo { height: 100px; width: auto; display: block; } 
+                            .business-details { text-align: left; line-height: 1.6; color: #333; font-size: 14px; }
+                            .bsd { position: absolute; top: 20px; right: 20px; font-weight: bold; font-size: 14px; }
+                            h1 { text-align: center; font-size: 36px; font-weight: 900; text-decoration: underline; color: #051c42; margin-bottom: 30px; }
+                            .grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-bottom: 30px; }
+                            .section { background: #f9fafb; border: 1px solid #e5e7eb; padding: 20px; border-radius: 12px; }
+                            .section h3 { border-bottom: 2px solid #fbbf24; padding-bottom: 8px; margin-bottom: 15px; color: #051c42; font-size: 20px; font-weight: bold; }
+                            .row { display: flex; justify-content: space-between; margin-bottom: 10px; border-bottom: 1px dashed #e5e7eb; padding-bottom: 5px; font-size: 16px; }
+                            .pkg-box { background: #eff6ff; border: 1px solid #bfdbfe; padding: 25px; border-radius: 12px; margin-bottom: 30px; }
+                            .pkg-title { font-size: 22px; font-weight: bold; color: #1e40af; border-bottom: 1px solid #93c5fd; padding-bottom: 10px; margin-bottom: 15px; }
+                            .pkg-desc { font-size: 18px; line-height: 1.6; white-space: pre-line; }
+                            .total-box { background-color: #051c42; color: white; padding: 25px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; margin-top: 20px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+                            .total-label { font-size: 24px; font-weight: bold; color: #ffffff; }
+                            .total-price { font-size: 40px; font-weight: 900; color: #ffffff; text-shadow: 0 0 10px rgba(0,0,0,0.5); }
+                            .footer { margin-top: 60px; text-align: center; border-top: 1px solid #e5e7eb; padding-top: 20px; color: #666; font-size: 14px; }
+                            .quote { font-family: 'Heebo', sans-serif; font-size: 24px; font-weight: 900; color: #051c42; margin-bottom: 10px; display: block; }
+                            @media print { body { -webkit-print-color-adjust: exact; } }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="bsd">בס"ד</div>
+                        <div class="header">
+                            <img src="https://i.postimg.cc/CMcRF8Nm/Logo.gif" class="logo" alt="Logo">
+                            <div class="business-details">
+                                <div><strong>אביב ויצמן - פייטן לבר מצווה</strong></div>
+                                <div>עוסק פטור: 315660746</div>
+                                <div>avivshows@gmail.com</div>
+                                <div>055-9907076</div>
+                            </div>
+                        </div>
+
+                        <h1>הצעת מחיר</h1>
+
+                        <div class="grid-container">
+                            <div class="section">
+                                <h3>פרטי הלקוח</h3>
+                                <div class="row"><strong>שם:</strong> <span>${name}</span></div>
+                                <div class="row"><strong>שם הילד:</strong> <span>${child}</span></div>
+                            </div>
+                            <div class="section">
+                                <h3>פרטי האירוע</h3>
+                                <div class="row"><strong>תאריך:</strong> <span>${date}</span></div>
+                                <div class="row"><strong>תאריך שבת:</strong> <span>${hebDate}</span></div>
+                                <div class="row"><strong>מיקום:</strong> <span>${loc}</span></div>
+                            </div>
+                        </div>
+
+                        <div class="pkg-box">
+                            <div class="pkg-title">שירותים נבחרים:</div>
+                            <div class="pkg-desc">${details.replace(/\n/g, '<br>')}</div>
+                        </div>
+
+                        <div class="total-box">
+                            <span class="total-label">סה"כ לתשלום:</span>
+                            <span class="total-price">${price}</span>
+                        </div>
+
+                        <div class="footer">
+                            <span class="quote">"בשם השם נעשה ונצליח!"</span>
+                            <p>ההצעה בתוקף ל-30 יום מתאריך ההפקה</p>
+                            <p>אפשרויות תשלום: ביט / פייבוקס / העברה בנקאית / צ'ק</p>
+                        </div>
+
+                        <script>
+                            window.onload = function() { window.print(); }
+                        <\/script>
+                    </body>
+                    </html>
+                `);
+                printWindow.document.close();
+            }
+            
+             window.generateCalendarLink = (evt) => {
+                 return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(evt.eventName || 'אירוע')}&dates=${evt.date.replace(/-/g,'')}T120000/`;
+            }
+
+            window.sendWaToClient = (phone) => {
+                 const p = phone || document.getElementById('waPhone').value;
+                 if(!p) return alert('נא להזין מספר טלפון');
+                 const msg = "היי :) שמחתי לשוחח, מצורף הצעת המחיר ופרטים נוספים...";
+                 window.open(`https://wa.me/972${p.replace(/-/g,'').substring(1)}?text=${encodeURIComponent(msg)}`, '_blank');
+            }
+
+            window.sendReviewRequest = () => {
+                const p = document.getElementById('waPhone').value;
+                if(!p) return alert('נא להזין מספר טלפון קודם בחלונית.');
+                
+                const link = siteConfig.googleReviewLink || 'https://g.page/r/your-link';
+                const msg = `היי! שמחנו לקחת חלק בבר המצווה שלכם 💫\n\nנשמח מאוד אם תוכלו להקדיש דקה לכתוב לנו המלצה חמה בגוגל דרך הקישור הבא:\n${link}\n\nתודה רבה מראש,\nצוות אביב ויצמן`;
+                
+                window.open(`https://wa.me/972${p.replace(/-/g,'').substring(1)}?text=${encodeURIComponent(msg)}`, '_blank');
+            }
+
+            window.openWhatsAppTool = () => { window.closeSideMenu(); window.openModal('whatsappModal'); }
+            window.openProposalTool = () => { window.closeSideMenu(); window.openModal('proposalSetupModal'); }
+
+            // Init Load - טעינת כל הנתונים בפתיחת האתר
             async function loadData() {
                 try {
                     showLoader(); 
@@ -1622,7 +2342,7 @@
                         renderPublicReviews();
                     }
                     
-                    // טעינת הפניות מהגיליון החדש
+                    // טעינת הפניות (לידים) מהשרת
                     if (data.leads) { leadsData = data.leads; }
                     
                     if (data.gallery) galleryImages = data.gallery;
@@ -1633,19 +2353,19 @@
 
                 } catch (error) {
                     hideLoader();
-                    console.log("Error Loading / Demo Mode", error);
+                    console.log("Error Loading", error);
                 }
                 
-                // ודא שכל הפונקציות קיימות אצלך לפני ההפעלה (renderCalendar וכו')
+                // ציור כל הלוחות
                 if(typeof renderCalendar === 'function') renderCalendar();
                 if(typeof filterEvents === 'function') filterEvents();
                 if(typeof renderGallery === 'function') renderGallery();
                 if(currentUser && currentUser.role === 'superadmin' && typeof renderPaymentsBoard === 'function') renderPaymentsBoard();
             }
 
+            // הפעלת הטעינה כשהאתר עולה
             loadData();
         });
     </script>
 </body>
 </html>
-
