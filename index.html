@@ -883,8 +883,192 @@
                 if (currentUser && currentUser.role === 'superadmin') {
                     document.querySelectorAll('[contenteditable]').forEach(el => { el.contentEditable = true; el.classList.add('editable-active'); });
                 }
-                renderGallery(); renderCalendar();
+                renderGallery(); 
+                renderCalendar(); // <-- שוחזר!
             }
+
+            // --- הפונקציות שהיו חסרות ושוחזרו במלואן ---
+            
+            let currentDate = new Date();
+            
+            window.renderCalendar = () => {
+                const g = document.getElementById('calendarGrid'); 
+                if(!g) return;
+                g.innerHTML = '';
+                document.getElementById('monthYearDisplay').innerText = (currentDate.getMonth()+1) + '/' + currentDate.getFullYear();
+                
+                const daysInMonth = new Date(currentDate.getFullYear(), currentDate.getMonth()+1, 0).getDate();
+                const firstDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).getDay();
+
+                for(let i=0; i<firstDay; i++) g.appendChild(document.createElement('div'));
+                
+                for(let i=1; i<=daysInMonth; i++) {
+                    const d = document.createElement('div'); 
+                    d.innerText = i; 
+                    d.className = 'calendar-day';
+                    const year = currentDate.getFullYear();
+                    const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+                    const day = String(i).padStart(2, '0');
+                    const dateString = `${year}-${month}-${day}`;
+                    const isBooked = bookedDates.includes(dateString);
+
+                    if (isBooked) d.classList.add('day-booked');
+                    else d.classList.add('day-available');
+
+                    d.onclick = () => {
+                        if (isAdmin) {
+                            if (!isBooked) { window.openQuickEventModal(dateString); } 
+                        } else {
+                            if (!isBooked) { window.open(`https://wa.me/972559907076?text=${encodeURIComponent('היי,מעוניינים לסגור אירוע בר מצווה בתאריך ' + dateString + '  האם התאריך פנוי? תודה!')}`, '_blank'); }                        
+                        }
+                    };
+                    g.appendChild(d);
+                }
+            }
+            document.getElementById('prevMonth').onclick = () => { currentDate.setMonth(currentDate.getMonth()-1); renderCalendar(); };
+            document.getElementById('nextMonth').onclick = () => { currentDate.setMonth(currentDate.getMonth()+1); renderCalendar(); };
+
+            window.filterEvents = () => {
+                const timeFilter = document.getElementById('filterTime').value;
+                const typeFilter = document.getElementById('filterType').value;
+                const statusFilter = document.getElementById('filterStatus').value;
+                const todayTime = new Date().setHours(0,0,0,0);
+
+                const filtered = events.filter(evt => {
+                    if (evt.status === 'תהליך' && (!currentUser || !isAdmin)) return false;
+                    if (statusFilter !== 'all' && evt.status !== statusFilter) return false;
+                    if (statusFilter === 'תהליך' && evt.status !== 'תהליך') return false;
+                    const evtDate = new Date(evt.date).getTime();
+                    if (timeFilter === 'future' && evtDate < todayTime) return false;
+                    if (timeFilter === 'past' && evtDate >= todayTime) return false;
+                    if (typeFilter === 'keyboard' && !(evt.hasKeyboard === true || String(evt.hasKeyboard).toUpperCase() === 'TRUE')) return false;
+                    if (typeFilter === 'drummers' && !(evt.hasDrummers === true || String(evt.hasDrummers).toUpperCase() === 'TRUE')) return false;
+                    return true;
+                });
+                renderEventsBoard(filtered);
+            }
+            
+            function renderEventsBoard(dataToRender) {
+                const board = document.getElementById('eventsBoard');
+                if(!board) return;
+                board.innerHTML = '';
+                const list = dataToRender || events;
+                const sortedList = [...list].sort((a,b) => new Date(a.date) - new Date(b.date));
+                const todayTime = new Date().setHours(0,0,0,0);
+                let nextEventId = null;
+                for(let e of sortedList) { if(new Date(e.date).getTime() >= todayTime) { nextEventId = e.id; break; } }
+
+                sortedList.forEach(evt => {
+                     const dateObj = new Date(evt.date);
+                    const day = dateObj.getDate();
+                    const month = dateObj.toLocaleString('he-IL', { month: 'short' });
+                    let statusClass = evt.status === 'סגור' ? 'status-sagoor' : (evt.status === 'הסתיים' ? 'status-done' : 'status-process');
+                    let displayStatus = evt.status === 'תהליך' ? 'בתהליך סגירה' : evt.status;
+
+                    let badgesHtml = `<div class="floating-badges">`;
+                    if(evt.packageType && evt.packageType.includes('הכל כלול')) badgesHtml += `<span class="special-badge badge-all-inclusive"><i class="fas fa-gem ml-1"></i> הכל כלול</span>`;
+                    
+                    let isStudentVal = evt.isStudent === true || String(evt.isStudent).toUpperCase() === 'TRUE';
+                    if(isStudentVal) badgesHtml += `<span class="special-badge badge-student"><i class="fas fa-graduation-cap ml-1"></i> תלמיד</span>`;
+                    
+                    badgesHtml += `<span class="status-pill ${statusClass}">${displayStatus}</span></div>`;
+
+                    let nextEventClass = (evt.id === nextEventId) ? 'next-event' : '';
+                    let nextEventLabel = (evt.id === nextEventId) ? '<div class="next-event-label">האירוע הבא</div>' : '';
+
+                    let compBadges = '';
+                    if(evt.hasKeyboard === true || String(evt.hasKeyboard).toUpperCase() === 'TRUE') compBadges += `<span class="comp-badge comp-badge-key"><i class="fas fa-music"></i> קלידן</span>`;
+                    if(evt.hasDrummers === true || String(evt.hasDrummers).toUpperCase() === 'TRUE') compBadges += `<span class="comp-badge comp-badge-drum"><i class="fas fa-drum"></i> מתופפים</span>`;
+
+                    let cardHtml = `
+                        <div class="event-card ${nextEventClass}">
+                            ${nextEventLabel}
+                            <div class="card-header">
+                                <div class="date-badge"><div class="day">${day}</div><div class="month">${month}</div></div>
+                                ${badgesHtml}
+                            </div>
+                            <div class="card-body">
+                                <div class="location-title">${evt.eventName || evt.location}</div>
+                                <div class="info-bubble"><i class="fas fa-map-marker-alt"></i> ${evt.location}</div>
+                                <div class="info-bubble"><i class="far fa-clock"></i> ${evt.startTime || '--:--'} <span style="color:#94a3b8; font-size:0.9em; margin-right:5px;">(הגעה: ${evt.guestTime || '--:--'})</span></div>
+                                <div class="comp-badges">${compBadges}</div>
+                    `;
+                    
+                    if (isAdmin) {
+                        cardHtml += `
+                                <div class="info-bubble"><i class="fas fa-user"></i> ${evt.clientName}</div>
+                                <div class="info-bubble"><i class="fas fa-child"></i> חתן: ${evt.childName}</div>
+                                <div class="info-bubble"><i class="fas fa-phone"></i> <a href="tel:${evt.phone}">${evt.phone}</a></div>
+                                <div class="info-bubble" style="border-color: rgba(251, 191, 36, 0.4);"><i class="fas fa-tag"></i> ${evt.packageType} | ${evt.price} ₪</div>
+                                ${evt.notes ? `<div class="mt-4 p-4 rounded-xl text-lg italic notes-area">"${evt.notes}"</div>` : ''}
+                            </div>
+                            <div class="card-actions">
+                                <button onclick="openEventEditor('${evt.id}')" class="action-btn btn-edit"><i class="fas fa-edit"></i> ערוך</button>
+                                <button onclick="sendWaToClient('${evt.phone}')" class="action-btn btn-wa-green"><i class="fab fa-whatsapp"></i> תקשורת</button>
+                            </div>
+                        `;
+                    } 
+                    else {
+                        cardHtml += `
+                            </div>
+                            <div class="card-actions">
+                                <a href="${evt.wazeLink || '#'}" target="_blank" class="action-btn btn-waze"><i class="fab fa-waze"></i> נווט</a>
+                                <a href="${window.generateCalendarLink(evt)}" target="_blank" class="action-btn btn-cal"><i class="far fa-calendar-plus"></i> יומן</a>
+                                ${evt.mediaLink ? `<a href="${evt.mediaLink}" target="_blank" class="action-btn btn-media"><i class="fas fa-camera"></i> גלריה</a>` : ''}
+                            </div>
+                        `;
+                    }
+                    cardHtml += `</div>`;
+                    board.innerHTML += cardHtml;
+                });
+            }
+
+            function renderPaymentsBoard() {
+                const board = document.getElementById('paymentsBoard');
+                if(!board) return;
+                board.innerHTML = '';
+                
+                events.forEach(evt => {
+                    let payments = evt.payments || {};
+                    let client = payments.client || { downPayment: false, fullPayment: false };
+                    let staff = payments.staff || {};
+
+                    const isFinished = evt.status === 'הסתיים';
+                    let isFullyPaid = false;
+                    
+                    if (!isFinished) {
+                        isFullyPaid = client.downPayment; 
+                    } else {
+                        const clientOK = client.fullPayment;
+                        const staffOK = Object.values(staff).every(s => {
+                            if (s.attended === false) return true; 
+                            if (s.amount && s.amount > 0) return s.paid;
+                            return true; 
+                        });
+                        isFullyPaid = clientOK && staffOK;
+                    }
+
+                    const borderClass = isFullyPaid ? 'payment-ok' : 'payment-bad';
+                    const depositIcon = client.downPayment ? '<i class="fas fa-check text-green-500"></i>' : '<i class="fas fa-times text-red-500"></i>';
+
+                    let cardHtml = `
+                        <div class="payment-card ${borderClass}">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-xl font-bold text-white">${evt.eventName || 'אירוע'}</h3>
+                                <span class="text-sm text-gray-400">${evt.date}</span>
+                            </div>
+                            <div class="mb-4 text-right text-gray-300">
+                                 <div>מקדמה: ${depositIcon}</div>
+                                 ${isFinished ? `<div>גמר חשבון: ${client.fullPayment ? '<i class="fas fa-check text-green-500"></i>' : '<i class="fas fa-times text-red-500"></i>'}</div>` : ''}
+                            </div>
+                            <button onclick="openPaymentModal('${evt.id}')" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 rounded">ניהול תשלומים</button>
+                        </div>
+                    `;
+                    board.innerHTML += cardHtml;
+                });
+            }
+
+            // --- המשך כל שאר הפונקציות שכבר היו בקוד שלך ---
 
             window.scrollToEvents = () => { document.getElementById('eventsBoardSection').scrollIntoView({ behavior: 'smooth' }); window.closeSideMenu(); }
             window.scrollToPayments = () => { document.getElementById('paymentsSection').scrollIntoView({ behavior: 'smooth' }); window.closeSideMenu(); }
@@ -1292,7 +1476,7 @@
                 }
                 
                 if(!jobKey) {
-                    body.innerHTML = '<div class="text-center text-red-400 p-6 font-bold">לא הוגדר תפקיד במערכת. אנא ודא שעמודת "תפקיד" באקסל מלאה.</div>';
+                    body.innerHTML = '<div class="text-center text-red-400 p-6 font-bold">לא הוגדר תפקיד במערכת. אנא ודא שעמודת "תפקיד" (עמודה E בגיליון Users) מלאה.</div>';
                     window.openModal('myPaymentsModal');
                     return;
                 }
@@ -1363,8 +1547,6 @@
                  }
             }
 
-            let currentDate = new Date();
-            
             window.openEventEditor = (id) => {
                 const form = document.getElementById('eventForm');
                 form.reset();
@@ -1471,7 +1653,7 @@
                         <h3 class="text-xl font-bold text-amber-400 border-b border-slate-700 pb-2 mb-4">${pkg.title}</h3>`;
                     
                     html += buildPriceRow(`price${pkg.id}`, 'מחיר סופי', pricingData[`price${pkg.id}`] || siteConfig[`price${pkg.id}`] || '', isSuper, true);
-                    html += buildPriceRow(`discount${pkg.id}`, 'מקסימום הנחה (בתיאום מראש)', pricingData[`discount${pkg.id}`] || '', isSuper, false);
+                    html += buildPriceRow(`discount${pkg.id}`, 'מקסימום הנחה מותרת (בתיאום מראש)', pricingData[`discount${pkg.id}`] || '', isSuper, false);
                     
                     if (isSuper) {
                         html += `<div class="mt-4 pt-4 border-t border-slate-700">`;
@@ -1653,7 +1835,173 @@
                 printWindow.document.close();
             }
             
-             window.generateCalendarLink = (evt) => {
+            window.toggleStaffAttendance = (roleKey) => {
+                const isChecked = document.getElementById(`pay_${roleKey}_attended`).checked;
+                const fieldsDiv = document.getElementById(`pay_${roleKey}_fields`);
+                const checkPaid = document.getElementById(`pay_${roleKey}_check`);
+                
+                if(isChecked) {
+                    fieldsDiv.classList.remove('opacity-50', 'pointer-events-none');
+                    checkPaid.disabled = false;
+                } else {
+                    fieldsDiv.classList.add('opacity-50', 'pointer-events-none');
+                    checkPaid.disabled = true;
+                    checkPaid.checked = false;
+                }
+            }
+
+            window.openPaymentModal = (eventId) => {
+                const evt = events.find(e => e.id == eventId);
+                if(!evt) return;
+                
+                if (!evt.payments) evt.payments = { client: {}, staff: {} };
+                const client = evt.payments.client || {};
+                const staff = evt.payments.staff || {};
+                const depData = client.deposit || {};
+
+                document.getElementById('payEventName').innerText = evt.eventName || 'אירוע';
+                document.getElementById('payEventId').value = evt.id;
+                
+                const isDepositChecked = client.downPayment || false;
+                document.getElementById('payClientDeposit').checked = isDepositChecked;
+                document.getElementById('depositDetailsContainer').style.display = isDepositChecked ? 'flex' : 'none';
+                
+                document.getElementById('payDepositDate').value = depData.date || '';
+                document.getElementById('payDepositMethod').value = depData.method || '';
+                document.getElementById('payDepositNotes').value = depData.notes || '';
+                togglePayMethodNotes('payDepositMethod', 'payDepositNotes');
+                
+                document.getElementById('payReceiptLink1').value = client.receiptLink || '';
+                if(client.receiptLink) {
+                    document.getElementById('openReceiptBtn1').href = client.receiptLink;
+                    document.getElementById('openReceiptBtn1').style.display = 'flex';
+                } else { document.getElementById('openReceiptBtn1').style.display = 'none'; }
+
+                document.getElementById('payReceiptLink2').value = client.receiptLink2 || '';
+                if(client.receiptLink2) {
+                    document.getElementById('openReceiptBtn2').href = client.receiptLink2;
+                    document.getElementById('openReceiptBtn2').style.display = 'flex';
+                } else { document.getElementById('openReceiptBtn2').style.display = 'none'; }
+                
+                const fullPayContainer = document.getElementById('payClientFullContainer');
+                const staffContainer = document.getElementById('staffPaymentsContainer');
+                const staffList = document.getElementById('staffPaymentsList');
+                
+                if(evt.status === 'הסתיים') {
+                    fullPayContainer.classList.remove('hidden');
+                    staffContainer.classList.remove('hidden');
+                    document.getElementById('payClientFull').checked = client.fullPayment || false;
+                    
+                    staffList.innerHTML = '';
+                    const roles = [ 
+                        { key: 'keyboard', label: 'קלידן' }, 
+                        { key: 'drummer', label: 'מתופפים' }, 
+                        { key: 'sound', label: 'סאונד' }, 
+                        { key: 'manager', label: 'מנהלת אירועים' },
+                        { key: 'aviv', label: 'אביב' } 
+                    ];
+                    
+                    roles.forEach(role => {
+                        const data = staff[role.key] || { paid: false, amount: '', date: '', method: '', notes: '', attended: true };
+                        const attended = data.attended !== false; 
+                        let showNotes = data.method === 'אחר' ? '' : 'hidden';
+                        let disabledState = attended ? '' : 'disabled';
+                        let opacityState = attended ? '' : 'opacity-50 pointer-events-none';
+                        
+                        staffList.innerHTML += `
+                            <div class="bg-slate-700/40 p-4 rounded-xl border border-slate-600 relative">
+                                <div class="flex justify-between items-center mb-3">
+                                    <div class="flex items-center gap-4">
+                                        <span class="font-black text-lg text-amber-400">${role.label}</span>
+                                        <label class="flex items-center gap-1 text-sm text-gray-300 cursor-pointer">
+                                            <input type="checkbox" id="pay_${role.key}_attended" onchange="toggleStaffAttendance('${role.key}')" ${attended ? 'checked' : ''} class="w-4 h-4 accent-blue-500"> השתתף באירוע
+                                        </label>
+                                    </div>
+                                    <label class="flex items-center gap-2 text-white cursor-pointer font-bold bg-slate-900 px-3 py-1 rounded-lg border border-slate-700">
+                                        <input type="checkbox" class="w-5 h-5 accent-green-500" id="pay_${role.key}_check" ${data.paid ? 'checked' : ''} ${disabledState}> שולם
+                                    </label>
+                                </div>
+                                <div class="grid grid-cols-2 gap-3 ${opacityState}" id="pay_${role.key}_fields">
+                                    <input type="number" placeholder="סכום (₪)" class="bg-slate-900 text-white p-2 rounded-lg border border-slate-600 outline-none focus:border-blue-400" id="pay_${role.key}_amount" value="${data.amount || ''}">
+                                    <input type="date" class="bg-slate-900 text-white p-2 rounded-lg border border-slate-600 outline-none focus:border-blue-400" id="pay_${role.key}_date" value="${data.date || ''}" title="תאריך">
+                                    <select class="bg-slate-900 text-white p-2 rounded-lg border border-slate-600 outline-none focus:border-blue-400 col-span-2 md:col-span-1" id="pay_${role.key}_method" onchange="togglePayMethodNotes('pay_${role.key}_method', 'pay_${role.key}_notes')">
+                                        <option value="" ${!data.method ? 'selected' : ''}>אופן תשלום...</option>
+                                        <option value="מזומן" ${data.method==='מזומן' ? 'selected' : ''}>מזומן</option>
+                                        <option value="העברה בנקאית" ${data.method==='העברה בנקאית' ? 'selected' : ''}>העברה בנקאית</option>
+                                        <option value="Bit" ${data.method==='Bit' ? 'selected' : ''}>Bit</option>
+                                        <option value="Paybox" ${data.method==='Paybox' ? 'selected' : ''}>Paybox</option>
+                                        <option value="אחר" ${data.method==='אחר' ? 'selected' : ''}>אחר</option>
+                                    </select>
+                                    <input type="text" placeholder="פירוט הערה..." class="bg-slate-900 text-white p-2 rounded-lg border border-slate-600 outline-none focus:border-blue-400 col-span-2 md:col-span-1 ${showNotes}" id="pay_${role.key}_notes" value="${data.notes || ''}">
+                                </div>
+                            </div>
+                        `;
+                    });
+                } else {
+                    fullPayContainer.classList.add('hidden');
+                    staffContainer.classList.add('hidden');
+                }
+                window.openModal('paymentModal');
+            }
+
+            window.savePaymentData = (btn) => {
+                if(isProcessing) return;
+                const eventId = document.getElementById('payEventId').value;
+                const evt = events.find(e => e.id == eventId);
+                if(!evt) return;
+
+                isProcessing = true;
+                if(btn) btn.disabled = true;
+
+                if(!evt.payments) evt.payments = { client: {}, staff: {} };
+                if(!evt.payments.client) evt.payments.client = {};
+                if(!evt.payments.staff) evt.payments.staff = {};
+
+                evt.payments.client.downPayment = document.getElementById('payClientDeposit').checked;
+                evt.payments.client.deposit = {
+                    date: document.getElementById('payDepositDate').value,
+                    method: document.getElementById('payDepositMethod').value,
+                    notes: document.getElementById('payDepositNotes').value
+                };
+                evt.payments.client.receiptLink = document.getElementById('payReceiptLink1').value;
+                evt.payments.client.receiptLink2 = document.getElementById('payReceiptLink2').value;
+                
+                if(evt.status === 'הסתיים') {
+                    evt.payments.client.fullPayment = document.getElementById('payClientFull').checked;
+                    const roles = ['drummer', 'keyboard', 'sound', 'manager', 'aviv'];
+                    roles.forEach(role => {
+                        evt.payments.staff[role] = {
+                            attended: document.getElementById(`pay_${role}_attended`).checked,
+                            paid: document.getElementById(`pay_${role}_check`).checked,
+                            amount: document.getElementById(`pay_${role}_amount`).value,
+                            date: document.getElementById(`pay_${role}_date`).value,
+                            method: document.getElementById(`pay_${role}_method`).value,
+                            notes: document.getElementById(`pay_${role}_notes`).value
+                        };
+                    });
+                }
+
+                if(API_URL.includes("http")) {
+                    showLoader();
+                    fetch(API_URL, {
+                        method: 'POST',
+                        body: JSON.stringify({ action: 'savePayment', id: eventId, client: evt.payments.client, staff: evt.payments.staff })
+                    }).then(() => { 
+                        isProcessing = false;
+                        if(btn) btn.disabled = false;
+                        hideLoader(); 
+                        window.closeModal('paymentModal'); 
+                        renderPaymentsBoard(); 
+                    }).catch(()=>{ isProcessing=false; if(btn) btn.disabled=false; hideLoader(); });
+                } else {
+                    isProcessing = false;
+                    if(btn) btn.disabled = false;
+                    window.closeModal('paymentModal');
+                    renderPaymentsBoard();
+                }
+            }
+
+            window.generateCalendarLink = (evt) => {
                  return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(evt.eventName || 'אירוע')}&dates=${evt.date.replace(/-/g,'')}T120000/`;
             }
 
@@ -1730,6 +2078,8 @@
                     hideLoader();
                     console.log("Error loading data", error);
                 }
+                
+                // הבטחה שכל הפונקציות האלו רצות בסיום השליפה כדי לבנות את האתר!
                 renderCalendar();
                 filterEvents();
                 renderGallery();
