@@ -434,7 +434,12 @@
         <div class="copyright">© 2026 כל הזכויות שמורות לאביב ויצמן</div>
         <i id="loginIcon" class="fas fa-user-circle footer-login-btn" onclick="openLoginModal()" title="כניסת מורשים"></i>
     </footer>
-
+<div id="lightboxModal" class="modal-overlay" onclick="closeModal('lightboxModal')">
+        <button onclick="closeModal('lightboxModal')" class="absolute top-4 right-4 text-white text-4xl z-[100] hover:text-amber-400 transition"><i class="fas fa-times"></i></button>
+        <button class="lightbox-nav lightbox-prev" onclick="prevImage(event)"><i class="fas fa-chevron-right"></i></button>
+        <button class="lightbox-nav lightbox-next" onclick="nextImage(event)"><i class="fas fa-chevron-left"></i></button>
+        <img id="lightboxImage" src="" class="max-h-[90vh] max-w-[90vw] object-contain mx-auto relative z-50 rounded-xl shadow-2xl" onclick="event.stopPropagation()">
+    </div>
     <div id="loginModal" class="modal-overlay">
         <div class="modal-content !w-[400px] text-center bg-slate-900 border-amber-500/30">
             <h3 class="text-2xl font-bold mb-4 text-amber-400">כניסה למערכת</h3>
@@ -2534,3 +2539,4 @@
     </script>
 </body>
 </html>
+
