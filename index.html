@@ -928,9 +928,10 @@
                 document.getElementById('menuOverlay').classList.remove('show'); 
             }
 
-            window.openStudentsManager = () => {
+         window.openStudentsManager = () => {
                 window.closeSideMenu();
-                customAlert("מערכת ניהול תלמידים תיבנה בדף נפרד ותחובר לכאן בקרוב!");
+                // מעבר למערכת התלמידים באותו חלון
+                window.location.href = 'students.html'; 
             }
             
             window.deleteEvent = async () => {
@@ -2530,3 +2531,4 @@
     </script>
 </body>
 </html>
+
