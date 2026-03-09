@@ -1,0 +1,1276 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ניהול תלמידי בר מצווה | אביב ויצמן</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* --- בסיס עיצובי --- */
+        html { font-size: 16px; } /* פונט בסיס למחשב */
+        body { font-family: 'Heebo', sans-serif; background-color: #051c42; color: #ffffff; min-height: 100vh; overflow-x: hidden; margin: 0; padding: 0; }
+        #fixed-background { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; background-image: linear-gradient(180deg, #051c42 0%, #021029 100%); pointer-events: none; }
+        .gold-text { background: linear-gradient(45deg, #fbbf24, #d97706); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 900; }
+        
+        #globalLoader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); z-index: 9999999; display: none; justify-content: center; align-items: center; flex-direction: column; backdrop-filter: blur(5px); }
+        .spinner { border: 6px solid rgba(255, 255, 255, 0.3); border-top: 6px solid #fbbf24; border-radius: 50%; width: 60px; height: 60px; animation: spin 1s linear infinite; margin-bottom: 20px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .glass-card { background: linear-gradient(145deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.95)); backdrop-filter: blur(12px); border: 1px solid rgba(251, 191, 36, 0.25); box-shadow: 0 15px 35px rgba(0,0,0,0.5); }
+        
+        .student-card { background: linear-gradient(145deg, rgba(40, 56, 84, 0.8), rgba(15, 23, 42, 0.9)); border: 1px solid rgba(96, 165, 250, 0.25); border-top: 1px solid rgba(251, 191, 36, 0.4); border-radius: 1.5rem; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4); padding: 1.8rem; transition: all 0.3s ease; position: relative; overflow: hidden; }
+        
+        .btn-primary { background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%); color: #0f172a; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3); font-weight: 900; }
+        .btn-primary:hover { background: linear-gradient(135deg, #f59e0b 0%, #b45309 100%); color: white; }
+
+        .form-input { background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(96, 165, 250, 0.3); color: white; transition: all 0.3s ease; }
+        .form-input:focus { border-color: #fbbf24; background: rgba(15, 23, 42, 0.9); outline: none; }
+        
+        .info-bubble { background: rgba(2, 6, 23, 0.5); border: 1px solid rgba(255,255,255,0.05); border-radius: 1rem; padding: 10px 15px; display: flex; align-items: center; gap: 10px; color: #cbd5e1; font-size: 1.05rem; }
+        .info-bubble i { width: 20px; text-align: center; color: #60a5fa; font-size: 1.3rem; }
+
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 99999; display: none; justify-content: center; align-items: center; backdrop-filter: blur(5px); padding: 10px; }
+        .modal-overlay.active { display: flex; }
+        .modal-content { background: #0f172a; border-radius: 1.5rem; border: 1px solid #334155; width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto; padding: 25px; }
+
+        .action-btn { padding: 12px; border-radius: 1rem; font-weight: bold; font-size: 1.05rem; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; border: none; }
+        .btn-edit { background: linear-gradient(135deg, #475569, #334155); color: white; border: 1px solid #64748b; } 
+        .btn-lesson { background: linear-gradient(135deg, #8b5cf6, #6d28d9); color: white; }
+        .btn-delete { background: linear-gradient(135deg, #ef4444, #b91c1c); color: white; }
+
+        /* חומרי הלימוד ונגן */
+        .inline-material-box { background: rgba(2, 6, 23, 0.6); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 1rem; padding: 1.5rem; margin-top: 1rem; }
+        .audio-ctrl-btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 6px 12px; border-radius: 8px; font-weight: bold; font-size: 0.9rem; transition: 0.2s; cursor: pointer; }
+        .audio-ctrl-btn:hover { background: #3b82f6; border-color: #60a5fa; }
+        
+        .zoom-btn { background: rgba(0,0,0,0.8); color: white; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,0.4); transition: 0.2s; font-size: 1.2rem; }
+        .zoom-btn:hover { background: #fbbf24; color: black; border-color: #fbbf24; transform: scale(1.1); }
+        
+        .custom-scrollbar::-webkit-scrollbar { width: 8px; height: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #000; border-radius: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #475569; border-radius: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #64748b; }
+
+        /* === התאמות למובייל === */
+        @media (max-width: 768px) {
+            html { font-size: 13px; } /* הקטנת יחס פונט בסיסי לנייד */
+            .student-card { padding: 1.2rem; }
+            .inline-material-box { padding: 1rem; }
+            .info-bubble { padding: 8px 12px; font-size: 1rem; }
+            .zoom-btn { width: 36px; height: 36px; font-size: 1rem; }
+            .audio-ctrl-btn { padding: 6px 8px; font-size: 0.8rem; }
+            .action-btn { padding: 10px; font-size: 1rem; }
+            h1.text-4xl { font-size: 2.2rem; }
+            .modal-content { padding: 15px; }
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div id="fixed-background"></div>
+
+    <div id="globalLoader">
+        <div class="spinner"></div>
+        <div class="text-white text-xl font-bold">מעבד נתונים מהענן...</div>
+    </div>
+
+    <div id="globalAlert" class="fixed top-5 left-1/2 transform -translate-x-1/2 z-[999999] hidden transition-all duration-300">
+        <div class="bg-blue-600 text-white px-6 py-3 rounded-full font-bold shadow-lg flex items-center gap-2 text-lg" id="globalAlertContent">
+            <span id="globalAlertText"></span>
+        </div>
+    </div>
+
+    <div id="loginScreen" class="min-h-screen flex items-center justify-center relative z-10 px-4">
+        <div class="glass-card rounded-3xl p-8 md:p-10 max-w-md w-full text-center">
+            <div class="mb-6 flex justify-center">
+                <div class="w-20 h-20 md:w-24 md:h-24 bg-blue-900/50 rounded-full flex items-center justify-center border-2 border-amber-400 shadow-[0_0_20px_rgba(251,191,36,0.3)]">
+                    <i class="fas fa-graduation-cap text-4xl md:text-5xl text-amber-400"></i>
+                </div>
+            </div>
+            <h1 class="text-3xl md:text-4xl font-black text-white mb-2">אביב <span class="gold-text">ויצמן</span></h1>
+            <h2 class="text-xl md:text-2xl font-bold text-blue-200 mb-8">מערכת לימוד לבר מצווה</h2>
+            
+            <form onsubmit="handleLogin(event)">
+                <input type="text" id="loginName" placeholder="הכנס שם מלא..." required class="form-input w-full p-4 rounded-xl text-center mb-4 text-lg md:text-xl font-bold" oninput="window.handleNameInput()">
+                
+                <div id="phoneSection" class="hidden mb-4">
+                    <input type="tel" id="loginPhone" placeholder="מספר הטלפון שלך..." class="form-input w-full p-4 rounded-xl text-center text-lg md:text-xl mb-2">
+                    <p class="text-amber-400 text-sm">נמצא תלמיד עם שם זהה, הוסף נייד לאימות.</p>
+                </div>
+
+                <div id="passwordSection" class="hidden mb-4">
+                    <input type="password" id="loginPassword" placeholder="הכנס סיסמת מנהל..." class="form-input w-full p-4 rounded-xl text-center text-lg md:text-xl mb-2 border-amber-500/50 focus:border-amber-400">
+                </div>
+                
+                <button type="submit" class="btn-primary w-full py-4 rounded-xl text-xl md:text-2xl mt-2 shadow-lg hover:scale-105 transition-transform">
+                    כניסה למערכת <i class="fas fa-arrow-left ml-2"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div id="mainSystem" class="container mx-auto px-4 py-8 hidden relative z-10">
+        
+        <div class="flex flex-col md:flex-row justify-between items-center bg-slate-900/80 border border-slate-700 p-5 md:p-6 rounded-3xl mb-8 backdrop-blur-md shadow-xl">
+            <div class="flex items-center gap-4 mb-4 md:mb-0">
+                <div class="w-14 h-14 md:w-16 md:h-16 bg-blue-900/50 rounded-full flex items-center justify-center border border-amber-400">
+                    <i class="fas fa-user-graduate text-2xl md:text-3xl text-amber-400"></i>
+                </div>
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-black text-white">מערכת לימוד <span class="gold-text">בר מצווה</span></h1>
+                    <div id="welcomeMessage" class="text-blue-200 font-bold text-base md:text-lg mt-1"></div>
+                </div>
+            </div>
+            <div class="flex gap-3">
+                <button id="adminToolsBtn" onclick="toggleAdminSidebar()" class="hidden bg-blue-600 hover:bg-blue-500 text-white px-5 py-3 rounded-xl font-bold transition shadow-lg text-base md:text-lg">ניהול <i class="fas fa-cog"></i></button>
+                <button onclick="logout()" class="bg-slate-700 hover:bg-slate-600 text-white px-5 py-3 rounded-xl font-bold transition shadow-lg text-base md:text-lg">יציאה <i class="fas fa-sign-out-alt"></i></button>
+            </div>
+        </div>
+
+        <div id="addStudentBtnWrapper" class="text-center mb-8 hidden">
+            <button onclick="showAddStudentForm()" class="bg-green-600 hover:bg-green-500 text-white px-8 py-3 rounded-full font-bold text-lg md:text-xl shadow-[0_0_15px_rgba(34,197,94,0.3)] transition-all transform hover:scale-105">
+                <i class="fas fa-plus-circle ml-2"></i> הוסף תלמיד חדש
+            </button>
+        </div>
+
+        <div id="studentsGrid" class="grid grid-cols-1 gap-8 max-w-4xl mx-auto"></div>
+
+        <div id="completedStudentsSection" class="hidden mt-16 max-w-4xl mx-auto">
+            <div class="flex items-center justify-between mb-6 border-b border-slate-700 pb-4">
+                <h3 class="text-2xl font-black text-slate-300"><i class="fas fa-check-circle text-green-500 ml-2"></i> תלמידי עבר (סיימו)</h3>
+            </div>
+            <div id="completedStudentsGrid" class="grid grid-cols-1 gap-8 opacity-75"></div>
+        </div>
+
+        <div id="emptyState" class="text-center py-16 hidden">
+            <div class="glass-card rounded-3xl p-12 max-w-md mx-auto">
+                <i class="fas fa-book-reader text-6xl text-slate-500 mb-6"></i>
+                <h3 class="text-2xl font-bold text-white mb-2">אין תלמידים להצגה</h3>
+                <p class="text-slate-400">לא נמצאו נתונים תואמים במערכת.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="adminSidebar" class="fixed top-0 right-0 h-full w-[85%] md:w-80 bg-slate-900 border-l border-slate-700 text-white shadow-[0_0_30px_rgba(0,0,0,0.8)] z-[100] transform translate-x-full transition-transform duration-300 overflow-y-auto">
+        <div class="p-6">
+            <div class="flex items-center justify-between mb-8 border-b border-slate-700 pb-4">
+                <h3 class="text-xl font-bold gold-text"><i class="fas fa-user-shield ml-2"></i> פאנל מורה</h3>
+                <button onclick="toggleAdminSidebar()" class="text-slate-400 hover:text-white text-3xl"><i class="fas fa-times"></i></button>
+            </div>
+
+            <div class="space-y-4 mb-8">
+                <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 flex justify-between items-center">
+                    <div class="text-slate-400 text-base">פעילים כעת</div>
+                    <div class="text-4xl font-black text-blue-400" id="sidebarActiveCount">0</div>
+                </div>
+                <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 flex justify-between items-center">
+                    <div class="text-slate-400 text-base">סיימו אירוע</div>
+                    <div class="text-4xl font-black text-green-400" id="sidebarCompletedCount">0</div>
+                </div>
+            </div>
+
+            <div class="space-y-3">
+                <button onclick="window.openGlobalCalendar(); toggleAdminSidebar();" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white p-4 rounded-xl text-right font-bold transition flex items-center text-lg">
+                    <i class="far fa-calendar-alt w-8 text-indigo-400 text-2xl"></i> יומן שיעורים
+                </button>
+                <button onclick="showLibraryEditor(); toggleAdminSidebar();" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white p-4 rounded-xl text-right font-bold transition flex items-center text-lg mt-4">
+                    <i class="fas fa-headphones-alt w-8 text-amber-400 text-2xl"></i> ספריית הקלטות
+                </button>
+                <button onclick="toggleCompletedStudents(); toggleAdminSidebar();" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white p-4 rounded-xl text-right font-bold transition flex items-center text-lg">
+                    <i class="fas fa-history w-8 text-slate-400 text-2xl"></i> תלמידי עבר
+                </button>
+                <button onclick="refreshData(); toggleAdminSidebar();" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white p-4 rounded-xl text-right font-bold transition flex items-center text-lg">
+                    <i class="fas fa-sync-alt w-8 text-blue-400 text-2xl"></i> רענן נתונים
+                </button>
+                <a href="index.html" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white p-4 rounded-xl text-right font-bold transition flex items-center block mt-6 text-lg">
+                    <i class="fas fa-home w-8 text-purple-400 text-2xl"></i> חזור לאתר הראשי
+                </a>
+            </div>
+        </div>
+    </div>
+    <div id="sidebarOverlay" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-[90]" onclick="toggleAdminSidebar()"></div>
+
+    <div id="globalCalendarModal" class="modal-overlay">
+        <div class="modal-content !max-w-3xl bg-slate-900 border border-indigo-500/50">
+            <div class="flex justify-between items-center mb-6 border-b border-slate-700 pb-4 sticky top-0 bg-slate-900 z-10">
+                <h3 class="text-2xl md:text-3xl font-black text-white"><i class="far fa-calendar-alt text-indigo-400 ml-2"></i> יומן שיעורים</h3>
+                <button onclick="closeModal('globalCalendarModal')" class="text-slate-400 hover:text-white text-3xl"><i class="fas fa-times"></i></button>
+            </div>
+            <div id="globalCalendarList" class="space-y-4"></div>
+        </div>
+    </div>
+
+    <div id="lessonModal" class="modal-overlay">
+        <div class="modal-content !max-w-2xl bg-slate-900 border border-amber-500/50">
+            <div class="flex justify-between items-center mb-6 border-b border-slate-700 pb-4 sticky top-0 bg-slate-900 z-10">
+                <h3 class="text-2xl font-bold text-white"><i class="fas fa-book text-amber-400 ml-2"></i> <span id="lessonModalTitle">מעקב שיעורים</span></h3>
+                <button onclick="closeModal('lessonModal')" class="text-slate-400 hover:text-white text-3xl"><i class="fas fa-times"></i></button>
+            </div>
+            
+            <div class="mb-4 bg-indigo-900/30 p-4 rounded-xl border border-indigo-800/50 flex flex-col md:flex-row justify-between items-center gap-4">
+                <div class="flex-1 w-full">
+                    <h4 class="text-indigo-300 font-bold mb-2 text-base">קביעת שיעור הבא לתלמיד:</h4>
+                    <div class="flex flex-wrap gap-2">
+                        <input type="date" id="modalNextLessonDate" class="form-input flex-1 min-w-[120px] p-2 rounded-lg text-base bg-slate-900" title="תאריך">
+                        <input type="time" id="modalNextLessonTime" class="form-input w-28 p-2 rounded-lg text-base bg-slate-900" title="שעה">
+                        <button onclick="updateNextLessonDate()" class="bg-indigo-600 text-white px-4 py-2 rounded-lg font-bold hover:bg-indigo-500 w-full sm:w-auto mt-2 sm:mt-0">קבע מועד</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 mb-6">
+                <h4 class="text-amber-400 font-bold mb-3 text-base">הוסף/ערוך תיעוד שיעור שהתקיים:</h4>
+                <div class="flex flex-col gap-3">
+                    <input type="hidden" id="editingLessonId" value="">
+                    <input type="date" id="newLessonDate" class="form-input w-full p-3 rounded-lg text-base">
+                    <textarea id="newLessonSummary" placeholder="מה למדנו בשיעור? (לדוגמה: עברנו על עליית ראשון והטעמים...)" class="form-input w-full p-3 rounded-lg h-24 text-base"></textarea>
+                    <div class="flex gap-2">
+                        <button id="saveLessonBtn" onclick="addNewLesson()" class="bg-green-600 hover:bg-green-500 text-white font-bold py-3 rounded-lg transition shadow-md flex-1 text-lg">שמור שיעור</button>
+                        <button id="cancelEditLessonBtn" onclick="resetLessonForm()" class="bg-slate-600 hover:bg-slate-500 text-white font-bold py-3 rounded-lg transition hidden px-6 text-lg">ביטול עריכה</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-3 text-left">
+                <span class="bg-blue-900/50 text-blue-200 px-3 py-1 rounded-full font-bold text-sm border border-blue-800/50" id="lessonCountBadge">סה"כ שיעורים: 0</span>
+            </div>
+            <div id="lessonsList" class="space-y-3"></div>
+        </div>
+    </div>
+
+    <div id="addStudentForm" class="modal-overlay">
+        <div class="modal-content !max-w-4xl">
+            <div class="flex justify-between items-center mb-6 border-b border-slate-700 pb-4">
+                <h3 class="text-2xl md:text-3xl font-bold text-white" id="studentFormTitle">הוסף תלמיד חדש</h3>
+                <button onclick="hideAddStudentForm()" class="text-slate-400 hover:text-white text-3xl"><i class="fas fa-times"></i></button>
+            </div>
+            <form id="studentForm" onsubmit="addStudent(event)" class="space-y-5">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div><label class="block text-base text-slate-400 mb-1">שם התלמיד</label><input type="text" id="studentName" required class="form-input w-full p-3 rounded-xl text-lg"></div>
+                    <div><label class="block text-base text-slate-400 mb-1">תאריך האירוע</label><input type="date" id="eventDate" required class="form-input w-full p-3 rounded-xl text-lg"></div>
+                    <div><label class="block text-base text-slate-400 mb-1">תאריך לידה עברי</label><input type="text" id="hebrewBirthDate" class="form-input w-full p-3 rounded-xl text-lg"></div>
+                    <div><label class="block text-base text-slate-400 mb-1">שם הפרשה</label><input type="text" id="parsha" class="form-input w-full p-3 rounded-xl text-lg"></div>
+                    <div><label class="block text-base text-slate-400 mb-1">טלפון התלמיד</label><input type="tel" id="studentPhone" class="form-input w-full p-3 rounded-xl text-lg"></div>
+                    <div><label class="block text-base text-slate-400 mb-1">שם ההורה</label><input type="text" id="parentName" class="form-input w-full p-3 rounded-xl text-lg"></div>
+                    <div><label class="block text-base text-slate-400 mb-1">טלפון ההורה</label><input type="tel" id="parentPhone" class="form-input w-full p-3 rounded-xl text-lg"></div>
+                    <div>
+                        <label class="block text-base text-slate-400 mb-1">סוג קריאה באירוע</label>
+                        <select id="eventType" onchange="toggleEventDetails()" class="form-input w-full p-3 rounded-xl text-lg">
+                            <option value="aliyah">עליית ראשון בלבד (ללא שבת)</option>
+                            <option value="shabbat-chatan">שבת חתן בלבד (ללא עליית ראשון)</option>
+                            <option value="both">עליית ראשון + שבת חתן</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="shabbatChatanDateField" class="hidden">
+                    <label class="block text-base text-slate-400 mb-1">תאריך שבת חתן</label>
+                    <input type="date" id="shabbatChatanDate" class="form-input w-full p-3 rounded-xl text-lg">
+                </div>
+
+                <div id="morningDetails" class="bg-slate-800/50 p-4 md:p-5 rounded-xl border border-slate-700 mt-4">
+                    <h4 class="text-amber-400 font-bold mb-4 text-lg"><i class="fas fa-sun"></i> חומרי עליית ראשון</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <select id="morningReading" onchange="updateMorningLibrarySelector()" class="form-input w-full p-3 rounded-lg mb-3 text-base">
+                                <option value="parsha">פרשה רגילה</option>
+                                <option value="rosh-chodesh">ראש חודש</option>
+                                <option value="holiday">חג / אחר</option>
+                            </select>
+                            <div id="morningLibrarySelector"></div>
+                        </div>
+                        <div>
+                            <input type="url" id="morningImage" placeholder="לינק לתמונה (קטע טקסט)" class="form-input w-full p-3 rounded-lg mb-3 text-base">
+                            <input type="url" id="morningAudio" placeholder="לינק להקלטה" class="form-input w-full p-3 rounded-lg mb-3 text-base">
+                            <input type="text" id="morningAudioTitle" placeholder="כותרת להקלטה" value="עליית ראשון" class="form-input w-full p-3 rounded-lg text-base">
+                        </div>
+                    </div>
+                </div>
+
+                <div id="shabbatChatanDetails" class="hidden bg-slate-800/50 p-4 md:p-5 rounded-xl border border-slate-700 mt-4">
+                    <h4 class="text-blue-400 font-bold mb-4 text-lg"><i class="fas fa-star-of-david"></i> חומרי שבת חתן</h4>
+                    <select id="shabbatReading" onchange="toggleShabbatImages(); updateShabbatLibrarySelectors()" class="form-input w-full p-3 rounded-lg mb-4 text-base">
+                        <option value="ראשון בלבד">עליית ראשון בלבד בשבת</option>
+                        <option value="ראשון ומפטיר">הפטרה + מפטיר</option>
+                        <option value="other">אחר (הקלדה חופשית)</option>
+                    </select>
+                    <input type="text" id="otherReading" placeholder="פרט..." class="form-input w-full p-3 rounded-lg mb-4 text-base hidden">
+                    
+                    <div id="singleShabbatImage" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div id="shabbatLibrarySelector"></div>
+                        <div>
+                            <input type="url" id="shabbatImage" placeholder="לינק לתמונה" class="form-input w-full p-3 rounded-lg mb-3 text-base">
+                            <input type="url" id="shabbatAudio" placeholder="לינק להקלטה" class="form-input w-full p-3 rounded-lg mb-3 text-base">
+                            <input type="text" id="shabbatAudioTitle" placeholder="כותרת להקלטה" value="הפטרה" class="form-input w-full p-3 rounded-lg text-base">
+                        </div>
+                    </div>
+
+                    <div id="multipleShabbatImages" class="hidden space-y-5">
+                        <div class="border border-slate-700 p-4 rounded-xl">
+                            <h5 class="text-base font-bold text-slate-300 mb-3">ראשון / קריאה 1</h5>
+                            <div id="rishonLibrarySelector" class="mb-3"></div>
+                            <input type="url" id="rishonImage" placeholder="לינק לתמונה" class="form-input w-full p-3 rounded-lg mb-3 text-base">
+                            <input type="url" id="rishonAudio" placeholder="לינק לאודיו" class="form-input w-full p-3 rounded-lg text-base">
+                            <input type="hidden" id="rishonAudioTitle" value="קריאה ראשונה">
+                        </div>
+                        <div class="border border-slate-700 p-4 rounded-xl">
+                            <h5 class="text-base font-bold text-slate-300 mb-3">הפטרה / מפטיר</h5>
+                            <div id="maftirLibrarySelector" class="mb-3"></div>
+                            <input type="url" id="maftirImage" placeholder="לינק לתמונה" class="form-input w-full p-3 rounded-lg mb-3 text-base">
+                            <input type="url" id="maftirAudio" placeholder="לינק לאודיו" class="form-input w-full p-3 rounded-lg text-base">
+                            <input type="hidden" id="maftirAudioTitle" value="קריאת מפטיר">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-8 border-t border-slate-700 pt-6 text-center">
+                    <button type="submit" class="btn-primary w-full py-4 rounded-xl text-xl font-bold">💾 שמור פרטי תלמיד</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="libraryEditor" class="modal-overlay">
+        <div class="modal-content !max-w-6xl">
+            <div class="flex justify-between items-center mb-6 border-b border-slate-700 pb-4">
+                <h3 class="text-2xl md:text-3xl font-black text-white"><i class="fas fa-headphones text-amber-400 ml-2"></i> עריכת ספריית הקלטות</h3>
+                <button onclick="closeModal('libraryEditor')" class="text-slate-400 hover:text-white text-3xl"><i class="fas fa-times"></i></button>
+            </div>
+            
+            <div class="flex mb-6 bg-slate-800 rounded-xl p-2 border border-slate-700 text-sm md:text-lg gap-1">
+                <button onclick="switchLibraryTab('parshiot')" id="tab-parshiot" class="flex-1 py-3 px-1 rounded-lg font-bold transition-all duration-300 bg-blue-600 text-white">📖 עליות</button>
+                <button onclick="switchLibraryTab('shabbat')" id="tab-shabbat" class="flex-1 py-3 px-1 rounded-lg font-bold transition-all duration-300 text-slate-400 hover:text-white hover:bg-slate-700">✡️ הפטרות</button>
+                <button onclick="switchLibraryTab('special')" id="tab-special" class="flex-1 py-3 px-1 rounded-lg font-bold transition-all duration-300 text-slate-400 hover:text-white hover:bg-slate-700">🎯 מיוחדות</button>
+            </div>
+
+            <div id="library-content"></div>
+
+            <div class="text-center mt-8 pt-6 border-t border-slate-700 flex flex-col md:flex-row justify-center gap-4">
+                <button onclick="addNewLibraryItem()" class="bg-green-600 text-white px-8 py-4 rounded-xl font-bold hover:bg-green-500 transition shadow-lg text-lg w-full md:w-auto"><i class="fas fa-plus ml-2"></i> הוסף פריט חדש</button>
+                <button onclick="saveLibraryChanges()" class="bg-blue-600 text-white px-8 py-4 rounded-xl font-bold hover:bg-blue-500 transition shadow-lg text-lg w-full md:w-auto"><i class="fas fa-save ml-2"></i> שמור שינויים לגיליון</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="confirmDialog" class="modal-overlay">
+        <div class="modal-content !max-w-sm text-center border-red-500/50">
+            <i class="fas fa-exclamation-triangle text-5xl text-amber-400 mb-4"></i>
+            <h3 class="text-2xl font-bold text-white mb-2" id="confirmTitle">אישור פעולה</h3>
+            <p class="text-slate-300 mb-6 text-lg" id="confirmMessage"></p>
+            <div class="flex gap-3 justify-center">
+                <button id="confirmNo" class="bg-slate-700 hover:bg-slate-600 text-white px-6 py-3 rounded-xl font-bold transition flex-1 text-lg">ביטול</button>
+                <button id="confirmYes" class="bg-red-600 hover:bg-red-500 text-white px-6 py-3 rounded-xl font-bold transition flex-1 text-lg">אישור</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="inputDialog" class="modal-overlay">
+        <div class="modal-content !max-w-sm text-center border-blue-500/50">
+            <i class="fas fa-pencil-alt text-4xl text-blue-400 mb-4"></i>
+            <h3 class="text-2xl font-bold text-white mb-2" id="inputTitle">הכנס מידע</h3>
+            <p class="text-slate-300 mb-4" id="inputMessage"></p>
+            <input type="text" id="inputField" class="form-input w-full p-4 rounded-xl mb-6 text-center text-xl" placeholder="הקלד כאן...">
+            <div class="flex gap-3 justify-center">
+                <button id="inputCancel" class="bg-slate-700 hover:bg-slate-600 text-white px-6 py-3 rounded-xl font-bold transition flex-1 text-lg">ביטול</button>
+                <button id="inputSubmit" class="bg-green-600 hover:bg-green-500 text-white px-6 py-3 rounded-xl font-bold transition flex-1 text-lg">אישור</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // === הלינק שלך לכאן ===
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyqb6gOlbB_w-1ZQyqa2YZJ6qu5bTxN9bEMK-CJopc3zH5vNe9SW582iwdkYG9mrUIP8Q/exec";
+        
+        let students = [];
+        let recordingsLibrary = { parshiot: {}, shabbat: {}, special: {} };
+        let currentUser = null;
+        let isAdmin = false;
+        let currentEditingStudentId = null;
+        let currentLibraryTab = 'parshiot';
+
+        window.customAlert = function(msg, isError = false) {
+            const alm = document.getElementById('globalAlert');
+            const txt = document.getElementById('globalAlertText');
+            const content = document.getElementById('globalAlertContent');
+            content.className = `${isError ? 'bg-red-600' : 'bg-green-600'} text-white px-6 py-3 rounded-full font-bold shadow-2xl flex items-center gap-2 border border-white/20 text-lg`;
+            txt.innerHTML = `<i class="fas ${isError ? 'fa-exclamation-triangle' : 'fa-check-circle'} ml-2"></i> ${msg}`;
+            alm.classList.remove('hidden');
+            setTimeout(() => { alm.classList.add('hidden'); }, 3500);
+        };
+
+        window.openModal = (id) => { const el = document.getElementById(id); if(el) { el.classList.add('active'); document.body.style.overflow = 'hidden'; } }
+        window.closeModal = (id) => { const el = document.getElementById(id); if(el) { el.classList.remove('active'); document.body.style.overflow = 'auto'; } }
+
+        window.showConfirmDialog = function(message, onConfirm, title = 'אישור פעולה') {
+            document.getElementById('confirmTitle').textContent = title;
+            document.getElementById('confirmMessage').textContent = message;
+            window.openModal('confirmDialog');
+            
+            const yesBtn = document.getElementById('confirmYes');
+            const noBtn = document.getElementById('confirmNo');
+            const newYes = yesBtn.cloneNode(true);
+            const newNo = noBtn.cloneNode(true);
+            yesBtn.parentNode.replaceChild(newYes, yesBtn);
+            noBtn.parentNode.replaceChild(newNo, noBtn);
+            
+            newYes.addEventListener('click', () => { window.closeModal('confirmDialog'); if(onConfirm) onConfirm(); });
+            newNo.addEventListener('click', () => window.closeModal('confirmDialog'));
+        };
+
+        window.showInputDialog = function(title, message, defaultValue = '', onSubmit) {
+            document.getElementById('inputTitle').textContent = title;
+            document.getElementById('inputMessage').textContent = message;
+            const inputEl = document.getElementById('inputField');
+            inputEl.value = defaultValue;
+            
+            window.openModal('inputDialog');
+            setTimeout(() => inputEl.focus(), 100);
+
+            const submitBtn = document.getElementById('inputSubmit');
+            const cancelBtn = document.getElementById('inputCancel');
+            const newSubmit = submitBtn.cloneNode(true);
+            const newCancel = cancelBtn.cloneNode(true);
+            submitBtn.parentNode.replaceChild(newSubmit, submitBtn);
+            cancelBtn.parentNode.replaceChild(newCancel, cancelBtn);
+            
+            const handleSub = () => {
+                const val = document.getElementById('inputField').value.trim();
+                window.closeModal('inputDialog');
+                if(onSubmit && val) onSubmit(val);
+            };
+
+            newSubmit.addEventListener('click', handleSub);
+            newCancel.addEventListener('click', () => window.closeModal('inputDialog'));
+            inputEl.onkeydown = (e) => { if(e.key === 'Enter') handleSub(); };
+        };
+
+        // סנכרון POST
+        window.syncToGoogleSheets = async function(action, data, callback) {
+            if (!GOOGLE_SCRIPT_URL) return callback && callback({ success: false });
+            document.getElementById('globalLoader').style.display = 'flex';
+            
+            let baseUrl = GOOGLE_SCRIPT_URL;
+            if (baseUrl.includes('?mode=api')) baseUrl = baseUrl.replace('?mode=api', '');
+            
+            try {
+                const response = await fetch(baseUrl, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: action, data: data }),
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+                });
+                
+                const resData = await response.json();
+                document.getElementById('globalLoader').style.display = 'none';
+                if(callback) callback(resData);
+            } catch (error) {
+                document.getElementById('globalLoader').style.display = 'none';
+                if(callback) callback({success: false, error: error.toString()});
+            }
+        };
+
+        window.loadFromGoogleSheets = function(callback) {
+            document.getElementById('globalLoader').style.display = 'flex';
+            let baseUrl = GOOGLE_SCRIPT_URL;
+            if (baseUrl.includes('?mode=api')) baseUrl = baseUrl.replace('?mode=api', '');
+            
+            fetch(baseUrl + '?action=load')
+                .then(res => res.json())
+                .then(response => {
+                    document.getElementById('globalLoader').style.display = 'none';
+                    if (response && response.success && response.data) {
+                        students = response.data;
+                        if (response.library) recordingsLibrary = response.library;
+                        localStorage.setItem('barMitzvahStudents', JSON.stringify(students));
+                    } else {
+                        students = JSON.parse(localStorage.getItem('barMitzvahStudents')) || [];
+                    }
+                    if (callback) callback();
+                })
+                .catch(err => {
+                    document.getElementById('globalLoader').style.display = 'none';
+                    students = JSON.parse(localStorage.getItem('barMitzvahStudents')) || [];
+                    if (callback) callback();
+                });
+        };
+
+        window.saveToGoogleSheets = function(studentData, callback) {
+            window.syncToGoogleSheets('save', studentData, callback);
+        };
+
+        // התחברות
+        window.handleNameInput = () => {
+            const name = document.getElementById('loginName').value.trim();
+            const phoneSection = document.getElementById('phoneSection');
+            const passwordSection = document.getElementById('passwordSection');
+            const passwordInput = document.getElementById('loginPassword');
+
+            if (name.toLowerCase() === 'admin') {
+                phoneSection.classList.add('hidden');
+                passwordSection.classList.remove('hidden');
+                passwordInput.setAttribute('required', 'required');
+            } else {
+                passwordSection.classList.add('hidden');
+                passwordInput.removeAttribute('required');
+                passwordInput.value = '';
+                
+                const matches = students.filter(s => String(s.name || '').trim() === name);
+                if (matches.length > 1) phoneSection.classList.remove('hidden');
+                else phoneSection.classList.add('hidden');
+            }
+        };
+
+        window.handleLogin = (e) => {
+            e.preventDefault();
+            const name = document.getElementById('loginName').value.trim();
+            const phone = document.getElementById('loginPhone').value.trim();
+            const password = document.getElementById('loginPassword').value.trim();
+            
+            if (name.toLowerCase() === 'admin') {
+                if (password === 'aviv123') {
+                    isAdmin = true;
+                    currentUser = { name: 'מנהל המערכת' };
+                } else {
+                    return window.customAlert('סיסמה שגויה!', true);
+                }
+            } else {
+                const matches = students.filter(s => String(s.name || '').trim() === name);
+                if (matches.length === 0) return window.customAlert('תלמיד לא נמצא במערכת', true);
+                if (matches.length > 1 && !phone) return window.customAlert('יש להזין נייד לאימות', true);
+                if (matches.length > 1 && phone) {
+                    const exact = matches.find(s => String(s.studentPhone || '').trim() === phone || String(s.parentPhone || '').trim() === phone);
+                    if (!exact) return window.customAlert('הנייד לא תואם', true);
+                    currentUser = exact;
+                } else {
+                    currentUser = matches[0];
+                }
+                isAdmin = false;
+            }
+
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('mainSystem').classList.remove('hidden');
+            document.getElementById('welcomeMessage').innerText = `שלום, ${currentUser.name}!`;
+            
+            if (isAdmin) {
+                document.getElementById('adminToolsBtn').classList.remove('hidden');
+                document.getElementById('addStudentBtnWrapper').classList.remove('hidden');
+            }
+            
+            window.renderStudents();
+        };
+
+        window.logout = () => { location.reload(); };
+
+        // שליטה בנגן וזום
+        window.skipAudio = (audioId, seconds) => {
+            const audio = document.getElementById(audioId);
+            if (audio) { audio.currentTime = Math.max(0, Math.min(audio.duration || 0, audio.currentTime + seconds)); }
+        };
+
+        window.zoomImg = (imgId, direction) => {
+            const img = document.getElementById(imgId);
+            if(!img) return;
+            let currentWidth = parseFloat(img.getAttribute('data-width')) || 100;
+            currentWidth += (direction * 25); 
+            if(currentWidth < 100) currentWidth = 100;
+            if(currentWidth > 350) currentWidth = 350;
+            img.setAttribute('data-width', currentWidth);
+            img.style.width = `${currentWidth}%`;
+        };
+
+        function calculateDaysRemaining(dateStr) {
+            if (!dateStr) return 0;
+            const eventDate = new Date(dateStr);
+            const today = new Date();
+            eventDate.setHours(0,0,0,0); today.setHours(0,0,0,0);
+            return Math.round((eventDate - today) / (1000 * 60 * 60 * 24));
+        }
+
+        function formatDate(dateStr) {
+            if (!dateStr) return '';
+            const d = new Date(dateStr);
+            if(isNaN(d.getTime())) return dateStr;
+            return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
+        }
+        
+        function formatTime(timeStr) {
+            if (!timeStr) return '';
+            let t = String(timeStr).replace(/'/g, '').trim();
+            if (t.includes('T')) {
+                const match = t.match(/T(\d{2}:\d{2})/);
+                if (match && match[1]) return match[1];
+            }
+            return t;
+        }
+
+        function getEventTypeText(eventType) {
+            if(eventType === 'aliyah') return 'עליית ראשון (ללא שבת)';
+            if(eventType === 'shabbat-chatan') return 'שבת חתן בלבד';
+            return 'עליית ראשון + שבת חתן';
+        }
+
+        function buildInlineMaterial(imgSrc, audioSrc, audioTitle, elementIdPrefix) {
+            let html = '';
+            if(imgSrc) {
+                html += `
+                    <div class="relative group mb-5">
+                        <div class="absolute top-3 left-3 flex flex-col gap-2 z-10 opacity-80 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+                            <button type="button" onclick="window.zoomImg('img-${elementIdPrefix}', 1)" class="zoom-btn" title="הגדל"><i class="fas fa-search-plus"></i></button>
+                            <button type="button" onclick="window.zoomImg('img-${elementIdPrefix}', -1)" class="zoom-btn" title="הקטן"><i class="fas fa-search-minus"></i></button>
+                        </div>
+                        <div class="rounded-xl border border-slate-700 bg-slate-950 overflow-auto max-h-[70vh] custom-scrollbar shadow-inner text-center">
+                            <img id="img-${elementIdPrefix}" src="${imgSrc}" class="inline-block" style="width: 100%; max-width: none !important; height: auto; transition: width 0.2s ease; image-rendering: high-quality;" data-width="100" onerror="this.style.display='none';">
+                        </div>
+                    </div>
+                `;
+            }
+            if(audioSrc) {
+                let directUrl = audioSrc;
+                let isDrive = false;
+                if (audioSrc.includes('drive.google.com')) {
+                    isDrive = true;
+                    let fileId = '';
+                    if (audioSrc.includes('/file/d/')) fileId = audioSrc.split('/file/d/')[1].split('/')[0];
+                    else if (audioSrc.includes('id=')) fileId = audioSrc.split('id=')[1].split('&')[0];
+                    if (fileId) directUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
+                }
+                html += `
+                    <div class="text-center bg-slate-800 p-4 rounded-xl border border-slate-600">
+                        <h5 class="text-white font-bold mb-3 text-base"><i class="fas fa-headphones text-amber-400 ml-1"></i> ${audioTitle}</h5>
+                        <audio id="audio-${elementIdPrefix}" controls class="w-full h-12 rounded-lg outline-none" preload="none">
+                            <source src="${directUrl}">
+                        </audio>
+                        <div class="flex justify-center gap-1 sm:gap-2 mt-3 flex-wrap">
+                            <button type="button" onclick="window.skipAudio('audio-${elementIdPrefix}', -10)" class="audio-ctrl-btn">-10 <i class="fas fa-backward"></i></button>
+                            <button type="button" onclick="window.skipAudio('audio-${elementIdPrefix}', -5)" class="audio-ctrl-btn">-5 <i class="fas fa-step-backward"></i></button>
+                            <button type="button" onclick="window.skipAudio('audio-${elementIdPrefix}', 5)" class="audio-ctrl-btn"><i class="fas fa-step-forward"></i> +5</button>
+                            <button type="button" onclick="window.skipAudio('audio-${elementIdPrefix}', 10)" class="audio-ctrl-btn"><i class="fas fa-forward"></i> +10</button>
+                        </div>
+                        ${isDrive ? `<a href="${audioSrc}" target="_blank" class="block mt-3 text-blue-400 hover:text-blue-300 text-sm underline"><i class="fas fa-external-link-alt"></i> פתח ב-Google Drive</a>` : ''}
+                    </div>
+                `;
+            }
+            return html ? `<div class="inline-material-box">${html}</div>` : '';
+        }
+
+        window.renderStudents = function() {
+            const grid = document.getElementById('studentsGrid');
+            const compGrid = document.getElementById('completedStudentsGrid');
+            grid.innerHTML = ''; compGrid.innerHTML = '';
+            
+            let displayStudents = isAdmin ? students : students.filter(s => String(s.id) === String(currentUser.id));
+            
+            if(isAdmin) {
+                document.getElementById('sidebarActiveCount').innerText = displayStudents.filter(s => calculateDaysRemaining(s.eventDate) >= 0).length;
+                document.getElementById('sidebarCompletedCount').innerText = displayStudents.filter(s => calculateDaysRemaining(s.eventDate) < 0).length;
+            }
+
+            if(displayStudents.length === 0) {
+                document.getElementById('emptyState').classList.remove('hidden');
+                return;
+            }
+            document.getElementById('emptyState').classList.add('hidden');
+
+            let activeStudents = displayStudents.filter(s => calculateDaysRemaining(s.eventDate) >= 0);
+            activeStudents.sort((a,b) => new Date(a.eventDate) - new Date(b.eventDate));
+
+            let pastStudents = displayStudents.filter(s => calculateDaysRemaining(s.eventDate) < 0);
+            pastStudents.sort((a,b) => new Date(b.eventDate) - new Date(a.eventDate));
+
+            const renderCard = (s, isDone) => {
+                const days = calculateDaysRemaining(s.eventDate);
+                
+                let badgeClass = 'bg-blue-600 border-2 border-white/30 text-lg py-2 px-5';
+                let badgeText = `נותרו ${days} ימים`;
+                if(days === 0) { badgeClass = 'bg-amber-500 text-black border-2 border-white/50 text-lg py-2 px-5'; badgeText = 'האירוע היום! 🎉'; }
+                if(days < 0) { badgeClass = 'bg-slate-600 border-2 border-slate-400 text-base py-2 px-4'; badgeText = `עבר לפני ${Math.abs(days)} ימים`; }
+                
+                const lessonCount = (s.lessons || []).length;
+                const lessonsBadge = isAdmin 
+                    ? `<button type="button" onclick="window.openLessonModal('${s.id}')" class="action-btn btn-lesson w-full mt-5 text-lg"><i class="fas fa-book"></i> מעקב שיעורים (${lessonCount})</button>`
+                    : `<div class="bg-blue-900/40 text-blue-200 text-center py-3 rounded-xl font-bold text-lg border border-blue-800/50 mt-5 shadow-inner"><i class="fas fa-trophy text-amber-400 ml-1"></i> מספר שיעורים עד כה: ${lessonCount}</div>`;
+
+                const includesMorning = (s.eventType === 'aliyah' || s.eventType === 'both');
+                const includesShabbat = (s.eventType === 'shabbat-chatan' || s.eventType === 'both');
+
+                let materialsHtml = '';
+                
+                if (includesMorning && (s.morningImage || s.morningAudio)) {
+                    materialsHtml += `
+                        <div class="mt-5">
+                            <h4 class="text-amber-400 font-bold border-b border-slate-700 pb-2 mb-3 text-xl"><i class="fas fa-sun ml-1"></i> עליית ראשון</h4>
+                            ${buildInlineMaterial(s.morningImage, s.morningAudio, s.morningAudioTitle || "עליית ראשון", `${s.id}-morning`)}
+                        </div>
+                    `;
+                }
+
+                if (includesShabbat) {
+                    if (s.shabbatReading === 'ראשון ומפטיר') {
+                        if(s.rishonImage || s.rishonAudio) {
+                            materialsHtml += `
+                                <div class="mt-5">
+                                    <h4 class="text-blue-400 font-bold border-b border-slate-700 pb-2 mb-3 text-xl"><i class="fas fa-star-of-david ml-1"></i> קריאת ראשון (שבת)</h4>
+                                    ${buildInlineMaterial(s.rishonImage, s.rishonAudio, s.rishonAudioTitle || "ראשון", `${s.id}-rishon`)}
+                                </div>
+                            `;
+                        }
+                        if(s.maftirImage || s.maftirAudio) {
+                            materialsHtml += `
+                                <div class="mt-5">
+                                    <h4 class="text-purple-400 font-bold border-b border-slate-700 pb-2 mb-3 text-xl"><i class="fas fa-scroll ml-1"></i> קריאת מפטיר / הפטרה</h4>
+                                    ${buildInlineMaterial(s.maftirImage, s.maftirAudio, s.maftirAudioTitle || "מפטיר", `${s.id}-maftir`)}
+                                </div>
+                            `;
+                        }
+                    } else if (s.shabbatImage || s.shabbatAudio) {
+                        materialsHtml += `
+                            <div class="mt-5">
+                                <h4 class="text-purple-400 font-bold border-b border-slate-700 pb-2 mb-3 text-xl"><i class="fas fa-star-of-david ml-1"></i> הפטרה / שבת חתן</h4>
+                                ${buildInlineMaterial(s.shabbatImage, s.shabbatAudio, s.shabbatAudioTitle || "הפטרה", `${s.id}-shabbat`)}
+                            </div>
+                        `;
+                    }
+                }
+
+                let nextLessonHtml = '';
+                if (s.nextLessonDate && !isDone) {
+                    let timeStr = s.nextLessonTime ? ` בשעה ${formatTime(s.nextLessonTime)}` : '';
+                    nextLessonHtml = `
+                        <div class="bg-gradient-to-r from-amber-400 to-amber-600 text-slate-900 p-4 rounded-xl border-2 border-amber-300 shadow-[0_0_15px_rgba(251,191,36,0.4)] mt-5 mb-2 text-center">
+                            <div class="font-black text-lg mb-1"><i class="far fa-clock"></i> מועד השיעור הבא שלך:</div>
+                            <div class="text-2xl font-bold">${formatDate(s.nextLessonDate)}${timeStr}</div>
+                        </div>
+                    `;
+                }
+
+                let html = `
+                    <div class="student-card ${isDone ? 'opacity-80 grayscale-[20%]' : ''}">
+                        <div class="flex flex-col sm:flex-row justify-between items-start mb-5 gap-3">
+                            <div class="flex items-center gap-4">
+                                <div class="w-16 h-16 bg-gradient-to-br from-amber-400 to-amber-600 rounded-full flex items-center justify-center shadow-lg text-slate-900 font-black text-3xl flex-shrink-0 border-2 border-white/20">
+                                    ${(s.name || '?').charAt(0)}
+                                </div>
+                                <div>
+                                    <h3 class="text-3xl font-black text-white leading-tight mb-1">${s.name}</h3>
+                                    <div class="text-lg text-slate-300 font-bold">${s.parsha || 'ללא פרשה'} | ${getEventTypeText(s.eventType)}</div>
+                                </div>
+                            </div>
+                            <div class="${badgeClass} rounded-2xl shadow-xl whitespace-nowrap self-start">${badgeText}</div>
+                        </div>
+
+                        ${nextLessonHtml}
+
+                        <div class="space-y-3 mb-4 mt-4">
+                            <div class="info-bubble"><i class="far fa-calendar-alt"></i> תאריך האירוע: <span class="font-bold text-white">${formatDate(s.eventDate)}</span></div>
+                            ${includesShabbat && s.shabbatChatanDate ? `<div class="info-bubble"><i class="fas fa-wine-glass-alt text-purple-400"></i> שבת חתן: <span class="font-bold text-white">${formatDate(s.shabbatChatanDate)}</span></div>` : ''}
+                        </div>
+
+                        ${materialsHtml}
+                        
+                        ${lessonsBadge}
+
+                        ${isAdmin ? `
+                            <div class="flex gap-3 mt-6 pt-5 border-t border-slate-700/50">
+                                <button type="button" onclick="window.editStudent('${s.id}')" class="action-btn btn-edit flex-1 text-lg"><i class="fas fa-edit"></i> ערוך תלמיד</button>
+                                <button type="button" onclick="window.deleteStudent('${s.id}')" class="action-btn btn-delete px-5 text-lg"><i class="fas fa-trash"></i></button>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+
+                if(isDone && isAdmin) compGrid.innerHTML += html;
+                else grid.innerHTML += html;
+            };
+
+            activeStudents.forEach(s => renderCard(s, false));
+            if(isAdmin) pastStudents.forEach(s => renderCard(s, true));
+        };
+
+        // יומן גלובלי למנהל
+        window.openGlobalCalendar = () => {
+            const list = document.getElementById('globalCalendarList');
+            let upcoming = students.filter(s => s.nextLessonDate);
+            
+            upcoming.sort((a, b) => {
+                const dateA = new Date(a.nextLessonDate + 'T' + (a.nextLessonTime ? formatTime(a.nextLessonTime) : '00:00'));
+                const dateB = new Date(b.nextLessonDate + 'T' + (b.nextLessonTime ? formatTime(b.nextLessonTime) : '00:00'));
+                return dateA - dateB;
+            });
+
+            if(upcoming.length === 0) {
+                list.innerHTML = '<div class="text-center text-slate-400 py-8 text-xl">לא נקבעו שיעורים עתידיים לאף תלמיד.</div>';
+            } else {
+                list.innerHTML = upcoming.map(s => `
+                    <div class="bg-slate-800 p-4 rounded-xl border-l-4 border-indigo-500 flex justify-between items-center shadow-lg cursor-pointer hover:bg-slate-700 transition" onclick="window.openLessonModal('${s.id}')">
+                        <div>
+                            <h4 class="text-white font-bold text-xl mb-1">${s.name}</h4>
+                            <div class="text-slate-400 text-base">${s.parsha || ''}</div>
+                        </div>
+                        <div class="text-left">
+                            <div class="text-amber-400 font-black text-xl">${formatDate(s.nextLessonDate)}</div>
+                            <div class="text-white font-bold text-lg">${formatTime(s.nextLessonTime) || 'שעה לא צוינה'}</div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            window.openModal('globalCalendarModal');
+        };
+
+        // מעקב שיעורים פרטני
+        window.openLessonModal = (id) => {
+            const student = students.find(s => String(s.id) === String(id));
+            if(!student) return;
+            currentEditingStudentId = id;
+            document.getElementById('lessonModalTitle').innerText = `יומן שיעורים: ${student.name}`;
+            
+            const nDate = student.nextLessonDate ? new Date(student.nextLessonDate).toISOString().split('T')[0] : '';
+            document.getElementById('modalNextLessonDate').value = nDate;
+            document.getElementById('modalNextLessonTime').value = formatTime(student.nextLessonTime) || '';
+            
+            window.resetLessonForm();
+            window.renderLessonsList(student);
+            window.openModal('lessonModal');
+        };
+
+        window.updateNextLessonDate = () => {
+            const dateVal = document.getElementById('modalNextLessonDate').value;
+            const timeVal = document.getElementById('modalNextLessonTime').value;
+            const student = students.find(s => String(s.id) === String(currentEditingStudentId));
+            
+            student.nextLessonDate = dateVal;
+            student.nextLessonTime = timeVal;
+            
+            window.saveToGoogleSheets(student, (res) => {
+                if(res.success) {
+                    window.customAlert('מועד השיעור הבא עודכן!');
+                    window.renderStudents();
+                } else {
+                    window.customAlert('שגיאה בעדכון התאריך', true);
+                }
+            });
+        };
+
+        window.renderLessonsList = function(student) {
+            const list = document.getElementById('lessonsList');
+            const lessons = student.lessons || [];
+            document.getElementById('lessonCountBadge').innerText = `סה"כ עבר ${lessons.length} שיעורים`;
+            
+            if (lessons.length === 0) {
+                list.innerHTML = '<div class="text-slate-500 text-center py-6 bg-slate-800/30 rounded-xl border border-slate-700 text-lg">טרם תועדו שיעורים לתלמיד זה.</div>';
+            } else {
+                const sorted = [...lessons].sort((a,b) => new Date(b.date) - new Date(a.date));
+                list.innerHTML = sorted.map((l, idx) => `
+                    <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 flex justify-between items-start hover:border-blue-500/50 transition group">
+                        <div class="flex-1">
+                            <div class="text-amber-400 font-bold mb-2 text-lg"><i class="far fa-calendar-alt ml-1"></i> ${formatDate(l.date)}</div>
+                            <div class="text-white text-lg bg-slate-900/50 p-3 rounded-lg">${l.summary}</div>
+                        </div>
+                        <div class="flex flex-col gap-2 mr-3">
+                            <button type="button" onclick="window.editLesson(${idx})" class="text-blue-400 hover:text-blue-300 p-3 transition opacity-100 md:opacity-0 md:group-hover:opacity-100 bg-slate-900 rounded-lg border border-slate-700"><i class="fas fa-pencil-alt"></i></button>
+                            <button type="button" onclick="window.deleteLesson(${idx})" class="text-red-400 hover:text-red-300 p-3 transition opacity-100 md:opacity-0 md:group-hover:opacity-100 bg-slate-900 rounded-lg border border-slate-700"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        };
+
+        window.resetLessonForm = function() {
+            document.getElementById('newLessonDate').value = new Date().toISOString().split('T')[0];
+            document.getElementById('newLessonSummary').value = '';
+            document.getElementById('editingLessonId').value = '';
+            
+            const btn = document.getElementById('saveLessonBtn');
+            btn.innerText = 'שמור שיעור חדש';
+            btn.className = 'bg-green-600 hover:bg-green-500 text-white font-bold py-3 rounded-lg transition shadow-md flex-1 text-lg';
+            btn.onclick = window.addNewLesson;
+            
+            document.getElementById('cancelEditLessonBtn').classList.add('hidden');
+        };
+
+        window.addNewLesson = () => {
+            const date = document.getElementById('newLessonDate').value;
+            const summary = document.getElementById('newLessonSummary').value.trim();
+            if (!date || !summary) return window.customAlert('יש להזין תאריך וסיכום שיעור', true);
+
+            const student = students.find(s => String(s.id) === String(currentEditingStudentId));
+            if (!student.lessons) student.lessons = [];
+            
+            const lessonId = 'lsn-' + Date.now();
+            student.lessons.push({ id: lessonId, date, summary });
+            
+            const lessonData = { lessonId: lessonId, studentId: student.id, date: date, summary: summary };
+            window.syncToGoogleSheets('addLesson', lessonData, function(res) {
+                if(res.success) {
+                    window.customAlert('השיעור תועד בהצלחה!');
+                    window.renderLessonsList(student);
+                    window.renderStudents();
+                    window.resetLessonForm();
+                } else {
+                    window.customAlert('שגיאה: ' + (res.error || 'שגיאת תקשורת'), true);
+                }
+            });
+        };
+
+        window.editLesson = (index) => {
+            const student = students.find(s => String(s.id) === String(currentEditingStudentId));
+            const sorted = [...student.lessons].sort((a,b) => new Date(b.date) - new Date(a.date));
+            const lessonToEdit = sorted[index];
+
+            document.getElementById('newLessonDate').value = lessonToEdit.date ? new Date(lessonToEdit.date).toISOString().split('T')[0] : '';
+            document.getElementById('newLessonSummary').value = lessonToEdit.summary;
+            document.getElementById('editingLessonId').value = lessonToEdit.id;
+
+            const btn = document.getElementById('saveLessonBtn');
+            btn.innerHTML = 'עדכן שיעור <i class="fas fa-save ml-1"></i>';
+            btn.className = 'bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-lg transition shadow-md flex-1 text-lg';
+            btn.onclick = window.saveEditedLesson;
+            
+            document.getElementById('cancelEditLessonBtn').classList.remove('hidden');
+        };
+
+        window.saveEditedLesson = () => {
+            const lessonId = document.getElementById('editingLessonId').value;
+            const date = document.getElementById('newLessonDate').value;
+            const summary = document.getElementById('newLessonSummary').value.trim();
+            if (!date || !summary) return window.customAlert('יש להזין תאריך וסיכום שיעור', true);
+
+            const student = students.find(s => String(s.id) === String(currentEditingStudentId));
+            const realIndex = student.lessons.findIndex(l => String(l.id) === String(lessonId));
+            
+            if(realIndex > -1) {
+                student.lessons[realIndex].date = date;
+                student.lessons[realIndex].summary = summary;
+                
+                const lessonData = { lessonId: lessonId, date: date, summary: summary };
+                window.syncToGoogleSheets('updateLesson', lessonData, function(res) {
+                    if(res.success) {
+                        window.customAlert('השיעור עודכן בהצלחה!');
+                        window.resetLessonForm();
+                        window.renderLessonsList(student);
+                        window.renderStudents();
+                    } else {
+                        window.customAlert('שגיאה: ' + (res.error || 'שגיאת תקשורת'), true);
+                    }
+                });
+            }
+        };
+
+        window.deleteLesson = async (index) => {
+            window.showConfirmDialog('למחוק את תיעוד השיעור הזה?', () => {
+                const student = students.find(s => String(s.id) === String(currentEditingStudentId));
+                const sorted = [...student.lessons].sort((a,b) => new Date(b.date) - new Date(a.date));
+                const lessonToDelete = sorted[index];
+                const realIndex = student.lessons.findIndex(l => String(l.id) === String(lessonToDelete.id));
+                
+                if(realIndex > -1) {
+                    student.lessons.splice(realIndex, 1);
+                    if(lessonToDelete.id) {
+                         window.syncToGoogleSheets('deleteLesson', { lessonId: lessonToDelete.id }, function() {
+                            window.customAlert('השיעור נמחק בהצלחה');
+                            window.renderLessonsList(student);
+                            window.renderStudents();
+                        });
+                    }
+                }
+            });
+        };
+
+        // ספריית הקלטות
+        window.showLibraryEditor = () => { window.openModal('libraryEditor'); window.switchLibraryTab('parshiot'); }
+        window.hideLibraryEditor = () => { window.closeModal('libraryEditor'); }
+
+        window.switchLibraryTab = (tabName) => {
+            currentLibraryTab = tabName;
+            ['parshiot', 'shabbat', 'special'].forEach(t => {
+                const btn = document.getElementById(`tab-${t}`);
+                if(t === tabName) { btn.classList.add('bg-blue-600', 'text-white'); btn.classList.remove('text-slate-400', 'bg-slate-800'); }
+                else { btn.classList.remove('bg-blue-600', 'text-white'); btn.classList.add('text-slate-400'); }
+            });
+            window.renderLibraryContent(tabName);
+        }
+
+        window.renderLibraryContent = function(tabName) {
+            const content = document.getElementById('library-content');
+            const library = recordingsLibrary[tabName] || {};
+            
+            if(Object.keys(library).length === 0) {
+                content.innerHTML = '<div class="text-center py-8 text-slate-500 text-lg">אין פריטים בקטגוריה זו. לחץ על "הוסף פריט חדש".</div>';
+                return;
+            }
+
+            content.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                ${Object.entries(library).map(([name, data]) => `
+                    <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 relative group" data-name="${name}">
+                        <div class="flex justify-between items-start mb-3">
+                            <h5 class="text-xl font-bold text-white">${name}</h5>
+                            <div class="flex gap-2 transition opacity-100 md:opacity-0 md:group-hover:opacity-100">
+                                <button type="button" onclick="window.editLibraryItem('${tabName}', '${name}')" class="text-blue-400 hover:text-blue-300 p-2 bg-slate-900 rounded border border-slate-600"><i class="fas fa-edit"></i></button>
+                                <button type="button" onclick="window.deleteLibraryItem('${tabName}', '${name}')" class="text-red-400 hover:text-red-300 p-2 bg-slate-900 rounded border border-slate-600"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                        <div class="text-base text-slate-400 space-y-1">
+                            <div class="truncate"><i class="fas fa-image text-blue-400 w-6"></i> ${data.image ? 'יש תמונה' : 'אין תמונה'}</div>
+                            <div class="truncate"><i class="fas fa-music text-purple-400 w-6"></i> ${data.audio ? 'יש הקלטה' : 'אין הקלטה'}</div>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>`;
+        }
+
+        window.editLibraryItem = (tabName, itemName) => {
+            const item = recordingsLibrary[tabName][itemName];
+            const div = document.querySelector(`[data-name="${itemName}"]`);
+            
+            div.innerHTML = `
+                <div class="bg-slate-900/80 -m-4 p-4 rounded-xl border border-amber-500/50">
+                    <input type="text" id="edit-name-${itemName}" value="${itemName}" class="form-input w-full p-3 mb-2 rounded-lg text-base" placeholder="שם הפריט">
+                    <input type="url" id="edit-image-${itemName}" value="${item.image || ''}" class="form-input w-full p-3 mb-2 rounded-lg text-base" placeholder="לינק לתמונה">
+                    <input type="url" id="edit-audio-${itemName}" value="${item.audio || ''}" class="form-input w-full p-3 mb-4 rounded-lg text-base" placeholder="לינק להקלטה">
+                    <div class="flex gap-2">
+                        <button type="button" onclick="window.saveLibraryItem('${tabName}', '${itemName}')" class="bg-green-600 text-white px-4 py-3 rounded-lg flex-1 font-bold text-lg hover:bg-green-500">שמור</button>
+                        <button type="button" onclick="window.switchLibraryTab('${tabName}')" class="bg-slate-600 text-white px-4 py-3 rounded-lg flex-1 text-lg hover:bg-slate-500">ביטול</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        window.saveLibraryItem = (tabName, oldName) => {
+            const newName = document.getElementById(`edit-name-${oldName}`).value.trim();
+            const newImage = document.getElementById(`edit-image-${oldName}`).value.trim();
+            const newAudio = document.getElementById(`edit-audio-${oldName}`).value.trim();
+            
+            if(!newName) return window.customAlert('שם הפריט הוא חובה', true);
+            if(oldName !== newName && recordingsLibrary[tabName][newName]) return window.customAlert('שם זה כבר קיים', true);
+            
+            if(oldName !== newName) delete recordingsLibrary[tabName][oldName];
+            recordingsLibrary[tabName][newName] = { image: newImage, audio: newAudio };
+            
+            window.renderLibraryContent(tabName);
+        }
+
+        window.addNewLibraryItem = () => {
+            window.showInputDialog('הוסף פריט חדש', 'הכנס שם לפריט (למשל: פרשת נח):', '', (newName) => {
+                if(!newName) return;
+                if(!recordingsLibrary[currentLibraryTab]) recordingsLibrary[currentLibraryTab] = {};
+                if(recordingsLibrary[currentLibraryTab][newName]) return window.customAlert('פריט כזה כבר קיים', true);
+                
+                recordingsLibrary[currentLibraryTab][newName] = { image: '', audio: '' };
+                window.renderLibraryContent(currentLibraryTab);
+                setTimeout(() => window.editLibraryItem(currentLibraryTab, newName), 100);
+            });
+        }
+
+        window.deleteLibraryItem = (tabName, itemName) => {
+            window.showConfirmDialog(`למחוק את "${itemName}" מהספרייה?`, () => {
+                delete recordingsLibrary[tabName][itemName];
+                window.renderLibraryContent(tabName);
+            });
+        }
+
+        window.saveLibraryChanges = () => {
+            window.syncToGoogleSheets('saveLibrary', recordingsLibrary, (res) => {
+                if(res.success) {
+                    window.customAlert('הספרייה נשמרה בהצלחה!');
+                    window.hideLibraryEditor();
+                } else window.customAlert('שגיאה בשמירה', true);
+            });
+        }
+
+        // טפסים להוספת תלמיד
+        window.createLibrarySelectorHTML = function(type, targetImageId, targetAudioId, targetTitleId, placeholder) {
+            const lib = recordingsLibrary[type] || {};
+            let options = Object.keys(lib).map(k => `<option value="${k}">${k}</option>`).join('');
+            return `
+                <select onchange="window.populateFromLibrary('${type}', this.value, '${targetImageId}', '${targetAudioId}', '${targetTitleId}')" class="form-input w-full p-3 rounded-lg mb-3 text-base bg-blue-900/30">
+                    <option value="">${placeholder}</option>
+                    ${options}
+                </select>
+            `;
+        }
+
+        window.populateFromLibrary = (type, selection, targetImageId, targetAudioId, targetTitleId) => {
+            const recording = recordingsLibrary[type]?.[selection];
+            if(recording) {
+                if(targetImageId) document.getElementById(targetImageId).value = recording.image || '';
+                if(targetAudioId) document.getElementById(targetAudioId).value = recording.audio || '';
+                if(targetTitleId) document.getElementById(targetTitleId).value = `${selection}`;
+            }
+        }
+
+        window.updateMorningLibrarySelector = () => {
+            const reading = document.getElementById('morningReading').value;
+            const type = reading === 'parsha' ? 'parshiot' : 'special';
+            document.getElementById('morningLibrarySelector').innerHTML = window.createLibrarySelectorHTML(type, 'morningImage', 'morningAudio', 'morningAudioTitle', '📚 ייבוא מהספרייה...');
+        }
+
+        window.updateShabbatLibrarySelectors = () => {
+            const shabbatReading = document.getElementById('shabbatReading').value;
+            if(shabbatReading === 'ראשון בלבד' || shabbatReading === 'other') {
+                document.getElementById('shabbatLibrarySelector').innerHTML = window.createLibrarySelectorHTML('shabbat', 'shabbatImage', 'shabbatAudio', 'shabbatAudioTitle', '📚 ייבוא הפטרה מהספרייה...');
+            } else {
+                document.getElementById('rishonLibrarySelector').innerHTML = window.createLibrarySelectorHTML('parshiot', 'rishonImage', 'rishonAudio', 'rishonAudioTitle', '📚 ייבוא קטע ראשון...');
+                document.getElementById('maftirLibrarySelector').innerHTML = window.createLibrarySelectorHTML('shabbat', 'maftirImage', 'maftirAudio', 'maftirAudioTitle', '📚 ייבוא קטע מפטיר...');
+            }
+        }
+
+        window.toggleShabbatImages = () => {
+            const val = document.getElementById('shabbatReading').value;
+            document.getElementById('otherReading').classList.toggle('hidden', val !== 'other');
+            document.getElementById('singleShabbatImage').classList.toggle('hidden', val === 'ראשון ומפטיר');
+            document.getElementById('multipleShabbatImages').classList.toggle('hidden', val !== 'ראשון ומפטיר');
+        }
+
+        window.toggleEventDetails = () => {
+            const val = document.getElementById('eventType').value;
+            document.getElementById('shabbatChatanDateField').classList.toggle('hidden', val === 'aliyah');
+            document.getElementById('shabbatChatanDetails').classList.toggle('hidden', val === 'aliyah');
+            document.getElementById('morningDetails').classList.toggle('hidden', val === 'shabbat-chatan');
+        }
+
+        window.showAddStudentForm = () => {
+            document.getElementById('studentForm').reset();
+            document.getElementById('studentForm').removeAttribute('data-edit-id');
+            document.getElementById('studentFormTitle').innerText = 'הוסף תלמיד חדש';
+            document.getElementById('eventType').value = 'aliyah';
+            window.toggleEventDetails();
+            window.updateMorningLibrarySelector();
+            window.updateShabbatLibrarySelectors();
+            window.openModal('addStudentForm');
+        }
+
+        window.hideAddStudentForm = () => window.closeModal('addStudentForm');
+
+        window.addStudent = (e) => {
+            e.preventDefault();
+            const editId = document.getElementById('studentForm').getAttribute('data-edit-id');
+            
+            const studentData = {
+                name: document.getElementById('studentName').value,
+                eventDate: document.getElementById('eventDate').value,
+                hebrewBirthDate: document.getElementById('hebrewBirthDate').value,
+                parsha: document.getElementById('parsha').value,
+                studentPhone: document.getElementById('studentPhone').value,
+                parentName: document.getElementById('parentName').value,
+                parentPhone: document.getElementById('parentPhone').value,
+                eventType: document.getElementById('eventType').value,
+                shabbatChatanDate: document.getElementById('shabbatChatanDate').value,
+                
+                morningReading: document.getElementById('morningReading').value,
+                morningImage: document.getElementById('morningImage').value,
+                morningAudio: document.getElementById('morningAudio').value,
+                morningAudioTitle: document.getElementById('morningAudioTitle').value,
+                
+                shabbatReading: document.getElementById('shabbatReading').value === 'other' ? document.getElementById('otherReading').value : document.getElementById('shabbatReading').value,
+                shabbatImage: document.getElementById('shabbatImage').value,
+                shabbatAudio: document.getElementById('shabbatAudio').value,
+                shabbatAudioTitle: document.getElementById('shabbatAudioTitle').value,
+                
+                rishonImage: document.getElementById('rishonImage').value,
+                rishonAudio: document.getElementById('rishonAudio').value,
+                rishonAudioTitle: document.getElementById('rishonAudioTitle').value,
+                
+                maftirImage: document.getElementById('maftirImage').value,
+                maftirAudio: document.getElementById('maftirAudio').value,
+                maftirAudioTitle: document.getElementById('maftirAudioTitle').value,
+                
+                hasRecording: !!(document.getElementById('morningAudio').value || document.getElementById('shabbatAudio').value || document.getElementById('rishonAudio').value)
+            };
+
+            if (editId) {
+                const idx = students.findIndex(s => String(s.id) === String(editId));
+                if (idx > -1) {
+                    students[idx] = { ...students[idx], ...studentData };
+                    window.saveToGoogleSheets(students[idx], (res) => { if(res.success) { window.customAlert('עודכן בהצלחה'); window.hideAddStudentForm(); window.renderStudents(); } else { window.customAlert('שגיאה בעדכון', true); } });
+                }
+            } else {
+                const newId = 'std-' + Date.now();
+                const newStudent = { id: newId, lessons: [], ...studentData };
+                students.push(newStudent);
+                window.saveToGoogleSheets(newStudent, (res) => { if(res.success) { window.customAlert('נוסף בהצלחה'); window.hideAddStudentForm(); window.renderStudents(); } else { window.customAlert('שגיאה בהוספה', true); } });
+            }
+        }
+
+        window.editStudent = (id) => {
+            const s = students.find(x => String(x.id) === String(id));
+            if(!s) return;
+            
+            window.showAddStudentForm();
+            document.getElementById('studentFormTitle').innerText = `ערוך: ${s.name}`;
+            document.getElementById('studentForm').setAttribute('data-edit-id', s.id);
+            
+            document.getElementById('studentName').value = s.name || '';
+            try { if(s.eventDate) document.getElementById('eventDate').value = new Date(s.eventDate).toISOString().split('T')[0]; }catch(e){}
+            try { if(s.shabbatChatanDate) document.getElementById('shabbatChatanDate').value = new Date(s.shabbatChatanDate).toISOString().split('T')[0]; }catch(e){}
+            document.getElementById('hebrewBirthDate').value = s.hebrewBirthDate || '';
+            document.getElementById('parsha').value = s.parsha || '';
+            document.getElementById('studentPhone').value = s.studentPhone || '';
+            document.getElementById('parentName').value = s.parentName || '';
+            document.getElementById('parentPhone').value = s.parentPhone || '';
+            
+            document.getElementById('eventType').value = s.eventType || 'both';
+            window.toggleEventDetails();
+
+            document.getElementById('morningReading').value = s.morningReading || 'parsha';
+            document.getElementById('morningImage').value = s.morningImage || '';
+            document.getElementById('morningAudio').value = s.morningAudio || '';
+            document.getElementById('morningAudioTitle').value = s.morningAudioTitle || '';
+
+            if (s.shabbatReading === 'ראשון בלבד' || s.shabbatReading === 'ראשון ומפטיר') {
+                document.getElementById('shabbatReading').value = s.shabbatReading;
+            } else {
+                document.getElementById('shabbatReading').value = 'other';
+                document.getElementById('otherReading').value = s.shabbatReading || '';
+            }
+            window.toggleShabbatImages();
+
+            document.getElementById('shabbatImage').value = s.shabbatImage || '';
+            document.getElementById('shabbatAudio').value = s.shabbatAudio || '';
+            document.getElementById('shabbatAudioTitle').value = s.shabbatAudioTitle || '';
+            
+            document.getElementById('rishonImage').value = s.rishonImage || '';
+            document.getElementById('rishonAudio').value = s.rishonAudio || '';
+            document.getElementById('rishonAudioTitle').value = s.rishonAudioTitle || '';
+            
+            document.getElementById('maftirImage').value = s.maftirImage || '';
+            document.getElementById('maftirAudio').value = s.maftirAudio || '';
+            document.getElementById('maftirAudioTitle').value = s.maftirAudioTitle || '';
+            
+            window.updateMorningLibrarySelector();
+            window.updateShabbatLibrarySelectors();
+        }
+
+        window.deleteStudent = (id) => {
+            window.showConfirmDialog('האם אתה בטוח שברצונך למחוק תלמיד זה לצמיתות?', () => {
+                const idx = students.findIndex(s => String(s.id) === String(id));
+                if(idx > -1) {
+                    students.splice(idx, 1);
+                    window.syncToGoogleSheets('delete', { id: id }, () => {
+                        window.customAlert('נמחק בהצלחה');
+                        window.renderStudents();
+                    });
+                }
+            });
+        }
+
+        window.toggleAdminSidebar = () => {
+            const sb = document.getElementById('adminSidebar');
+            const ov = document.getElementById('sidebarOverlay');
+            sb.classList.toggle('translate-x-full');
+            ov.classList.toggle('hidden');
+        }
+
+        window.toggleCompletedStudents = () => {
+            document.getElementById('completedStudentsSection').classList.toggle('hidden');
+        }
+
+        window.refreshData = () => {
+            window.loadFromGoogleSheets(() => { window.customAlert('נתונים רעננו בהצלחה'); window.renderStudents(); });
+        }
+
+        window.addEventListener('load', () => {
+            window.loadFromGoogleSheets(() => {});
+        });
+    </script>
+</body>
+</html>
