@@ -9,7 +9,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&display=swap" rel="stylesheet">
     <script>
-        // === הלינק לסקריפט ה-CRM הראשי שלך ===
+        // === הלינק לסקריפט ה-CRM הראשי שלך (עם התוספת ?mode=api) ===
         const API_URL = "https://script.google.com/macros/s/AKfycbyyw2egSdJuP2vEX42T0xFhXBJPip5jcgmAw1iPX59YBRygkS6TKrjzYYShVCAPl3GKKg/exec?mode=api";
     </script>
     <style>
@@ -51,7 +51,7 @@
 
             <div class="text-right bg-blue-900/30 p-5 rounded-xl border border-blue-800/50 mb-6">
                 <h4 class="font-bold text-amber-400 mb-3 text-lg"><i class="fas fa-file-invoice-dollar ml-2"></i>תנאי תשלום:</h4>
-                <p id="paymentTermsText" class="text-slate-300 text-base leading-relaxed"></p>
+                <div id="paymentTermsText" class="text-slate-300 text-base leading-relaxed space-y-2"></div>
             </div>
 
             <div class="section-title">2. פרטים אישיים ומיקום</div>
@@ -121,16 +121,8 @@
             }
 
             try {
-                let fetchUrl = API_URL;
-                if(fetchUrl.includes('?mode=api')) fetchUrl = fetchUrl.replace('?mode=api', '');
-                
-                // משיכת נתונים
-                const response = await fetch(fetchUrl, {
-                    method: 'POST',
-                    body: JSON.stringify({ action: 'load' }),
-                    headers: { 'Content-Type': 'text/plain;charset=utf-8' }
-                });
-                
+                // שאיבת נתונים מ-API הראשי (זהה ל-index.html)
+                const response = await fetch(API_URL);
                 const data = await response.json();
                 
                 if (data.events) {
@@ -171,10 +163,10 @@
                         if(desc) { document.getElementById('pkgDesc').innerText = desc; } else { document.getElementById('pkgDesc').style.display = 'none'; }
                         document.getElementById('lblPrice').innerText = currentEvent.price ? currentEvent.price + ' ₪' : 'טרם נקבע';
 
-                        // --- לוגיקת תנאי תשלום ---
+                        // --- לוגיקת תנאי תשלום מעודכנת ---
                         let termsHtml = '';
                         if (extPay !== '0') {
-                            termsHtml += `<div class="mb-3">תשלום לספקים חיצוניים (מתופפים, קלידן וכו'): <strong class="text-white bg-slate-800 px-2 py-1 rounded">${extPay} ₪</strong> ישולמו במזומן ביום האירוע עצמו.</div>`;
+                            termsHtml += `<div><strong>תשלום לספקים חיצוניים (מתופפים, קלידן וכו'):</strong> <span class="bg-slate-800 px-2 py-1 rounded text-white">${extPay} ₪</span> ישולמו במזומן ביום האירוע עצמו.</div>`;
                         }
                         termsHtml += `<div><strong class="text-amber-400">יתרה לתשלום:</strong> את היתרה הנותרת ניתן לשלם באמצעות מזומן, ביט, פייבוקס, העברה בנקאית או צ'ק.</div>`;
                         document.getElementById('paymentTermsText').innerHTML = termsHtml;
@@ -232,26 +224,27 @@
                 currentEvent.notes = existingNotes + "\n\n--- אישור לקוח ---\nהסכמת צילום: " + (mediaConsent ? "כן" : "לא") + "\nאישור תקנון: מאושר.";
             }
 
-            // הגדרת הפעולה בדיוק לאותה פעולה שה-CRM שלך משתמש בה כדי לערוך אירועים
+            // שולחים את הפקודה המדויקת שה-CRM מצפה לה
             currentEvent.action = 'saveEvent';
-
-            let fetchUrl = API_URL;
-            if(fetchUrl.includes('?mode=api')) fetchUrl = fetchUrl.replace('?mode=api', '');
 
             try {
                 // שליחה לענן
-                await fetch(fetchUrl, {
+                const response = await fetch(API_URL, {
                     method: 'POST',
-                    body: JSON.stringify(currentEvent),
-                    headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+                    body: JSON.stringify(currentEvent)
                 });
                 
-                // ברגע שהשרת מחזיר תשובה 200, אנחנו מציגים ללקוח הודעת הצלחה
-                document.getElementById('formContainer').style.display = 'none';
-                document.getElementById('successState').style.display = 'block';
-                
+                const result = await response.json();
+                if(result.success) {
+                    document.getElementById('formContainer').style.display = 'none';
+                    document.getElementById('successState').style.display = 'block';
+                } else {
+                    alert('אירעה שגיאה בשמירה. אנא נסה שוב.');
+                    btn.innerHTML = 'שלח אישור הזמנה <i class="fas fa-check-circle ml-2"></i>';
+                    btn.disabled = false;
+                }
             } catch (err) {
-                alert('שגיאת רשת עקב חסימת דפדפן, אנא נסה למלא מגלישה בסתר או מדפדפן אחר.');
+                alert('שגיאת רשת. אנא נסה שוב.');
                 btn.innerHTML = 'שלח אישור הזמנה <i class="fas fa-check-circle ml-2"></i>';
                 btn.disabled = false;
             }
