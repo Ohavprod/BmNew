@@ -119,7 +119,7 @@
         
         /* --- גלריה והמלצות (Marquee) --- */
         .marquee-wrapper { overflow: hidden; width: 100%; position: relative; direction: ltr; }
-        .marquee-track { display: flex; width: max-content; gap: 0; animation: scroll-loop 350s linear infinite; } /* האטתי משמעותית את הגלריה */
+        .marquee-track { display: flex; width: max-content; gap: 0; animation: scroll-loop 350s linear infinite; } /* מהירות איטית יותר */
         .marquee-track:hover { animation-play-state: paused; }
         @keyframes scroll-loop { 0% { transform: translateX(-50%); } 100% { transform: translateX(0%); } }
         
@@ -140,7 +140,7 @@
         
         /* --- וידאו ורקע --- */
         .promo-video-container { width: 98%; max-width: 1800px; margin: 30px auto; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.7); border: 2px solid #334155; position: relative; background: black; aspect-ratio: 21/9; }
-        .promo-video-iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+        .promo-video-iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; z-index: 10; }
         .sound-toggle-btn { position: absolute; bottom: 15px; left: 15px; background: rgba(0,0,0,0.6); color: white; border: 1px solid rgba(255,255,255,0.5); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 50; }
         
         #heroOverlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #051c42; opacity: 0.6; z-index: 0; pointer-events: none; }
@@ -952,7 +952,7 @@
                 showLoader();
                 fetch(API_URL, {
                     method: 'POST',
-                    mode: 'no-cors', // מבטל את חסימת ה-CORS (לא ניתן לקרוא את התשובה)
+                    mode: 'no-cors',
                     body: JSON.stringify(payloadData),
                     headers: { 'Content-Type': 'text/plain;charset=utf-8' }
                 })
@@ -963,7 +963,7 @@
                 .catch(err => {
                     hideLoader();
                     console.log(err);
-                    if(onSuccess) onSuccess(); // גוגל שומר בכל מקרה, לכן ממשיכים
+                    if(onSuccess) onSuccess(); 
                 });
             }
             
@@ -1709,7 +1709,7 @@
                  }
             }
 
-            // פונקציה להזזת תמונות ימינה ושמאלה
+            // הזזת תמונות מודגשת לאדמין
             window.moveImageItem = (url, direction) => {
                 const images = galleryImages.filter(item => typeof item === 'string' || item.type === 'image');
                 let imageOrder = [];
@@ -1740,8 +1740,8 @@
                 saveConfigToDB('imageOrderDB', JSON.stringify(newOrder), renderGallery);
             }
 
-            // פונקציה להזזת וידאו ימינה ושמאלה
-            window.moveVideoItem = (index, direction) => {
+            // הזזת סרטונים מודגשת לאדמין
+            window.moveVideoItem = (url, direction) => {
                 const videos = galleryImages.filter(item => item.type === 'video');
                 let videoOrder = [];
                 try { 
@@ -1757,7 +1757,8 @@
                     return idxA - idxB;
                 });
 
-                if (index + direction < 0 || index + direction >= videos.length) return;
+                let index = videos.findIndex(v => v.url === url);
+                if (index === -1 || index + direction < 0 || index + direction >= videos.length) return;
 
                 const temp = videos[index];
                 videos[index] = videos[index + direction];
@@ -1816,12 +1817,12 @@
                         let btns = '';
                         if (isSuper && !clone) {
                              btns = `
-                                <div class="absolute top-2 right-2 flex gap-2 z-50">
-                                    <button class="bg-red-600/80 text-white p-2 rounded-full hover:bg-red-500" onclick="deleteImage('${src}')"><i class="fas fa-trash"></i></button>
+                                <div class="absolute top-2 right-2 flex gap-2 z-[9999]">
+                                    <button class="bg-red-600 border-2 border-white text-white w-8 h-8 flex items-center justify-center rounded-full hover:bg-red-500" onclick="deleteImage('${src}')"><i class="fas fa-trash"></i></button>
                                 </div>
-                                <div class="absolute top-2 left-2 flex gap-2 z-50">
-                                    ${idx > 0 ? `<button class="bg-slate-700/80 text-white w-8 h-8 rounded-full hover:bg-amber-500 hover:text-black transition flex items-center justify-center shadow-lg border border-slate-500" onclick="moveImageItem('${src}', -1)" title="הזז ימינה"><i class="fas fa-arrow-right"></i></button>` : ''}
-                                    ${idx < lightboxImageUrls.length - 1 ? `<button class="bg-slate-700/80 text-white w-8 h-8 rounded-full hover:bg-amber-500 hover:text-black transition flex items-center justify-center shadow-lg border border-slate-500" onclick="moveImageItem('${src}', 1)" title="הזז שמאלה"><i class="fas fa-arrow-left"></i></button>` : ''}
+                                <div class="absolute top-2 left-2 flex gap-2 z-[9999]">
+                                    ${idx > 0 ? `<button class="bg-slate-900 border-2 border-amber-400 text-amber-400 w-8 h-8 rounded-full hover:bg-amber-400 hover:text-black transition flex items-center justify-center shadow-[0_0_10px_rgba(0,0,0,0.8)]" onclick="moveImageItem('${src}', -1)" title="הזז ימינה"><i class="fas fa-arrow-right"></i></button>` : ''}
+                                    ${idx < lightboxImageUrls.length - 1 ? `<button class="bg-slate-900 border-2 border-amber-400 text-amber-400 w-8 h-8 rounded-full hover:bg-amber-400 hover:text-black transition flex items-center justify-center shadow-[0_0_10px_rgba(0,0,0,0.8)]" onclick="moveImageItem('${src}', 1)" title="הזז שמאלה"><i class="fas fa-arrow-left"></i></button>` : ''}
                                 </div>`;
                         }
                         w.innerHTML += `<div class="gallery-item relative">${btns}<img src="${src}" class="gallery-img" onclick="openLightbox('${src}')"></div>`;
@@ -1864,14 +1865,14 @@
                     let moveBtns = '';
                     if (isSuper) {
                         delBtn = `
-                            <div class="absolute top-2 right-2 flex gap-2 z-50">
-                                <button class="bg-blue-600/80 text-white p-2 rounded-full hover:bg-blue-500" onclick="editGalleryItem('${vid.url}')"><i class="fas fa-pencil-alt"></i></button>
-                                <button class="bg-red-600/80 text-white p-2 rounded-full hover:bg-red-500" onclick="deleteImage('${vid.url}')"><i class="fas fa-trash"></i></button>
+                            <div class="absolute top-3 right-3 flex gap-2 z-[9999]">
+                                <button class="bg-blue-600 border-2 border-white text-white w-10 h-10 flex items-center justify-center rounded-full hover:bg-blue-500 shadow-xl" onclick="editGalleryItem('${vid.url}')"><i class="fas fa-pencil-alt"></i></button>
+                                <button class="bg-red-600 border-2 border-white text-white w-10 h-10 flex items-center justify-center rounded-full hover:bg-red-500 shadow-xl" onclick="deleteImage('${vid.url}')"><i class="fas fa-trash"></i></button>
                             </div>`;
                         moveBtns = `
-                            <div class="absolute top-2 left-2 flex gap-2 z-50">
-                                ${index > 0 ? `<button class="bg-slate-700/80 text-white w-8 h-8 rounded-full hover:bg-amber-500 hover:text-black transition flex items-center justify-center shadow-lg border border-slate-500" onclick="moveVideoItem(${index}, -1)" title="הזז למעלה/ימינה"><i class="fas fa-arrow-right"></i></button>` : ''}
-                                ${index < videos.length - 1 ? `<button class="bg-slate-700/80 text-white w-8 h-8 rounded-full hover:bg-amber-500 hover:text-black transition flex items-center justify-center shadow-lg border border-slate-500" onclick="moveVideoItem(${index}, 1)" title="הזז למטה/שמאלה"><i class="fas fa-arrow-left"></i></button>` : ''}
+                            <div class="absolute top-3 left-3 flex gap-2 z-[9999]">
+                                ${index > 0 ? `<button class="bg-slate-900 border-2 border-amber-400 text-amber-400 w-10 h-10 rounded-full hover:bg-amber-400 hover:text-black transition flex items-center justify-center shadow-[0_0_15px_rgba(0,0,0,0.8)]" onclick="moveVideoItem('${vid.url}', -1)" title="הזז למעלה/ימינה"><i class="fas fa-arrow-right text-lg"></i></button>` : ''}
+                                ${index < videos.length - 1 ? `<button class="bg-slate-900 border-2 border-amber-400 text-amber-400 w-10 h-10 rounded-full hover:bg-amber-400 hover:text-black transition flex items-center justify-center shadow-[0_0_15px_rgba(0,0,0,0.8)]" onclick="moveVideoItem('${vid.url}', 1)" title="הזז למטה/שמאלה"><i class="fas fa-arrow-left text-lg"></i></button>` : ''}
                             </div>`;
                     }
                     
