@@ -121,16 +121,8 @@
             }
 
             try {
-                let fetchUrl = API_URL;
-                if(fetchUrl.includes('?mode=api')) fetchUrl = fetchUrl.replace('?mode=api', '');
-                
-                // === התיקון הקריטי: שאיבת נתונים בשיטת POST לעקיפת שגיאות CORS ===
-                const response = await fetch(fetchUrl, {
-                    method: 'POST',
-                    body: JSON.stringify({ action: 'load' }),
-                    headers: { 'Content-Type': 'text/plain;charset=utf-8' }
-                });
-                
+                // חזרנו לשיטת המשיכה שעבדה לך בצורה מושלמת קודם לכן (בלי לעורר חסימות CORS)
+                const response = await fetch(API_URL);
                 const data = await response.json();
                 
                 if (data.events) {
@@ -232,11 +224,12 @@
                 currentEvent.notes = existingNotes + "\n\n--- אישור לקוח ---\nהסכמת צילום: " + (mediaConsent ? "כן" : "לא") + "\nאישור תקנון: מאושר.";
             }
 
+            // חילוץ הלינק הנקי בשביל השמירה
             let fetchUrl = API_URL;
             if(fetchUrl.includes('?mode=api')) fetchUrl = fetchUrl.replace('?mode=api', '');
 
             try {
-                // שליחה לענן באמצעות הפקודה הרגילה והאמינה של 'save'
+                // שליחה לענן באמצעות שיטת POST נסתרת (זה לא נחסם כי זה טקסט נקי)
                 const response = await fetch(fetchUrl, {
                     method: 'POST',
                     body: JSON.stringify({ action: 'save', data: currentEvent }),
