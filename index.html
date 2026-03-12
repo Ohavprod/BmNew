@@ -119,13 +119,17 @@
         
         /* --- גלריה והמלצות (Marquee) --- */
         .marquee-wrapper { overflow: hidden; width: 100%; position: relative; direction: ltr; }
-        .marquee-track { display: flex; width: max-content; gap: 0; animation: scroll-loop 500s linear infinite; } /* מהירות איטית במיוחד */
+        .marquee-track { display: flex; width: max-content; gap: 0; animation: scroll-loop 500s linear infinite; } 
         .marquee-track:hover { animation-play-state: paused; }
         @keyframes scroll-loop { 0% { transform: translateX(-50%); } 100% { transform: translateX(0%); } }
         
         .gallery-item { margin: 0 5px; }
         .gallery-img { height: 250px; width: auto; aspect-ratio: 3/2; object-fit: cover; border-radius: 16px; cursor: pointer; transition: 0.3s; border: 2px solid transparent; }
         .gallery-img:hover { border-color: #fbbf24; transform: scale(1.05); }
+
+        /* --- עיצוב גרירת וידאו --- */
+        .dragging-active iframe, .dragging-active video { pointer-events: none !important; }
+        .video-card.opacity-50 { opacity: 0.5; border: 2px dashed #fbbf24; }
 
         .review-card { background: linear-gradient(145deg, rgba(30,41,59,0.9), rgba(15,23,42,0.95)); border: 1px solid rgba(251,191,36,0.3); border-radius: 1.5rem; padding: 1.5rem; width: 350px; margin: 0 15px; flex-shrink: 0; direction: rtl; text-align: right; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
         .review-stars { color: #fbbf24; font-size: 1.2rem; margin-bottom: 10px; }
@@ -890,6 +894,8 @@
             let currentLightboxIndex = 0;
             let lightboxImageUrls = [];
             let editingReviewIndex = -1;
+
+            let draggedVideoUrl = null;
 
             const packagesData = {
                 'VIP': { t: 'חבילת הכל כלול VIP', p: '₪5,500', d: 'ליווי תפילה ופיוטים\nחזנות\nהגברה מקצועית\nקלידן\nזוג מתופפים\nכניסה מיוחדת עם חופה ושופרות\nליווי שירים בסעודה (אביב + קלידן)\nלימוד הפרשה (במידת הצורך)' },
@@ -1709,65 +1715,59 @@
                  }
             }
 
-            // הזזת תמונות - מוצגת תמיד לאדמין
-            window.moveImageItem = (url, direction) => {
-                const images = galleryImages.filter(item => typeof item === 'string' || item.type === 'image');
-                let imageOrder = [];
-                try { 
-                    let parsed = JSON.parse(siteConfig.imageOrderDB); 
-                    if (Array.isArray(parsed)) imageOrder = parsed;
-                } catch(e){}
+            // === פונקציות גרירה (Drag & Drop) חדישות לסרטונים ===
+            let draggedVideoUrl = null;
+
+            window.handleDragStart = function(e) {
+                draggedVideoUrl = this.getAttribute('data-url');
+                e.dataTransfer.effectAllowed = 'move';
+                // כיבוי זמני של הסרטונים כדי שלא יבלעו את העכבר בזמן הגרירה
+                document.getElementById('videoContainer').classList.add('dragging-active');
+                setTimeout(() => this.classList.add('opacity-50'), 0);
+            };
+
+            window.handleDragOver = function(e) {
+                e.preventDefault(); // חובה כדי לאפשר Drop
+                e.dataTransfer.dropEffect = 'move';
+                return false;
+            };
+
+            window.handleDrop = function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                const targetUrl = this.getAttribute('data-url');
                 
-                images.sort((a, b) => {
-                    let urlA = typeof a === 'string' ? a : a.url;
-                    let urlB = typeof b === 'string' ? b : b.url;
-                    let idxA = imageOrder.indexOf(urlA);
-                    let idxB = imageOrder.indexOf(urlB);
-                    if (idxA === -1) idxA = 9999;
-                    if (idxB === -1) idxB = 9999;
-                    return idxA - idxB;
-                });
+                if (draggedVideoUrl && draggedVideoUrl !== targetUrl) {
+                    const videos = galleryImages.filter(item => item.type === 'video');
+                    let videoOrder = [];
+                    try { 
+                        let parsed = JSON.parse(siteConfig.videoOrderDB); 
+                        if (Array.isArray(parsed)) videoOrder = parsed;
+                    } catch(e){}
+                    
+                    // מוודאים שכל הסרטונים נמצאים במערך הסדר
+                    videos.forEach(v => { if (!videoOrder.includes(v.url)) videoOrder.push(v.url); });
 
-                let index = images.findIndex(i => (typeof i === 'string' ? i : i.url) === url);
-                if (index === -1 || index + direction < 0 || index + direction >= images.length) return;
+                    const fromIndex = videoOrder.indexOf(draggedVideoUrl);
+                    const toIndex = videoOrder.indexOf(targetUrl);
 
-                const temp = images[index];
-                images[index] = images[index + direction];
-                images[index + direction] = temp;
+                    if (fromIndex !== -1 && toIndex !== -1) {
+                        videoOrder.splice(fromIndex, 1);
+                        videoOrder.splice(toIndex, 0, draggedVideoUrl);
 
-                const newOrder = images.map(i => typeof i === 'string' ? i : i.url);
-                siteConfig.imageOrderDB = JSON.stringify(newOrder); 
-                saveConfigToDB('imageOrderDB', JSON.stringify(newOrder), renderGallery);
-            }
+                        siteConfig.videoOrderDB = JSON.stringify(videoOrder);
+                        saveConfigToDB('videoOrderDB', JSON.stringify(videoOrder), renderGallery);
+                        renderGallery(); // רענון מיידי
+                    }
+                }
+                return false;
+            };
 
-            // הזזת סרטונים - מוצגת תמיד לאדמין
-            window.moveVideoItem = (url, direction) => {
-                const videos = galleryImages.filter(item => item.type === 'video');
-                let videoOrder = [];
-                try { 
-                    let parsed = JSON.parse(siteConfig.videoOrderDB); 
-                    if (Array.isArray(parsed)) videoOrder = parsed;
-                } catch(e){}
-                
-                videos.sort((a, b) => {
-                    let idxA = videoOrder.indexOf(a.url);
-                    let idxB = videoOrder.indexOf(b.url);
-                    if (idxA === -1) idxA = 9999;
-                    if (idxB === -1) idxB = 9999;
-                    return idxA - idxB;
-                });
-
-                let index = videos.findIndex(v => v.url === url);
-                if (index === -1 || index + direction < 0 || index + direction >= videos.length) return;
-
-                const temp = videos[index];
-                videos[index] = videos[index + direction];
-                videos[index + direction] = temp;
-
-                const newOrder = videos.map(v => v.url);
-                siteConfig.videoOrderDB = JSON.stringify(newOrder); 
-                saveConfigToDB('videoOrderDB', JSON.stringify(newOrder), renderGallery);
-            }
+            window.handleDragEnd = function(e) {
+                this.classList.remove('opacity-50');
+                document.getElementById('videoContainer').classList.remove('dragging-active');
+                draggedVideoUrl = null;
+            };
 
             function renderGallery() {
                 const c = document.getElementById('imageMarquee'); 
@@ -1781,12 +1781,9 @@
                 const videos = galleryImages.filter(item => item.type === 'video');
 
                 let videoOrder = [];
-                let imageOrder = [];
                 try { 
                     let parsedV = JSON.parse(siteConfig.videoOrderDB); 
                     if (Array.isArray(parsedV)) videoOrder = parsedV;
-                    let parsedI = JSON.parse(siteConfig.imageOrderDB); 
-                    if (Array.isArray(parsedI)) imageOrder = parsedI;
                 } catch(e){}
                 
                 videos.sort((a, b) => {
@@ -1797,18 +1794,7 @@
                     return idxA - idxB;
                 });
 
-                images.sort((a, b) => {
-                    let urlA = typeof a === 'string' ? a : a.url;
-                    let urlB = typeof b === 'string' ? b : b.url;
-                    let idxA = imageOrder.indexOf(urlA);
-                    let idxB = imageOrder.indexOf(urlB);
-                    if (idxA === -1) idxA = 9999;
-                    if (idxB === -1) idxB = 9999;
-                    return idxA - idxB;
-                });
-
                 lightboxImageUrls = images.map(i => (typeof i === 'string' ? i : i.url));
-
                 const isSuper = (currentUser && currentUser.role === 'superadmin');
 
                 const createSet = (clone) => {
@@ -1819,10 +1805,6 @@
                              btns = `
                                 <div class="absolute top-2 right-2 flex gap-2 z-[9999]">
                                     <button class="bg-red-600 border-2 border-white text-white w-8 h-8 flex items-center justify-center rounded-full hover:bg-red-500 shadow-xl" onclick="deleteImage('${src}')"><i class="fas fa-trash text-sm"></i></button>
-                                </div>
-                                <div class="absolute top-2 left-2 flex gap-2 z-[9999]">
-                                    <button class="bg-slate-900 border-2 border-amber-400 text-amber-400 w-8 h-8 flex items-center justify-center rounded-full hover:bg-amber-400 hover:text-black shadow-xl" onclick="moveImageItem('${src}', -1)" title="הזז ימינה"><i class="fas fa-arrow-right text-sm"></i></button>
-                                    <button class="bg-slate-900 border-2 border-amber-400 text-amber-400 w-8 h-8 flex items-center justify-center rounded-full hover:bg-amber-400 hover:text-black shadow-xl" onclick="moveImageItem('${src}', 1)" title="הזז שמאלה"><i class="fas fa-arrow-left text-sm"></i></button>
                                 </div>`;
                         }
                         w.innerHTML += `<div class="gallery-item relative">${btns}<img src="${src}" class="gallery-img" onclick="openLightbox('${src}')"></div>`;
@@ -1859,30 +1841,38 @@
                     }
 
                     const div = document.createElement('div');
-                    div.className = "rounded-2xl overflow-hidden border border-slate-700 bg-slate-900 relative group shadow-2xl flex flex-col";
-                    
+                    div.className = "rounded-2xl overflow-hidden border border-slate-700 bg-slate-900 relative shadow-2xl flex flex-col video-card transition-all duration-200";
+                    // הוספת יכולת גרירה
+                    if (isSuper) {
+                        div.setAttribute('data-url', vid.url);
+                        div.draggable = true;
+                        div.addEventListener('dragstart', window.handleDragStart);
+                        div.addEventListener('dragover', window.handleDragOver);
+                        div.addEventListener('drop', window.handleDrop);
+                        div.addEventListener('dragend', window.handleDragEnd);
+                    }
+
                     let delBtn = '';
-                    let moveBtns = '';
+                    let dragHandle = '';
                     if (isSuper) {
                         delBtn = `
                             <div class="absolute top-3 right-3 flex gap-2 z-[9999]">
                                 <button class="bg-blue-600 border-2 border-white text-white w-10 h-10 flex items-center justify-center rounded-full hover:bg-blue-500 shadow-xl" onclick="editGalleryItem('${vid.url}')"><i class="fas fa-pencil-alt"></i></button>
                                 <button class="bg-red-600 border-2 border-white text-white w-10 h-10 flex items-center justify-center rounded-full hover:bg-red-500 shadow-xl" onclick="deleteImage('${vid.url}')"><i class="fas fa-trash"></i></button>
                             </div>`;
-                        moveBtns = `
-                            <div class="absolute top-3 left-3 flex gap-2 z-[9999] pointer-events-auto">
-                                <button class="bg-slate-900 border-2 border-amber-400 text-amber-400 w-10 h-10 rounded-full hover:bg-amber-400 hover:text-black transition flex items-center justify-center shadow-[0_0_15px_rgba(0,0,0,0.8)]" onclick="moveVideoItem('${vid.url}', -1)" title="הזז למעלה/ימינה"><i class="fas fa-arrow-right text-lg"></i></button>
-                                <button class="bg-slate-900 border-2 border-amber-400 text-amber-400 w-10 h-10 rounded-full hover:bg-amber-400 hover:text-black transition flex items-center justify-center shadow-[0_0_15px_rgba(0,0,0,0.8)]" onclick="moveVideoItem('${vid.url}', 1)" title="הזז למטה/שמאלה"><i class="fas fa-arrow-left text-lg"></i></button>
+                        dragHandle = `
+                            <div class="absolute top-3 left-3 flex gap-2 z-[9999] cursor-grab active:cursor-grabbing" title="גרור כדי לשנות סדר">
+                                <div class="bg-slate-900 border-2 border-amber-400 text-amber-400 w-10 h-10 rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(0,0,0,0.8)]"><i class="fas fa-arrows-alt text-lg"></i></div>
                             </div>`;
                     }
                     
                     let videoHtml = '';
                     if (isDirectFile) {
-                        videoHtml = `<div class="bg-black aspect-video relative w-full"><video src="${embedUrl}" class="w-full h-full" controls playsinline controlsList="nodownload"></video></div>`;
+                        videoHtml = `<div class="bg-black aspect-video relative w-full"><video src="${embedUrl}" class="w-full h-full pointer-events-auto" controls playsinline controlsList="nodownload"></video></div>`;
                     } 
                     else if (poster) { 
                         videoHtml = `
-                            <div class="bg-black aspect-video relative cursor-pointer group w-full" onclick="this.innerHTML='<iframe class=\\'w-full h-full\\' src=\\'${embedUrl}\\' frameborder=\\'0\\' allowfullscreen allow=\\'autoplay\\'></iframe>'">
+                            <div class="bg-black aspect-video relative cursor-pointer group w-full pointer-events-auto" onclick="this.innerHTML='<iframe class=\\'w-full h-full\\' src=\\'${embedUrl}\\' frameborder=\\'0\\' allowfullscreen allow=\\'autoplay\\'></iframe>'">
                                 <img src="${poster}" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition duration-500">
                                 <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
                                     <div class="bg-red-600 text-white rounded-full w-16 h-16 flex items-center justify-center shadow-lg group-hover:scale-110 transition"><i class="fas fa-play text-2xl ml-1"></i></div>
@@ -1891,7 +1881,7 @@
                         `;
                     }
                     else { 
-                        videoHtml = `<div class="bg-black aspect-video relative w-full"><iframe class="w-full h-full" src="${embedUrl}" frameborder="0" allowfullscreen allow="autoplay; fullscreen; picture-in-picture"></iframe></div>`;
+                        videoHtml = `<div class="bg-black aspect-video relative w-full pointer-events-auto"><iframe class="w-full h-full" src="${embedUrl}" frameborder="0" allowfullscreen allow="autoplay; fullscreen; picture-in-picture"></iframe></div>`;
                     }
 
                     let titleHtml = '';
@@ -1899,8 +1889,8 @@
                         titleHtml = `<div class="p-4 text-center font-bold text-amber-400 text-lg tracking-wide border-t border-slate-800 bg-slate-900/50">${vid.title}</div>`;
                     }
 
-                    // הרכבת הוידאו כך שהכפתורים לא יוסתרו
-                    div.innerHTML = videoHtml + titleHtml + delBtn + moveBtns;
+                    // הרכבה
+                    div.innerHTML = videoHtml + titleHtml + delBtn + dragHandle;
                     v.appendChild(div);
                 });
             }
