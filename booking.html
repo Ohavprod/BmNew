@@ -28,7 +28,7 @@
         .loader { border: 5px solid rgba(255,255,255,0.1); border-top-color: #fbbf24; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 20px auto; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* --- עיצוב מיוחד לטופס נעול (מאושר) - שומר על צבעים יפים --- */
+        /* עיצוב חסין לטופס נעול - הצ'קבוקסים נשארים יפים ואינם אפורים */
         .locked-input {
             background: rgba(15, 23, 42, 0.9) !important;
             border-color: #fbbf24 !important;
@@ -38,7 +38,7 @@
         }
         input[type="checkbox"]:disabled, input[type="radio"]:disabled {
             opacity: 1 !important;
-            accent-color: #fbbf24 !important;
+            cursor: not-allowed !important;
         }
     </style>
 </head>
@@ -193,10 +193,9 @@
                         termsHtml += `<div><strong class="text-amber-400">יתרה לתשלום:</strong> את היתרה הנותרת ניתן לשלם באמצעות מזומן, ביט, פייבוקס, העברה בנקאית או צ'ק.</div>`;
                         document.getElementById('paymentTermsText').innerHTML = termsHtml;
 
-                        // נעילה חכמה ויוקרתית אם הטופס כבר אושר בעבר
+                        // נעילה מוחלטת ללקוח שכבר אישר - הכל נשאר זהב ובלתי ניתן ללחיצה
                         if (currentEvent.notes && String(currentEvent.notes).includes("אישור לקוח")) {
                             
-                            // קריאת הבחירה של הלקוח מתוך ההערה
                             let isMediaYes = String(currentEvent.notes).includes("הסכמת צילום: כן");
                             let isMediaNo = String(currentEvent.notes).includes("הסכמת צילום: לא");
 
@@ -204,7 +203,6 @@
                             if(isMediaNo) document.querySelector('input[name="mediaConsent"][value="no"]').checked = true;
                             document.getElementById('inpTerms').checked = true;
 
-                            // הפיכת כפתור השליחה לכפתור "נעול"
                             const btn = document.getElementById('submitBtn');
                             btn.innerHTML = '<i class="fas fa-check-circle"></i> הטופס מאושר ונעול';
                             btn.disabled = true;
@@ -213,24 +211,25 @@
                             btn.style.border = '2px solid #fbbf24';
                             btn.style.cursor = 'default';
                             
-                            // נעילת כל השדות תוך שמירה על עיצוב זוהר ולא אפור
                             const inputs = document.querySelectorAll('#bookingForm input');
                             inputs.forEach(input => {
-                                input.style.pointerEvents = 'none';
-                                if (input.type !== 'checkbox' && input.type !== 'radio') {
-                                    input.readOnly = true;
-                                    input.classList.add('locked-input');
-                                } else {
-                                    if (!input.checked) {
-                                        input.parentElement.style.opacity = '0.3';
-                                    } else {
+                                if(input.type === 'checkbox' || input.type === 'radio') {
+                                    input.disabled = true; // נועל לחלוטין את אפשרות הלחיצה
+                                    input.parentElement.style.pointerEvents = 'none'; // חוסם לחיצה על הטקסט שסביבו
+                                    if(input.checked) {
                                         input.parentElement.style.border = '1px solid #fbbf24';
                                         input.parentElement.style.background = 'rgba(251, 191, 36, 0.15)';
                                         input.parentElement.style.color = '#fbbf24';
                                         input.parentElement.style.fontWeight = 'bold';
+                                    } else {
+                                        input.parentElement.style.opacity = '0.3';
                                     }
+                                } else {
+                                    input.readOnly = true;
+                                    input.classList.add('locked-input');
                                 }
                             });
+                            document.getElementById('termsContainer').style.pointerEvents = 'none';
                         }
 
                         document.getElementById('loadingState').style.display = 'none';
@@ -255,7 +254,6 @@
             const fName = document.getElementById('inpFirstName').value.trim();
             const lName = document.getElementById('inpLastName').value.trim();
             
-            // עדכון האובייקט עם הנתונים החדשים
             const updatedEvent = {
                 action: 'updateEventFromClient',
                 id: currentEvent.id,
@@ -269,7 +267,6 @@
             let fetchUrl = API_URL;
             if(fetchUrl.includes('?mode=api')) fetchUrl = fetchUrl.replace('?mode=api', '');
 
-            // שומרים ולא מקפיצים שגיאות על חסימות של גוגל
             fetch(fetchUrl, {
                 method: 'POST',
                 mode: 'no-cors',
