@@ -119,7 +119,7 @@
         
         /* --- גלריה והמלצות (Marquee) --- */
         .marquee-wrapper { overflow: hidden; width: 100%; position: relative; direction: ltr; }
-        .marquee-track { display: flex; width: max-content; gap: 0; animation: scroll-loop 200s linear infinite; }
+        .marquee-track { display: flex; width: max-content; gap: 0; animation: scroll-loop 350s linear infinite; } /* האטתי משמעותית את הגלריה */
         .marquee-track:hover { animation-play-state: paused; }
         @keyframes scroll-loop { 0% { transform: translateX(-50%); } 100% { transform: translateX(0%); } }
         
@@ -2533,22 +2533,11 @@
                 window.openModal('proposalSetupModal'); 
             }
 
-            // Init Load
+            // Init Load בשיטה הבטוחה
             async function loadData() {
                 try {
                     showLoader(); 
-                    if(!API_URL.includes("http")) throw new Error("No API");
-                    
-                    let fetchUrl = API_URL;
-                    if(fetchUrl.includes('?mode=api')) fetchUrl = fetchUrl.replace('?mode=api', '');
-                    
-                    const response = await fetch(fetchUrl, {
-                        method: 'POST',
-                        body: JSON.stringify({ action: 'load' }),
-                        headers: { 'Content-Type': 'text/plain;charset=utf-8' }
-                    });
-                    
-                    if (!response.ok) throw new Error("Server returned " + response.status);
+                    const response = await fetch(API_URL);
                     const data = await response.json();
                     
                     if (data.events) {
