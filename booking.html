@@ -124,7 +124,13 @@
                 let fetchUrl = API_URL;
                 if(fetchUrl.includes('?mode=api')) fetchUrl = fetchUrl.replace('?mode=api', '');
                 
-                const response = await fetch(fetchUrl + '?action=load');
+                // === התיקון הקריטי: שאיבת נתונים בשיטת POST לעקיפת שגיאות CORS ===
+                const response = await fetch(fetchUrl, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'load' }),
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+                });
+                
                 const data = await response.json();
                 
                 if (data.events) {
@@ -226,11 +232,11 @@
                 currentEvent.notes = existingNotes + "\n\n--- אישור לקוח ---\nהסכמת צילום: " + (mediaConsent ? "כן" : "לא") + "\nאישור תקנון: מאושר.";
             }
 
-            // שליחה לענן באמצעות הפקודה הרגילה והאמינה של 'save'
             let fetchUrl = API_URL;
             if(fetchUrl.includes('?mode=api')) fetchUrl = fetchUrl.replace('?mode=api', '');
 
             try {
+                // שליחה לענן באמצעות הפקודה הרגילה והאמינה של 'save'
                 const response = await fetch(fetchUrl, {
                     method: 'POST',
                     body: JSON.stringify({ action: 'save', data: currentEvent }),
