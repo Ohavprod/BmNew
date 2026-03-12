@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>אישור הזמנת אירוע | אביב ויצמן</title>
+    <link rel="icon" href="https://i.postimg.cc/CMcRF8Nm/Logo.gif" type="image/gif">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&display=swap" rel="stylesheet">
@@ -19,10 +20,10 @@
         .form-input:focus { border-color: #fbbf24; outline: none; background: rgba(2, 6, 23, 0.9); }
         .form-input:disabled { opacity: 0.7; cursor: not-allowed; border-style: dashed; }
         .section-title { font-size: 1.4rem; font-weight: 900; color: #fbbf24; border-bottom: 2px solid rgba(251, 191, 36, 0.3); padding-bottom: 5px; margin-bottom: 15px; margin-top: 25px; }
-        .info-row { display: flex; justify-content: space-between; background: rgba(255,255,255,0.05); padding: 10px 15px; border-radius: 8px; margin-bottom: 8px; font-size: 1.1rem; }
+        .info-row { display: flex; justify-content: space-between; background: rgba(255,255,255,0.05); padding: 10px 15px; border-radius: 8px; margin-bottom: 8px; font-size: 1.1rem; align-items: center;}
         .btn-submit { background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%); color: #0f172a; font-weight: 900; padding: 15px; border-radius: 12px; width: 100%; font-size: 1.3rem; margin-top: 30px; transition: 0.3s; border: none; cursor: pointer; }
         .btn-submit:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(245, 158, 11, 0.4); color: white;}
-        .radio-group label { display: flex; items-center; gap: 8px; cursor: pointer; font-size: 1.1rem; background: rgba(255,255,255,0.05); padding: 10px 15px; border-radius: 8px; flex: 1; border: 1px solid rgba(255,255,255,0.1); transition: 0.2s;}
+        .radio-group label { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 1.1rem; background: rgba(255,255,255,0.05); padding: 10px 15px; border-radius: 8px; flex: 1; border: 1px solid rgba(255,255,255,0.1); transition: 0.2s;}
         .radio-group label:hover { background: rgba(255,255,255,0.1); }
         .radio-group input[type="radio"] { accent-color: #fbbf24; width: 20px; height: 20px; }
         .loader { border: 5px solid rgba(255,255,255,0.1); border-top-color: #fbbf24; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 20px auto; }
@@ -33,24 +34,32 @@
 
     <div class="glass-card" id="formContainer" style="display: none;">
         <div class="text-center mb-6 border-b border-slate-700 pb-6">
-            <i class="fas fa-file-signature text-5xl text-amber-400 mb-3"></i>
+            <img src="https://i.postimg.cc/CMcRF8Nm/Logo.gif" class="h-20 mx-auto mb-4" alt="לוגו אביב ויצמן">
             <h1 class="text-3xl font-black mb-2">טופס אישור הזמנת אירוע</h1>
             <p class="text-blue-200 text-lg">טופס זה נועד לסכם בצורה ברורה ונעימה את פרטי ההזמנה לאירוע בר המצווה.</p>
             <p class="text-slate-400 text-sm mt-2">המטרה היא לוודא שכל הפרטים סגורים ומוסכמים מראש - תאריך, מקום, תשלום ותנאים - כדי שנוכל לחגוג יחד בלב שקט ובשמחה גדולה.</p>
         </div>
 
         <form id="bookingForm" onsubmit="submitForm(event)">
-            <input type="hidden" id="eventId">
-
+            
             <div class="section-title">1. סיכום פרטי האירוע</div>
-            <div class="info-row"><span>סוג החבילה:</span> <strong id="lblPackage" class="text-amber-400"></strong></div>
-            <div class="info-row"><span>תנאי תשלום:</span> <strong>מקדמה שולמה / היתרה ביום האירוע</strong></div>
-            <div class="text-sm text-slate-400 text-center mb-4">ניתן לשלם בביט / פייבוקס / העברה בנקאית / מזומן / צ'ק</div>
+            
+            <div class="info-row"><span>סוג החבילה:</span> <strong id="lblPackage" class="text-amber-400 text-lg"></strong></div>
+            <div id="pkgDesc" class="text-sm text-blue-200 mt-2 mb-3 px-3 whitespace-pre-line leading-relaxed border-r-2 border-blue-500 mr-2"></div>
+            
+            <div class="info-row mb-6 bg-slate-800 border border-slate-600"><span>מחיר סופי (כולל מע"מ):</span> <strong id="lblPrice" class="text-white text-xl"></strong></div>
+
+            <div class="text-right bg-blue-900/30 p-5 rounded-xl border border-blue-800/50 mb-6">
+                <h4 class="font-bold text-amber-400 mb-3 text-lg"><i class="fas fa-file-invoice-dollar ml-2"></i>תנאי תשלום:</h4>
+                <p id="paymentTermsText" class="text-slate-300 text-base leading-relaxed"></p>
+            </div>
 
             <div class="section-title">2. פרטים אישיים ומיקום</div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                <div><label class="block text-slate-300 mb-1">שם הלקוח (הורה): *</label><input type="text" id="inpClientName" class="form-input" disabled></div>
-                <div><label class="block text-slate-300 mb-1">שם חתן הבר מצווה: *</label><input type="text" id="inpChildName" class="form-input" required></div>
+                <div><label class="block text-slate-300 mb-1">שם פרטי (הורה): *</label><input type="text" id="inpFirstName" class="form-input" required></div>
+                <div><label class="block text-slate-300 mb-1">שם משפחה (הורה): *</label><input type="text" id="inpLastName" class="form-input" required></div>
+                <div><label class="block text-slate-300 mb-1">טלפון נייד: *</label><input type="tel" id="inpPhone" class="form-input" dir="ltr" required></div>
+                <div><label class="block text-slate-300 mb-1">שם חתן בר המצווה: *</label><input type="text" id="inpChildName" class="form-input" required></div>
                 <div><label class="block text-slate-300 mb-1">תאריך האירוע: *</label><input type="text" id="inpEventDate" class="form-input" disabled></div>
                 <div><label class="block text-slate-300 mb-1">תאריך לידה עברי: *</label><input type="text" id="inpHebrewDate" class="form-input" placeholder="לדוגמה: ו' באדר" required></div>
             </div>
@@ -79,8 +88,8 @@
             </div>
 
             <div class="section-title">5. אישור וסיכום</div>
-            <label class="flex items-start gap-3 cursor-pointer bg-blue-900/30 p-4 rounded-xl border border-blue-800/50 hover:bg-blue-900/50 transition">
-                <input type="checkbox" id="inpTerms" class="w-6 h-6 accent-amber-400 mt-1" required>
+            <label class="flex items-start gap-3 cursor-pointer bg-slate-800 p-4 rounded-xl border border-slate-600 hover:border-amber-400 transition">
+                <input type="checkbox" id="inpTerms" class="w-6 h-6 accent-amber-400 mt-1 flex-shrink-0" required>
                 <span class="text-lg font-bold">קראתי את כל תנאי ההזמנה, וידאתי שפרטי האירוע נכונים, ואני מאשר/ת אותם. *</span>
             </label>
 
@@ -96,13 +105,14 @@
     <div id="successState" class="glass-card text-center" style="display: none;">
         <i class="fas fa-check-circle text-6xl text-green-500 mb-4"></i>
         <h2 class="text-3xl font-black text-white mb-2">הטופס נשלח בהצלחה!</h2>
-        <p class="text-xl text-blue-200">הפרטים נקלטו אצלנו במערכת. נתראה בשמחות!</p>
+        <p class="text-xl text-blue-200">הפרטים נקלטו אצלנו במערכת והאירוע סגור ומאושר.</p>
+        <p class="text-lg text-slate-400 mt-4">נתראה בשמחות!</p>
     </div>
 
     <script>
-        // פונקציה לשליפת פרמטרים מה-URL (למשל ?id=evt-12345)
         const urlParams = new URLSearchParams(window.location.search);
         const eventId = urlParams.get('id');
+        let currentEvent = null;
 
         window.onload = async () => {
             if (!eventId) {
@@ -111,23 +121,72 @@
             }
 
             try {
-                // משיכת נתוני האירוע מה-CRM
-                const response = await fetch(API_URL);
+                let fetchUrl = API_URL;
+                if(fetchUrl.includes('?mode=api')) fetchUrl = fetchUrl.replace('?mode=api', '');
+                
+                const response = await fetch(fetchUrl + '?action=load');
                 const data = await response.json();
                 
                 if (data.events) {
-                    const evt = data.events.find(e => e.id === eventId);
-                    if (evt) {
-                        // מילוי הטופס בנתונים הידועים
-                        document.getElementById('eventId').value = evt.id;
-                        document.getElementById('lblPackage').innerText = evt.packageType || 'טרם הוגדר';
-                        document.getElementById('inpClientName').value = evt.clientName || '';
-                        document.getElementById('inpChildName').value = evt.childName || '';
-                        document.getElementById('inpEventDate').value = evt.date || '';
-                        document.getElementById('inpHebrewDate').value = evt.hebrewDate || '';
-                        document.getElementById('inpLocation').value = evt.location || '';
-                        document.getElementById('inpGuestTime').value = evt.guestTime || '';
-                        document.getElementById('inpStartTime').value = evt.startTime || '';
+                    currentEvent = data.events.find(e => String(e.id) === String(eventId));
+                    if (currentEvent) {
+                        
+                        // --- מילוי פרטים אישיים ---
+                        const nameParts = (currentEvent.clientName || '').trim().split(' ');
+                        document.getElementById('inpFirstName').value = nameParts[0] || '';
+                        document.getElementById('inpLastName').value = nameParts.slice(1).join(' ') || '';
+                        document.getElementById('inpPhone').value = currentEvent.phone || '';
+                        document.getElementById('inpChildName').value = currentEvent.childName || '';
+                        document.getElementById('inpEventDate').value = currentEvent.date || '';
+                        document.getElementById('inpHebrewDate').value = currentEvent.hebrewDate || '';
+                        document.getElementById('inpLocation').value = currentEvent.location || '';
+                        document.getElementById('inpGuestTime').value = currentEvent.guestTime || '';
+                        document.getElementById('inpStartTime').value = currentEvent.startTime || '';
+
+                        // --- לוגיקת סוג חבילה ומחירים ---
+                        let pkgName = currentEvent.packageType || 'טרם הוגדר';
+                        let extPay = '0';
+                        let desc = '';
+
+                        if (pkgName.includes('בסיס')) { 
+                            extPay = '1,000'; 
+                            desc = 'ליווי תפילה ופיוטים\nחזנות מקצועית\nהגברה מקצועית\nקלידן\nלימוד הפרשה (במידת הצורך)'; 
+                        }
+                        else if (pkgName.includes('חגיגית') || pkgName.includes('הכל כלול') || pkgName.includes('VIP')) { 
+                            extPay = '2,300'; 
+                            desc = 'ליווי תפילה ופיוטים\nחזנות ו/או הגברה\nקלידן\nזוג מתופפים\nחופה ושופרות\nלימוד הפרשה (במידת הצורך)'; 
+                        }
+                        else if (pkgName.includes('לימוד')) { 
+                            extPay = '0'; 
+                            desc = 'לימוד יסודי של קריאת התורה בטעמי המקרא\nליווי אישי צמוד'; 
+                        }
+
+                        document.getElementById('lblPackage').innerText = pkgName;
+                        if(desc) { document.getElementById('pkgDesc').innerText = desc; } else { document.getElementById('pkgDesc').style.display = 'none'; }
+                        document.getElementById('lblPrice').innerText = currentEvent.price ? currentEvent.price + ' ₪' : 'טרם נקבע';
+
+                        // --- לוגיקת תנאי תשלום ---
+                        let termsHtml = '';
+                        if (extPay !== '0') {
+                            termsHtml += `<div class="mb-3">תשלום לספקים חיצוניים (מתופפים, קלידן וכו'): <strong class="text-white bg-slate-800 px-2 py-1 rounded">${extPay} ₪</strong> ישולמו במזומן ביום האירוע עצמו.</div>`;
+                        }
+                        termsHtml += `<div><strong class="text-amber-400">יתרה לתשלום:</strong> את היתרה הנותרת ניתן לשלם באמצעות מזומן, ביט, פייבוקס, העברה בנקאית או צ'ק.</div>`;
+                        document.getElementById('paymentTermsText').innerHTML = termsHtml;
+
+                        // --- נעילה אם כבר אושר ---
+                        if (currentEvent.notes && String(currentEvent.notes).includes("אישור לקוח")) {
+                            const btn = document.getElementById('submitBtn');
+                            btn.innerHTML = '<i class="fas fa-lock"></i> הטופס אושר וננעל';
+                            btn.disabled = true;
+                            btn.style.background = '#475569';
+                            btn.style.cursor = 'not-allowed';
+                            
+                            const inputs = document.querySelectorAll('#bookingForm input');
+                            inputs.forEach(input => {
+                                input.disabled = true;
+                                input.style.opacity = '0.7';
+                            });
+                        }
 
                         document.getElementById('loadingState').style.display = 'none';
                         document.getElementById('formContainer').style.display = 'block';
@@ -142,26 +201,39 @@
 
         async function submitForm(e) {
             e.preventDefault();
+            if (!currentEvent) return;
+
             const btn = document.getElementById('submitBtn');
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> שולח נתונים...';
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> מעדכן את המערכת...';
             btn.disabled = true;
 
+            // עדכון האובייקט בנתונים החדשים מהטופס
+            const fName = document.getElementById('inpFirstName').value.trim();
+            const lName = document.getElementById('inpLastName').value.trim();
+            currentEvent.clientName = fName + ' ' + lName;
+            currentEvent.phone = document.getElementById('inpPhone').value.trim();
+            currentEvent.childName = document.getElementById('inpChildName').value.trim();
+            currentEvent.hebrewDate = document.getElementById('inpHebrewDate').value.trim();
+            currentEvent.guestTime = document.getElementById('inpGuestTime').value.trim();
+            currentEvent.startTime = document.getElementById('inpStartTime').value.trim();
+            
+            // עדכון סטטוס והוספת הערת חתימה
+            currentEvent.status = 'סגור';
             const mediaConsent = document.querySelector('input[name="mediaConsent"]:checked').value === 'yes';
+            let existingNotes = currentEvent.notes || '';
+            
+            if (!String(existingNotes).includes("אישור לקוח")) {
+                currentEvent.notes = existingNotes + "\n\n--- אישור לקוח ---\nהסכמת צילום: " + (mediaConsent ? "כן" : "לא") + "\nאישור תקנון: מאושר.";
+            }
 
-            const payload = {
-                action: 'updateEventFromClient',
-                id: document.getElementById('eventId').value,
-                childName: document.getElementById('inpChildName').value,
-                hebrewDate: document.getElementById('inpHebrewDate').value,
-                guestTime: document.getElementById('inpGuestTime').value,
-                startTime: document.getElementById('inpStartTime').value,
-                mediaConsent: mediaConsent
-            };
+            // שליחה לענן באמצעות הפקודה הרגילה והאמינה של 'save'
+            let fetchUrl = API_URL;
+            if(fetchUrl.includes('?mode=api')) fetchUrl = fetchUrl.replace('?mode=api', '');
 
             try {
-                const response = await fetch(API_URL.replace('?mode=api', ''), {
+                const response = await fetch(fetchUrl, {
                     method: 'POST',
-                    body: JSON.stringify(payload),
+                    body: JSON.stringify({ action: 'save', data: currentEvent }),
                     headers: { 'Content-Type': 'text/plain;charset=utf-8' }
                 });
                 
@@ -175,7 +247,7 @@
                     btn.disabled = false;
                 }
             } catch (err) {
-                alert('שגיאת רשת. בדוק את החיבור שלך.');
+                alert('שגיאת רשת. עקב חסימת דפדפן, ייתכן שתצטרך לנסות מגלישה בסתר.');
                 btn.innerHTML = 'שלח אישור הזמנה <i class="fas fa-check-circle ml-2"></i>';
                 btn.disabled = false;
             }
