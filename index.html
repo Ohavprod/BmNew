@@ -3,7 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
     <title>אביב ויצמן | הפקה מוזיקלית</title>
+    <link rel="icon" href="https://i.postimg.cc/CMcRF8Nm/Logo.gif" type="image/gif">
+    <meta property="og:title" content="אביב ויצמן | הפקה מוזיקלית לבר מצווה">
+    <meta property="og:description" content="אביב ויצמן בהפקה מוזיקלית לעלייה לתורה: שופרות, תופים, פיוטים וליווי מרגש לחתן בר המצווה.">
+    <meta property="og:image" content="https://i.postimg.cc/8PFH5RRC/BIMG_2271A_(103).jpg">
+    <meta property="og:type" content="website">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&family=Raleway:wght@400;700&display=swap" rel="stylesheet">
@@ -542,7 +549,7 @@
     </div>
 
     <div id="whatsappModal" class="modal-overlay">
-        <div class="modal-content !w-[500px] text-center bg-slate-900 border border-green-500/50">
+        <div class="modal-content !max-w-2xl text-center bg-slate-900 border border-green-500/50">
              <div class="modal-header">
                 <h3 class="text-2xl font-bold text-green-400">תקשורת עם לקוחות</h3>
                 <button onclick="closeModal('whatsappModal')" class="text-white"><i class="fas fa-times"></i></button>
@@ -550,19 +557,22 @@
             <div class="modal-body flex flex-col gap-6">
                 <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
                      <label class="block text-gray-400 mb-2 text-sm">הזן טלפון לשליחת הצעה/טפסים:</label>
-                     <input type="tel" id="waPhone" placeholder="050..." class="w-full bg-slate-900 text-white text-center text-xl p-3 rounded-lg border border-slate-600 mb-3">
-                     <div class="flex gap-2">
-                        <button onclick="sendWaToClient()" class="w-full bg-green-600 text-white font-bold py-3 rounded-lg hover:bg-green-500 transition shadow-lg flex items-center justify-center gap-2">
-                            <i class="fab fa-whatsapp text-2xl"></i> שלח הודעה רגילה
+                     <input type="tel" id="waPhone" placeholder="050..." class="w-full bg-slate-900 text-white text-center text-xl p-3 rounded-lg border border-slate-600 mb-4">
+                     <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <button onclick="sendWaToClient()" class="w-full bg-green-600 text-white font-bold py-3 rounded-lg hover:bg-green-500 transition shadow-lg flex flex-col items-center justify-center gap-1 text-sm">
+                            <i class="fab fa-whatsapp text-xl"></i> הודעה רגילה
                         </button>
-                        <button onclick="sendReviewRequest()" class="w-full bg-purple-600 text-white font-bold py-3 rounded-lg hover:bg-purple-500 transition shadow-lg flex items-center justify-center gap-2">
-                            <i class="fas fa-star text-yellow-400"></i> בקש המלצה
+                        <button onclick="sendReviewRequest()" class="w-full bg-purple-600 text-white font-bold py-3 rounded-lg hover:bg-purple-500 transition shadow-lg flex flex-col items-center justify-center gap-1 text-sm">
+                            <i class="fas fa-star text-yellow-400 text-xl"></i> בקש המלצה
+                        </button>
+                        <button onclick="sendGenericBookingForm()" class="w-full bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-500 transition shadow-lg flex flex-col items-center justify-center gap-1 text-sm">
+                            <i class="fas fa-file-signature text-xl"></i> טופס הזמנה
                         </button>
                      </div>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <a href="https://forms.gle/yYLCZtynqt664iF86" target="_blank" class="bg-slate-700 text-white py-4 rounded-xl font-bold hover:bg-slate-600 transition shadow-lg block border border-slate-600">
-                        <i class="fas fa-file-alt block text-2xl mb-2 text-blue-400"></i> טופס הזמנה
+                        <i class="fas fa-file-alt block text-2xl mb-2 text-blue-400"></i> פתח טופס בגוגל פורמס
                     </a>
                     <a href="https://drive.google.com/drive/folders/15IEoTiyuEM71DmVzpqFtWcu8FdI9opUz?usp=sharing" target="_blank" class="bg-slate-700 text-white py-4 rounded-xl font-bold hover:bg-slate-600 transition shadow-lg block border border-slate-600">
                         <i class="fas fa-folder-open block text-2xl mb-2 text-amber-400"></i> תיקיית אישורים
@@ -671,7 +681,7 @@
                 <button onclick="closeModal('checklistModal')" class="text-white hover:text-orange-400 text-2xl"><i class="fas fa-times"></i></button>
             </div>
             <div class="modal-body">
-                <div class="superadmin-only flex gap-2 mb-6 pb-6 border-b border-slate-700">
+                <div class="flex gap-2 mb-6 pb-6 border-b border-slate-700">
                     <input type="text" id="newChecklistItem" placeholder="הוסף פריט חדש לרשימה..." class="w-3/4 bg-slate-800 text-white p-3 rounded border border-slate-600 outline-none">
                     <button onclick="addChecklistItem()" class="w-1/4 bg-orange-500 hover:bg-orange-400 text-slate-900 font-bold rounded">הוסף ציוד</button>
                 </div>
@@ -697,7 +707,7 @@
                     <p class="text-slate-400 text-xs mt-2">* הלינק הזה יישלח כשתלחץ על "בקש המלצה" בתקשורת מול הלקוח.</p>
                 </div>
             
-                <h4 class="text-white font-bold mb-4 border-b border-slate-700 pb-2">הוסף ביקורת חדשה שתוצג באתר:</h4>
+                <h4 class="text-white font-bold mb-4 border-b border-slate-700 pb-2">הוסף / ערוך המלצה באתר:</h4>
                 <div class="flex flex-col gap-3 mb-6 border-b border-slate-700 pb-6">
                     <input type="text" id="newRevName" placeholder="שם הלקוח" class="bg-slate-800 text-white p-2 rounded border border-slate-600 outline-none">
                     <textarea id="newRevText" placeholder="תוכן ההמלצה..." class="bg-slate-800 text-white p-2 rounded border border-slate-600 outline-none h-20"></textarea>
@@ -705,7 +715,10 @@
                         <option value="5">5 כוכבים ⭐⭐⭐⭐⭐</option>
                         <option value="4">4 כוכבים ⭐⭐⭐⭐</option>
                     </select>
-                    <button onclick="addReview()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 rounded">הוסף המלצה לאתר</button>
+                    <div class="flex gap-2">
+                        <button id="saveReviewBtn" onclick="addReview()" class="flex-1 bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 rounded transition">הוסף המלצה לאתר</button>
+                        <button id="cancelReviewBtn" onclick="cancelReviewEdit()" class="hidden bg-slate-600 hover:bg-slate-500 text-white font-bold py-2 px-4 rounded transition">ביטול עריכה</button>
+                    </div>
                 </div>
                 <div id="reviewsListAdmin" class="flex flex-col gap-3"></div>
             </div>
@@ -849,7 +862,7 @@
                     </div>
                     
                     <div class="input-group col-span-1 md:col-span-2"><label>לינק למדיה</label><input type="text" name="mediaLink"></div>
-                    <div class="input-group col-span-1 md:col-span-2"><label>הערות לצוות (גלוי למנהלים בלבד)</label><textarea name="notes" class="h-32 notes-area"></textarea></div>
+                    <div class="input-group col-span-1 md:col-span-2"><label>הערות לצוות (גלוי למנהלים בלבד)</label><textarea name="notes" class="h-32 notes-area" style="white-space: pre-wrap;"></textarea></div>
                 </form>
                 <div class="mt-8 flex justify-between items-center border-t border-slate-700 pt-6">
                     <button type="button" onclick="deleteEvent()" id="deleteEventBtn" class="text-red-500 font-bold px-4">מחק אירוע</button>
@@ -876,6 +889,7 @@
             
             let currentLightboxIndex = 0;
             let lightboxImageUrls = [];
+            let editingReviewIndex = -1;
 
             const packagesData = {
                 'VIP': { t: 'חבילת הכל כלול VIP', p: '₪5,500', d: 'ליווי תפילה ופיוטים\nחזנות\nהגברה מקצועית\nקלידן\nזוג מתופפים\nכניסה מיוחדת עם חופה ושופרות\nליווי שירים בסעודה (אביב + קלידן)\nלימוד הפרשה (במידת הצורך)' },
@@ -928,9 +942,8 @@
                 document.getElementById('menuOverlay').classList.remove('show'); 
             }
 
-         window.openStudentsManager = () => {
+            window.openStudentsManager = () => {
                 window.closeSideMenu();
-                // מעבר למערכת התלמידים באותו חלון
                 window.location.href = 'students.html'; 
             }
             
@@ -1485,6 +1498,7 @@
                                 <span class="text-lg font-bold ${checkedClass}">${item.text}</span>
                             </label>
                     `;
+                    // פתוח לכולם למחוק אם תרצה, כרגע מוגבל למנהל על פי קוד מקורי
                     if(isSuper) {
                         html += `<button onclick="deleteChecklistItem(${index})" class="text-red-500 hover:text-red-400 p-2"><i class="fas fa-trash"></i></button>`;
                     }
@@ -1546,9 +1560,11 @@
             window.openReviewsManager = () => {
                 window.closeSideMenu();
                 document.getElementById('googleReviewLinkInput').value = siteConfig.googleReviewLink || '';
+                window.cancelReviewEdit();
                 renderReviewsManager();
                 window.openModal('reviewsManagerModal');
             }
+            
             function renderReviewsManager() {
                 const list = document.getElementById('reviewsListAdmin');
                 list.innerHTML = '';
@@ -1559,25 +1575,67 @@
                             <div class="text-amber-400 mb-1">${starsHtml}</div>
                             <div class="text-white font-bold mb-2">${rev.name}</div>
                             <div class="text-slate-400 text-sm mb-3">"${rev.text}"</div>
-                            <button onclick="deleteReview(${index})" class="absolute top-4 left-4 text-red-500 hover:text-red-400"><i class="fas fa-trash"></i></button>
+                            <div class="absolute top-4 left-4 flex gap-2">
+                                <button onclick="editReview(${index})" class="text-blue-400 hover:text-blue-300"><i class="fas fa-edit"></i></button>
+                                <button onclick="deleteReview(${index})" class="text-red-500 hover:text-red-400"><i class="fas fa-trash"></i></button>
+                            </div>
                         </div>
                     `;
                 });
             }
+            
+            window.editReview = (index) => {
+                const rev = reviewsData[index];
+                document.getElementById('newRevName').value = rev.name;
+                document.getElementById('newRevText').value = rev.text;
+                document.getElementById('newRevStars').value = rev.stars;
+                editingReviewIndex = index;
+                
+                const btn = document.getElementById('saveReviewBtn');
+                btn.innerHTML = 'שמור שינויים <i class="fas fa-save ml-1"></i>';
+                btn.className = 'flex-1 bg-green-600 hover:bg-green-500 text-white font-bold py-2 rounded transition';
+                document.getElementById('cancelReviewBtn').classList.remove('hidden');
+                
+                document.querySelector('#reviewsManagerModal .modal-content').scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            window.cancelReviewEdit = () => {
+                document.getElementById('newRevName').value = '';
+                document.getElementById('newRevText').value = '';
+                document.getElementById('newRevStars').value = '5';
+                editingReviewIndex = -1;
+                
+                const btn = document.getElementById('saveReviewBtn');
+                btn.innerHTML = 'הוסף המלצה לאתר <i class="fas fa-plus ml-1"></i>';
+                btn.className = 'flex-1 bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 rounded transition';
+                document.getElementById('cancelReviewBtn').classList.add('hidden');
+            }
+
             window.addReview = () => {
                 const name = document.getElementById('newRevName').value;
                 const text = document.getElementById('newRevText').value;
                 const stars = document.getElementById('newRevStars').value;
-                if(!name || !text) return;
-                reviewsData.unshift({ name, text, stars: parseInt(stars) });
-                document.getElementById('newRevName').value = '';
-                document.getElementById('newRevText').value = '';
-                saveConfigToDB('reviewsDB', JSON.stringify(reviewsData), () => { renderReviewsManager(); renderPublicReviews(); });
+                if(!name || !text) return customAlert("חובה למלא שם ותוכן המלצה");
+                
+                if (editingReviewIndex > -1) {
+                    reviewsData[editingReviewIndex] = { name, text, stars: parseInt(stars) };
+                } else {
+                    reviewsData.unshift({ name, text, stars: parseInt(stars) });
+                }
+                
+                saveConfigToDB('reviewsDB', JSON.stringify(reviewsData), () => { 
+                    window.cancelReviewEdit();
+                    renderReviewsManager(); 
+                    renderPublicReviews(); 
+                });
             }
+            
             window.deleteReview = (index) => {
+                if(!confirm("למחוק את ההמלצה?")) return;
                 reviewsData.splice(index, 1);
                 saveConfigToDB('reviewsDB', JSON.stringify(reviewsData), () => { renderReviewsManager(); renderPublicReviews(); });
             }
+            
             window.saveGoogleReviewLink = () => {
                 const url = document.getElementById('googleReviewLinkInput').value;
                 siteConfig.googleReviewLink = url;
@@ -1750,6 +1808,30 @@
                  }
             }
 
+            window.moveVideoItem = (index, direction) => {
+                const videos = galleryImages.filter(item => item.type === 'video');
+                let videoOrder = [];
+                try { if(siteConfig.videoOrderDB) videoOrder = JSON.parse(siteConfig.videoOrderDB); } catch(e){}
+                
+                videos.sort((a, b) => {
+                    let idxA = videoOrder.indexOf(a.url);
+                    let idxB = videoOrder.indexOf(b.url);
+                    if (idxA === -1) idxA = 9999;
+                    if (idxB === -1) idxB = 9999;
+                    return idxA - idxB;
+                });
+
+                if (index + direction < 0 || index + direction >= videos.length) return;
+
+                const temp = videos[index];
+                videos[index] = videos[index + direction];
+                videos[index + direction] = temp;
+
+                const newOrder = videos.map(v => v.url);
+                siteConfig.videoOrderDB = JSON.stringify(newOrder); 
+                saveConfigToDB('videoOrderDB', JSON.stringify(newOrder), renderGallery);
+            }
+
             function renderGallery() {
                 const c = document.getElementById('imageMarquee'); 
                 const v = document.getElementById('videoContainer');
@@ -1760,6 +1842,17 @@
 
                 const images = galleryImages.filter(item => typeof item === 'string' || item.type === 'image');
                 const videos = galleryImages.filter(item => item.type === 'video');
+
+                let videoOrder = [];
+                try { if(siteConfig.videoOrderDB) videoOrder = JSON.parse(siteConfig.videoOrderDB); } catch(e){}
+                
+                videos.sort((a, b) => {
+                    let idxA = videoOrder.indexOf(a.url);
+                    let idxB = videoOrder.indexOf(b.url);
+                    if (idxA === -1) idxA = 9999;
+                    if (idxB === -1) idxB = 9999;
+                    return idxA - idxB;
+                });
 
                 lightboxImageUrls = images.map(i => (typeof i === 'string' ? i : i.url));
 
@@ -1784,7 +1877,7 @@
                     c.appendChild(createSet(true));
                 }
 
-                videos.forEach(vid => {
+                videos.forEach((vid, index) => {
                     let embedUrl = vid.url;
                     let isDirectFile = false;
                     let poster = ''; 
@@ -1812,31 +1905,37 @@
                     div.className = "rounded-2xl overflow-hidden border border-slate-700 bg-slate-900 relative group shadow-2xl flex flex-col";
                     
                     let delBtn = '';
+                    let moveBtns = '';
                     if (isSuper) {
                         delBtn = `
                             <div class="absolute top-2 right-2 flex gap-2 z-50">
                                 <button class="bg-blue-600/80 text-white p-2 rounded-full hover:bg-blue-500" onclick="editGalleryItem('${vid.url}')"><i class="fas fa-pencil-alt"></i></button>
                                 <button class="bg-red-600/80 text-white p-2 rounded-full hover:bg-red-500" onclick="deleteImage('${vid.url}')"><i class="fas fa-trash"></i></button>
                             </div>`;
+                        moveBtns = `
+                            <div class="absolute top-2 left-2 flex gap-2 z-50">
+                                ${index > 0 ? `<button class="bg-slate-700/80 text-white w-8 h-8 rounded-full hover:bg-amber-500 hover:text-black transition flex items-center justify-center shadow-lg border border-slate-500" onclick="moveVideoItem(${index}, -1)" title="הזז ימינה/למעלה"><i class="fas fa-arrow-right"></i></button>` : ''}
+                                ${index < videos.length - 1 ? `<button class="bg-slate-700/80 text-white w-8 h-8 rounded-full hover:bg-amber-500 hover:text-black transition flex items-center justify-center shadow-lg border border-slate-500" onclick="moveVideoItem(${index}, 1)" title="הזז שמאלה/למטה"><i class="fas fa-arrow-left"></i></button>` : ''}
+                            </div>`;
                     }
                     
                     let videoHtml = '';
                     if (isDirectFile) {
-                        videoHtml = `${delBtn}<div class="bg-black aspect-video relative w-full"><video src="${embedUrl}" class="w-full h-full" controls playsinline controlsList="nodownload"></video></div>`;
+                        videoHtml = `${delBtn}${moveBtns}<div class="bg-black aspect-video relative w-full"><video src="${embedUrl}" class="w-full h-full" controls playsinline controlsList="nodownload"></video></div>`;
                     } 
                     else if (poster) { 
                         videoHtml = `
-                            ${delBtn}
+                            ${delBtn}${moveBtns}
                             <div class="bg-black aspect-video relative cursor-pointer group w-full" onclick="this.innerHTML='<iframe class=\\'w-full h-full\\' src=\\'${embedUrl}\\' frameborder=\\'0\\' allowfullscreen allow=\\'autoplay\\'></iframe>'">
                                 <img src="${poster}" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition duration-500">
-                                <div class="absolute inset-0 flex items-center justify-center">
+                                <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
                                     <div class="bg-red-600 text-white rounded-full w-16 h-16 flex items-center justify-center shadow-lg group-hover:scale-110 transition"><i class="fas fa-play text-2xl ml-1"></i></div>
                                 </div>
                             </div>
                         `;
                     }
                     else { 
-                        videoHtml = `${delBtn}<div class="bg-black aspect-video relative w-full"><iframe class="w-full h-full" src="${embedUrl}" frameborder="0" allowfullscreen allow="autoplay; fullscreen; picture-in-picture"></iframe></div>`;
+                        videoHtml = `${delBtn}${moveBtns}<div class="bg-black aspect-video relative w-full"><iframe class="w-full h-full" src="${embedUrl}" frameborder="0" allowfullscreen allow="autoplay; fullscreen; picture-in-picture"></iframe></div>`;
                     }
 
                     let titleHtml = '';
@@ -1925,7 +2024,6 @@
                 renderEventsBoard(filtered);
             }
             
-            // הפונקציה ליצירת הלינק ליומן נוספה כאן:
             window.generateCalendarLink = (evt) => {
                  if (!evt.date) return '#';
                  const cleanDate = evt.date.replace(/-/g, '');
@@ -1979,16 +2077,26 @@
                     `;
                     
                     if (isAdmin) {
+                        let isFormApproved = evt.notes && evt.notes.includes("אישור לקוח");
+                        let formBtnHtml = isFormApproved 
+                            ? `<button onclick="window.open('booking.html?id=${evt.id}', '_blank')" class="action-btn" style="background: linear-gradient(135deg, #10b981, #059669); color: white; grid-column: span 2;">
+                                <i class="fas fa-eye"></i> צפה בטופס לקוח
+                               </button>`
+                            : `<button onclick="sendBookingForm('${evt.id}', '${evt.phone}')" class="action-btn" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white; grid-column: span 2;">
+                                <i class="fas fa-file-signature"></i> שלח טופס לאישור
+                               </button>`;
+
                         cardHtml += `
                                 <div class="info-bubble"><i class="fas fa-user"></i> ${evt.clientName}</div>
                                 <div class="info-bubble"><i class="fas fa-child"></i> חתן: ${evt.childName}</div>
                                 <div class="info-bubble"><i class="fas fa-phone"></i> <a href="tel:${evt.phone}">${evt.phone}</a></div>
                                 <div class="info-bubble" style="border-color: rgba(251, 191, 36, 0.4);"><i class="fas fa-tag"></i> ${evt.packageType} | ${evt.price} ₪</div>
-                                ${evt.notes ? `<div class="mt-4 p-4 rounded-xl text-lg italic notes-area">"${evt.notes}"</div>` : ''}
+                                ${evt.notes ? `<div class="mt-4 p-4 rounded-xl text-lg italic notes-area" style="white-space: pre-wrap;">"${evt.notes}"</div>` : ''}
                             </div>
                             <div class="card-actions">
                                 <button onclick="openEventEditor('${evt.id}')" class="action-btn btn-edit"><i class="fas fa-edit"></i> ערוך</button>
                                 <button onclick="sendWaToClient('${evt.phone}')" class="action-btn btn-wa-green"><i class="fab fa-whatsapp"></i> תקשורת</button>
+                                ${formBtnHtml}
                             </div>
                         `;
                     } 
@@ -2452,6 +2560,28 @@
                 window.open(`https://wa.me/972${p.replace(/-/g,'').substring(1)}?text=${encodeURIComponent(msg)}`, '_blank');
             }
 
+            window.sendGenericBookingForm = () => {
+                const p = document.getElementById('waPhone').value;
+                if(!p) return customAlert('נא להזין מספר טלפון קודם בחלונית.');
+                
+                const link = 'https://forms.gle/yYLCZtynqt664iF86';
+                const msg = `היי! שמחים ומתרגשים לקראת בר המצווה 💫\n\nכדי שנוכל לסגור את כל הקצוות בצורה מסודרת, הכנו עבורך טופס הזמנה לאירוע. אנא היכנס/י ללינק, מלא/י את הפרטים ואשר/י:\n\n${link}\n\nנתראה בשמחות,\nצוות אביב ויצמן`;
+                
+                window.open(`https://wa.me/972${p.replace(/-/g,'').substring(1)}?text=${encodeURIComponent(msg)}`, '_blank');
+            }
+
+            window.sendBookingForm = (eventId, phone) => {
+                if (!phone) { customAlert("לא הוזן מספר טלפון לאירוע זה."); return; }
+                
+                let baseUrl = window.location.href.split('index.html')[0];
+                if (!baseUrl.endsWith('/')) baseUrl += '/';
+                const formLink = `${baseUrl}booking.html?id=${eventId}`;
+                
+                const msg = `היי! שמחים ומתרגשים לקראת בר המצווה 💫\n\nכדי שנוכל לסגור את כל הקצוות בצורה מסודרת, הכנו עבורך טופס אישור פרטים קצר. אנא היכנס/י ללינק, ודא/י שהפרטים נכונים, השלם/י את החסר ואשר/י בתחתית העמוד:\n\n${formLink}\n\nנתראה בשמחות,\nצוות אביב ויצמן`;
+                
+                window.open(`https://wa.me/972${phone.replace(/-/g,'').substring(1)}?text=${encodeURIComponent(msg)}`, '_blank');
+            }
+
             window.openWhatsAppTool = () => { window.closeSideMenu(); window.openModal('whatsappModal'); }
             window.openProposalTool = () => { 
                 window.closeSideMenu(); 
@@ -2531,4 +2661,3 @@
     </script>
 </body>
 </html>
-
