@@ -1709,6 +1709,38 @@
                  }
             }
 
+            // פונקציה להזזת תמונות ימינה ושמאלה
+            window.moveImageItem = (url, direction) => {
+                const images = galleryImages.filter(item => typeof item === 'string' || item.type === 'image');
+                let imageOrder = [];
+                try { 
+                    let parsed = JSON.parse(siteConfig.imageOrderDB); 
+                    if (Array.isArray(parsed)) imageOrder = parsed;
+                } catch(e){}
+                
+                images.sort((a, b) => {
+                    let urlA = typeof a === 'string' ? a : a.url;
+                    let urlB = typeof b === 'string' ? b : b.url;
+                    let idxA = imageOrder.indexOf(urlA);
+                    let idxB = imageOrder.indexOf(urlB);
+                    if (idxA === -1) idxA = 9999;
+                    if (idxB === -1) idxB = 9999;
+                    return idxA - idxB;
+                });
+
+                let index = images.findIndex(i => (typeof i === 'string' ? i : i.url) === url);
+                if (index === -1 || index + direction < 0 || index + direction >= images.length) return;
+
+                const temp = images[index];
+                images[index] = images[index + direction];
+                images[index + direction] = temp;
+
+                const newOrder = images.map(i => typeof i === 'string' ? i : i.url);
+                siteConfig.imageOrderDB = JSON.stringify(newOrder); 
+                saveConfigToDB('imageOrderDB', JSON.stringify(newOrder), renderGallery);
+            }
+
+            // פונקציה להזזת וידאו ימינה ושמאלה
             window.moveVideoItem = (index, direction) => {
                 const videos = galleryImages.filter(item => item.type === 'video');
                 let videoOrder = [];
@@ -1748,14 +1780,27 @@
                 const videos = galleryImages.filter(item => item.type === 'video');
 
                 let videoOrder = [];
+                let imageOrder = [];
                 try { 
-                    let parsed = JSON.parse(siteConfig.videoOrderDB); 
-                    if (Array.isArray(parsed)) videoOrder = parsed;
+                    let parsedV = JSON.parse(siteConfig.videoOrderDB); 
+                    if (Array.isArray(parsedV)) videoOrder = parsedV;
+                    let parsedI = JSON.parse(siteConfig.imageOrderDB); 
+                    if (Array.isArray(parsedI)) imageOrder = parsedI;
                 } catch(e){}
                 
                 videos.sort((a, b) => {
                     let idxA = videoOrder.indexOf(a.url);
                     let idxB = videoOrder.indexOf(b.url);
+                    if (idxA === -1) idxA = 9999;
+                    if (idxB === -1) idxB = 9999;
+                    return idxA - idxB;
+                });
+
+                images.sort((a, b) => {
+                    let urlA = typeof a === 'string' ? a : a.url;
+                    let urlB = typeof b === 'string' ? b : b.url;
+                    let idxA = imageOrder.indexOf(urlA);
+                    let idxB = imageOrder.indexOf(urlB);
                     if (idxA === -1) idxA = 9999;
                     if (idxB === -1) idxB = 9999;
                     return idxA - idxB;
@@ -1773,6 +1818,10 @@
                              btns = `
                                 <div class="absolute top-2 right-2 flex gap-2 z-50">
                                     <button class="bg-red-600/80 text-white p-2 rounded-full hover:bg-red-500" onclick="deleteImage('${src}')"><i class="fas fa-trash"></i></button>
+                                </div>
+                                <div class="absolute top-2 left-2 flex gap-2 z-50">
+                                    ${idx > 0 ? `<button class="bg-slate-700/80 text-white w-8 h-8 rounded-full hover:bg-amber-500 hover:text-black transition flex items-center justify-center shadow-lg border border-slate-500" onclick="moveImageItem('${src}', -1)" title="הזז ימינה"><i class="fas fa-arrow-right"></i></button>` : ''}
+                                    ${idx < lightboxImageUrls.length - 1 ? `<button class="bg-slate-700/80 text-white w-8 h-8 rounded-full hover:bg-amber-500 hover:text-black transition flex items-center justify-center shadow-lg border border-slate-500" onclick="moveImageItem('${src}', 1)" title="הזז שמאלה"><i class="fas fa-arrow-left"></i></button>` : ''}
                                 </div>`;
                         }
                         w.innerHTML += `<div class="gallery-item relative">${btns}<img src="${src}" class="gallery-img" onclick="openLightbox('${src}')"></div>`;
@@ -1821,8 +1870,8 @@
                             </div>`;
                         moveBtns = `
                             <div class="absolute top-2 left-2 flex gap-2 z-50">
-                                ${index > 0 ? `<button class="bg-slate-700/80 text-white w-8 h-8 rounded-full hover:bg-amber-500 hover:text-black transition flex items-center justify-center shadow-lg border border-slate-500" onclick="moveVideoItem(${index}, -1)" title="הזז ימינה/למעלה"><i class="fas fa-arrow-right"></i></button>` : ''}
-                                ${index < videos.length - 1 ? `<button class="bg-slate-700/80 text-white w-8 h-8 rounded-full hover:bg-amber-500 hover:text-black transition flex items-center justify-center shadow-lg border border-slate-500" onclick="moveVideoItem(${index}, 1)" title="הזז שמאלה/למטה"><i class="fas fa-arrow-left"></i></button>` : ''}
+                                ${index > 0 ? `<button class="bg-slate-700/80 text-white w-8 h-8 rounded-full hover:bg-amber-500 hover:text-black transition flex items-center justify-center shadow-lg border border-slate-500" onclick="moveVideoItem(${index}, -1)" title="הזז למעלה/ימינה"><i class="fas fa-arrow-right"></i></button>` : ''}
+                                ${index < videos.length - 1 ? `<button class="bg-slate-700/80 text-white w-8 h-8 rounded-full hover:bg-amber-500 hover:text-black transition flex items-center justify-center shadow-lg border border-slate-500" onclick="moveVideoItem(${index}, 1)" title="הזז למטה/שמאלה"><i class="fas fa-arrow-left"></i></button>` : ''}
                             </div>`;
                     }
                     
@@ -2484,11 +2533,22 @@
                 window.openModal('proposalSetupModal'); 
             }
 
-            // Init Load בשיטה הבטוחה
+            // Init Load
             async function loadData() {
                 try {
                     showLoader(); 
-                    const response = await fetch(API_URL);
+                    if(!API_URL.includes("http")) throw new Error("No API");
+                    
+                    let fetchUrl = API_URL;
+                    if(fetchUrl.includes('?mode=api')) fetchUrl = fetchUrl.replace('?mode=api', '');
+                    
+                    const response = await fetch(fetchUrl, {
+                        method: 'POST',
+                        body: JSON.stringify({ action: 'load' }),
+                        headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+                    });
+                    
+                    if (!response.ok) throw new Error("Server returned " + response.status);
                     const data = await response.json();
                     
                     if (data.events) {
@@ -2554,4 +2614,3 @@
     </script>
 </body>
 </html>
-
