@@ -17,7 +17,7 @@
 
     <script>
         // הקישור לשרת ה-Google Apps Script שלך
-        const API_URL = "https://script.google.com/macros/s/AKfycbyyw2egSdJuP2vEX42T0xFhXBJPip5jcgmAw1iPX59YBRygkS6TKrjzYYShVCAPl3GKKg/exec?mode=api";
+        const API_URL = "https://script.google.com/macros/s/AKfycbydxpfGH1qc89otosndZn_yDhjSxeBHsTd5g7As78B48GLeukoNktcg7vHKNrmE9Ai9/exec?mode=api";
     </script>
 
     <style>
@@ -946,6 +946,26 @@
                 window.closeSideMenu();
                 window.location.href = 'students.html'; 
             }
+
+            // === פונקציית תקשורת בטוחה לשרת למניעת חסימות CORS וטעינה אינסופית ===
+            window.safeFetchPOST = function(payloadData, onSuccess) {
+                showLoader();
+                fetch(API_URL, {
+                    method: 'POST',
+                    body: JSON.stringify(payloadData),
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+                })
+                .then(res => res.json())
+                .then(result => {
+                    hideLoader();
+                    if(onSuccess) onSuccess(result);
+                })
+                .catch(err => {
+                    hideLoader();
+                    console.error("Fetch Error:", err);
+                    customAlert("שגיאת תקשורת עם השרת (ייתכן שיש חסימת אבטחה או שגיאה ב-Google Apps Script).");
+                });
+            }
             
             window.deleteEvent = async () => {
                 const form = document.getElementById('eventForm');
@@ -954,16 +974,10 @@
                 
                 if(!await customConfirm("האם אתה בטוח שברצונך למחוק את האירוע?")) return;
                 
-                if(API_URL.includes("http")) {
-                    showLoader();
-                    fetch(API_URL, {
-                        method: 'POST',
-                        body: JSON.stringify({ action: 'deleteEvent', id: id })
-                    }).then(() => {
-                        window.closeModal('eventEditor');
-                        loadData(); 
-                    });
-                }
+                safeFetchPOST({ action: 'deleteEvent', id: id }, () => {
+                    window.closeModal('eventEditor');
+                    loadData(); 
+                });
             }
 
             window.editLink = (key) => {
@@ -975,26 +989,17 @@
                 if (newVal !== null && newVal !== currentVal) {
                     siteConfig[key] = newVal;
                     document.getElementById(`link-${key.split('-')[1]}`).href = newVal;
-                    if(API_URL.includes("http")) {
-                        showLoader();
-                        fetch(API_URL, {
-                            method: 'POST',
-                            body: JSON.stringify({ action: 'updateConfig', key: key, value: newVal })
-                        }).then(() => { hideLoader(); customAlert("הלינק עודכן בהצלחה!"); });
-                    }
+                    safeFetchPOST({ action: 'updateConfig', key: key, value: newVal }, () => {
+                        customAlert("הלינק עודכן בהצלחה!");
+                    });
                 }
             }
 
             window.login = () => {
                 const u = document.getElementById('uName').value;
                 const p = document.getElementById('uPass').value;
-                
                 let user = users.find(usr => usr.username === u && String(usr.password) === p); 
-
-                if (user) { 
-                    currentUser = user; 
-                    onLoginSuccess(); 
-                } else { customAlert('פרטים שגויים'); }
+                if (user) { currentUser = user; onLoginSuccess(); } else { customAlert('פרטים שגויים'); }
             }
 
             window.logout = () => { location.reload(); }
@@ -1056,7 +1061,6 @@
                 }
                 
                 links.innerHTML = menuHtml;
-                
                 document.getElementById('filterTime').value = 'future';
                 filterEvents();
                 if(currentUser.role === 'superadmin') renderPaymentsBoard();
@@ -1095,12 +1099,12 @@
                 };
                 
                 events.push(newEvent); bookedDates.push(date); 
-                if(API_URL.includes("http")) {
-                    showLoader();
-                    fetch(API_URL, { method: 'POST', body: JSON.stringify(newEvent) }).then(()=> { hideLoader(); window.closeModal('quickEventModal'); renderCalendar(); filterEvents(); loadData(); });
-                } else {
-                     window.closeModal('quickEventModal'); renderCalendar(); filterEvents();
-                }
+                safeFetchPOST(newEvent, () => {
+                    window.closeModal('quickEventModal'); 
+                    renderCalendar(); 
+                    filterEvents(); 
+                    loadData(); 
+                });
             }
 
             window.openEventEditor = (id) => {
@@ -1168,17 +1172,10 @@
                     eventData.payments = { client: {}, staff: {} }; 
                 }
                 
-                if(API_URL.includes("http")) {
-                    showLoader();
-                    fetch(API_URL, { method: 'POST', body: JSON.stringify(eventData) })
-                    .then(() => {
-                        hideLoader();
-                        loadData(); 
-                        window.closeModal('eventEditor');
-                    });
-                } else {
+                safeFetchPOST(eventData, () => {
+                    loadData(); 
                     window.closeModal('eventEditor');
-                }
+                });
             }
             
             window.toggleLeadStatusOther = () => {
@@ -1201,7 +1198,6 @@
 
             window.openLeadsManager = () => {
                 window.closeSideMenu();
-                
                 document.getElementById('editLeadId').value = '';
                 document.getElementById('leadFormTitle').innerHTML = '<i class="fas fa-plus-circle ml-2"></i>הוספת פנייה / תזכורת חדשה';
                 document.getElementById('newLeadName').value = '';
@@ -1212,7 +1208,6 @@
                 document.getElementById('newLeadStatusOther').classList.add('hidden');
                 document.getElementById('newLeadReminder').value = '';
                 document.getElementById('newLeadNotes').value = '';
-
                 renderLeads();
                 window.openModal('leadsManagerModal');
             }
@@ -1220,15 +1215,10 @@
             window.saveLead = () => {
                 const editId = document.getElementById('editLeadId').value;
                 const name = document.getElementById('newLeadName').value;
-                if(!name) {
-                    customAlert('חובה להזין לפחות שם לקוח');
-                    return;
-                }
+                if(!name) return customAlert('חובה להזין לפחות שם לקוח');
                 
                 let status = document.getElementById('newLeadStatus').value;
-                if(status === 'אחר') {
-                    status = document.getElementById('newLeadStatusOther').value || 'אחר';
-                }
+                if(status === 'אחר') status = document.getElementById('newLeadStatusOther').value || 'אחר';
 
                 const leadData = {
                     action: editId ? 'updateLead' : 'createLead',
@@ -1242,21 +1232,12 @@
                     isArchived: false
                 };
                 
-                if (API_URL.includes("http")) {
-                    showLoader();
-                    fetch(API_URL, {
-                        method: 'POST',
-                        body: JSON.stringify(leadData)
-                    }).then(() => {
-                        hideLoader();
-                        customAlert('הפנייה נשמרה בהצלחה!');
-                        loadData().then(() => {
-                            if(document.getElementById('leadsManagerModal').style.display === 'flex') {
-                                openLeadsManager(); 
-                            }
-                        });
+                safeFetchPOST(leadData, () => {
+                    customAlert('הפנייה נשמרה בהצלחה!');
+                    loadData().then(() => {
+                        if(document.getElementById('leadsManagerModal').style.display === 'flex') openLeadsManager(); 
                     });
-                }
+                });
             }
             
             window.editLead = (id) => {
@@ -1276,12 +1257,8 @@
                 
                 let foundStatus = false;
                 for (let i = 0; i < statusSelect.options.length; i++) {
-                    if (statusSelect.options[i].value === lead.status) {
-                        foundStatus = true;
-                        break;
-                    }
+                    if (statusSelect.options[i].value === lead.status) { foundStatus = true; break; }
                 }
-                
                 if(foundStatus) {
                     statusSelect.value = lead.status;
                     otherInput.classList.add('hidden');
@@ -1291,27 +1268,19 @@
                     otherInput.classList.remove('hidden');
                     otherInput.value = lead.status;
                 }
-                
                 document.querySelector('#leadsManagerModal .modal-content').scrollTo({ top: 0, behavior: 'smooth' });
             }
 
             window.markLeadHandled = (id) => {
                 const lead = leadsData.find(l => l.id === id);
                 if(!lead) return;
-                
                 let nextWeek = new Date();
                 nextWeek.setDate(nextWeek.getDate() + 7);
                 lead.reminderDate = nextWeek.toISOString().split('T')[0];
                 lead.action = 'updateLead';
-                
-                if (API_URL.includes("http")) {
-                    showLoader();
-                    fetch(API_URL, { method: 'POST', body: JSON.stringify(lead) })
-                    .then(() => {
-                        hideLoader();
-                        loadData().then(() => { renderLeads(); customAlert('סומן כטופל. תזכורת הבאה בעוד שבוע.'); });
-                    });
-                }
+                safeFetchPOST(lead, () => {
+                    loadData().then(() => { renderLeads(); customAlert('סומן כטופל. תזכורת הבאה בעוד שבוע.'); });
+                });
             }
 
             function renderLeads() {
@@ -1321,7 +1290,6 @@
                 alertBox.innerHTML = '';
                 
                 const activeLeads = leadsData.filter(l => !l.isArchived);
-                
                 const today = new Date();
                 today.setHours(0,0,0,0);
                 let alerts = [];
@@ -1334,7 +1302,6 @@
                         const reminderDate = new Date(lead.reminderDate);
                         reminderDate.setHours(0,0,0,0);
                         const diffDays = Math.floor((today - reminderDate) / (1000 * 60 * 60 * 24));
-
                         if (diffDays >= 0) {
                             alerts.push({ id: lead.id, msg: `יש לשלוח תזכורת ל<b>${lead.name}</b> (איחור של ${diffDays} ימים מתאריך התזכורת)` });
                             isAlert = true;
@@ -1378,72 +1345,49 @@
             window.closeLeadAsSuccess = async (id) => {
                 const lead = leadsData.find(l => l.id === id);
                 if(!lead) return;
-                
                 lead.isArchived = true;
                 lead.action = 'updateLead';
-                
-                if (API_URL.includes("http")) {
-                    showLoader();
-                    await fetch(API_URL, { method: 'POST', body: JSON.stringify(lead) });
-                    hideLoader();
-                }
-                
-                window.closeModal('leadsManagerModal');
-                
-                const form = document.getElementById('eventForm');
-                form.reset();
-                form.elements['id'].value = ""; 
-                form.clientName.value = lead.name;
-                form.phone.value = lead.phone;
-                form.notes.value = lead.notes;
-                
-                loadData().then(() => window.openModal('eventEditor'));
+                safeFetchPOST(lead, () => {
+                    window.closeModal('leadsManagerModal');
+                    const form = document.getElementById('eventForm');
+                    form.reset();
+                    form.elements['id'].value = ""; 
+                    form.clientName.value = lead.name;
+                    form.phone.value = lead.phone;
+                    form.notes.value = lead.notes;
+                    loadData().then(() => window.openModal('eventEditor'));
+                });
             }
 
             window.archiveLead = async (id) => {
                 if(!await customConfirm("להעביר פנייה זו לארכיון?")) return;
                 const lead = leadsData.find(l => l.id === id);
                 if(!lead) return;
-                
                 lead.isArchived = true;
                 lead.action = 'updateLead';
-                
-                if (API_URL.includes("http")) {
-                    showLoader();
-                    fetch(API_URL, { method: 'POST', body: JSON.stringify(lead) })
-                    .then(() => {
-                        hideLoader();
-                        loadData().then(() => renderLeads());
-                    });
-                }
+                safeFetchPOST(lead, () => {
+                    loadData().then(() => renderLeads());
+                });
             }
             
             window.restoreLead = async (id) => {
                 if(!await customConfirm("לשחזר פנייה זו חזרה ללוח הפעיל?")) return;
                 const lead = leadsData.find(l => l.id === id);
                 if(!lead) return;
-                
                 lead.isArchived = false;
                 lead.action = 'updateLead';
-                
-                if (API_URL.includes("http")) {
-                    showLoader();
-                    fetch(API_URL, { method: 'POST', body: JSON.stringify(lead) })
-                    .then(() => {
-                        hideLoader();
-                        loadData().then(() => {
-                            window.openArchiveModal(); 
-                            customAlert('הפנייה שוחזרה בהצלחה ללוח הפעיל.');
-                        });
+                safeFetchPOST(lead, () => {
+                    loadData().then(() => {
+                        window.openArchiveModal(); 
+                        customAlert('הפנייה שוחזרה בהצלחה ללוח הפעיל.');
                     });
-                }
+                });
             }
 
             window.openArchiveModal = () => {
                 window.closeModal('leadsManagerModal');
                 const list = document.getElementById('archiveList');
                 list.innerHTML = '';
-                
                 const archivedLeads = leadsData.filter(l => l.isArchived);
                 
                 archivedLeads.forEach((lead) => {
@@ -1468,15 +1412,9 @@
 
             window.deleteLeadPermanently = async (id) => {
                 if(!await customConfirm("למחוק את הפנייה מהמערכת לצמיתות? (לא ניתן לשחזור)")) return;
-                
-                if (API_URL.includes("http")) {
-                    showLoader();
-                    fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'deleteLead', id: id }) })
-                    .then(() => {
-                        hideLoader();
-                        loadData().then(() => window.openArchiveModal());
-                    });
-                }
+                safeFetchPOST({ action: 'deleteLead', id: id }, () => {
+                    loadData().then(() => window.openArchiveModal());
+                });
             }
 
             window.openChecklist = () => {
@@ -1498,7 +1436,6 @@
                                 <span class="text-lg font-bold ${checkedClass}">${item.text}</span>
                             </label>
                     `;
-                    // פתוח לכולם למחוק אם תרצה, כרגע מוגבל למנהל על פי קוד מקורי
                     if(isSuper) {
                         html += `<button onclick="deleteChecklistItem(${index})" class="text-red-500 hover:text-red-400 p-2"><i class="fas fa-trash"></i></button>`;
                     }
@@ -1671,16 +1608,7 @@
             }
 
             function saveConfigToDB(key, value, callback) {
-                if(API_URL.includes("http")) {
-                    showLoader();
-                    fetch(API_URL, {
-                        method: 'POST',
-                        body: JSON.stringify({ action: 'updateConfig', key: key, value: value })
-                    }).then(() => {
-                        hideLoader();
-                        if(callback) callback();
-                    });
-                }
+                safeFetchPOST({ action: 'updateConfig', key: key, value: value }, callback);
             }
 
             window.openMyPayments = () => {
@@ -1758,60 +1686,36 @@
                 const url = prompt("הכנס קישור ליוטיוב או Vimeo או קובץ MP4:");
                 if (!url) return;
                 const title = prompt("הכנס כותרת לסרטון (לדוגמה: ליווי חתן בר המצווה):");
-                
-                if(API_URL.includes("http")) {
-                    showLoader();
-                    fetch(API_URL, {
-                        method: 'POST',
-                        body: JSON.stringify({ action: 'addToGallery', type: 'video', url: url, title: title || '' })
-                    }).then(() => { loadData(); });
-                }
+                safeFetchPOST({ action: 'addToGallery', type: 'video', url: url, title: title || '' }, loadData);
             }
 
             window.addNewImage = () => { 
                 const u = prompt("קישור לתמונה:"); 
                 if(u) { 
-                    if(API_URL.includes("http")) {
-                        showLoader();
-                        fetch(API_URL, {
-                            method: 'POST',
-                            body: JSON.stringify({ action: 'addToGallery', type: 'image', url: u })
-                        }).then(() => { loadData(); });
-                    } else {
-                        galleryImages.push({type: 'image', url: u}); renderGallery(); 
-                    }
+                    safeFetchPOST({ action: 'addToGallery', type: 'image', url: u }, loadData);
                 } 
             }
 
             window.deleteImage = async (url) => { 
                 if(!await customConfirm("למחוק את התמונה/וידאו מהגלריה?")) return;
-                if(API_URL.includes("http")) {
-                    showLoader();
-                    fetch(API_URL, {
-                        method: 'POST',
-                        body: JSON.stringify({ action: 'deleteFromGallery', url: url })
-                    }).then(() => { loadData(); });
-                }
+                safeFetchPOST({ action: 'deleteFromGallery', url: url }, loadData);
             }
             
             window.editGalleryItem = (oldUrl) => {
                  const newUrl = prompt("הכנס קישור חדש (או השאר כמו שהוא כדי לערוך רק כותרת):", oldUrl);
                  if (newUrl !== null) {
                      const newTitle = prompt("הכנס כותרת לסרטון (השאר ריק ללא כותרת):");
-                     if(API_URL.includes("http")) {
-                        showLoader();
-                        fetch(API_URL, {
-                            method: 'POST',
-                            body: JSON.stringify({ action: 'updateGallery', oldUrl: oldUrl, newUrl: newUrl, title: newTitle || '' })
-                        }).then(() => { loadData(); });
-                     }
+                     safeFetchPOST({ action: 'updateGallery', oldUrl: oldUrl, newUrl: newUrl, title: newTitle || '' }, loadData);
                  }
             }
 
             window.moveVideoItem = (index, direction) => {
                 const videos = galleryImages.filter(item => item.type === 'video');
                 let videoOrder = [];
-                try { if(siteConfig.videoOrderDB) videoOrder = JSON.parse(siteConfig.videoOrderDB); } catch(e){}
+                try { 
+                    let parsed = JSON.parse(siteConfig.videoOrderDB); 
+                    if (Array.isArray(parsed)) videoOrder = parsed;
+                } catch(e){}
                 
                 videos.sort((a, b) => {
                     let idxA = videoOrder.indexOf(a.url);
@@ -1844,7 +1748,10 @@
                 const videos = galleryImages.filter(item => item.type === 'video');
 
                 let videoOrder = [];
-                try { if(siteConfig.videoOrderDB) videoOrder = JSON.parse(siteConfig.videoOrderDB); } catch(e){}
+                try { 
+                    let parsed = JSON.parse(siteConfig.videoOrderDB); 
+                    if (Array.isArray(parsed)) videoOrder = parsed;
+                } catch(e){}
                 
                 videos.sort((a, b) => {
                     let idxA = videoOrder.indexOf(a.url);
@@ -2312,16 +2219,10 @@
                     });
                 }
 
-                if(API_URL.includes("http")) {
-                    showLoader();
-                    fetch(API_URL, {
-                        method: 'POST',
-                        body: JSON.stringify({ action: 'savePayment', id: eventId, client: evt.payments.client, staff: evt.payments.staff })
-                    }).then(() => { hideLoader(); window.closeModal('paymentModal'); renderPaymentsBoard(); });
-                } else {
-                    window.closeModal('paymentModal');
+                safeFetchPOST({ action: 'savePayment', id: eventId, client: evt.payments.client, staff: evt.payments.staff }, () => {
+                    window.closeModal('paymentModal'); 
                     renderPaymentsBoard();
-                }
+                });
             }
 
             window.openPriceListEditor = () => { 
@@ -2400,17 +2301,10 @@
                 ['VIP', 'FESTIVE', 'BASIC', 'SOLO'].forEach(id => { siteConfig[`price${id}`] = pricingData[`price${id}`]; });
                 updatePackagesFromConfig(); 
 
-                if(API_URL.includes("http")) {
-                    showLoader();
-                    fetch(API_URL, {
-                        method: 'POST',
-                        body: JSON.stringify({ action: 'updateConfig', key: 'pricingDB', value: JSON.stringify(pricingData) })
-                    }).then(() => {
-                        hideLoader();
-                        window.closeModal('priceListEditorModal');
-                        customAlert('המחירון עודכן ושמור בהצלחה!');
-                    });
-                }
+                safeFetchPOST({ action: 'updateConfig', key: 'pricingDB', value: JSON.stringify(pricingData) }, () => {
+                    window.closeModal('priceListEditorModal');
+                    customAlert('המחירון עודכן ושמור בהצלחה!');
+                });
             }
 
             window.toggleProposalFields = () => {
@@ -2595,7 +2489,17 @@
                 try {
                     showLoader(); 
                     if(!API_URL.includes("http")) throw new Error("No API");
-                    const response = await fetch(API_URL);
+                    
+                    let fetchUrl = API_URL;
+                    if(fetchUrl.includes('?mode=api')) fetchUrl = fetchUrl.replace('?mode=api', '');
+                    
+                    const response = await fetch(fetchUrl, {
+                        method: 'POST',
+                        body: JSON.stringify({ action: 'load' }),
+                        headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+                    });
+                    
+                    if (!response.ok) throw new Error("Server returned " + response.status);
                     const data = await response.json();
                     
                     if (data.events) {
@@ -2640,28 +2544,4 @@
                     
                     if (data.leads) { leadsData = data.leads; }
                     if (data.gallery) galleryImages = data.gallery;
-                    if (data.users) users = data.users;
-                    
-                    bookedDates = events.map(e => e.date);
-                    hideLoader(); 
-
-                } catch (error) {
-                    hideLoader();
-                    console.log("Error Loading", error);
-                }
-                
-                if(typeof renderCalendar === 'function') renderCalendar();
-                if(typeof filterEvents === 'function') filterEvents();
-                if(typeof renderGallery === 'function') renderGallery();
-                if(currentUser && currentUser.role === 'superadmin' && typeof renderPaymentsBoard === 'function') renderPaymentsBoard();
-            }
-
-            loadData();
-        });
-    </script>
-</body>
-</html>
-
-
-
-
+                    if (data.users)
