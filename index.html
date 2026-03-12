@@ -14,8 +14,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&family=Raleway:wght@400;700&display=swap" rel="stylesheet">
-    
-    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
 
     <script>
         // הקישור לשרת ה-Google Apps Script שלך
@@ -128,11 +126,6 @@
         .gallery-item { margin: 0 5px; }
         .gallery-img { height: 250px; width: auto; aspect-ratio: 3/2; object-fit: cover; border-radius: 16px; cursor: pointer; transition: 0.3s; border: 2px solid transparent; }
         .gallery-img:hover { border-color: #fbbf24; transform: scale(1.05); }
-
-        /* --- תוספות לספריית הגרירה --- */
-        body.is-dragging iframe, body.is-dragging video { pointer-events: none !important; }
-        .drag-handle { cursor: grab; touch-action: none; }
-        .drag-handle:active { cursor: grabbing; }
 
         .review-card { background: linear-gradient(145deg, rgba(30,41,59,0.9), rgba(15,23,42,0.95)); border: 1px solid rgba(251,191,36,0.3); border-radius: 1.5rem; padding: 1.5rem; width: 350px; margin: 0 15px; flex-shrink: 0; direction: rtl; text-align: right; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
         .review-stars { color: #fbbf24; font-size: 1.2rem; margin-bottom: 10px; }
@@ -389,14 +382,31 @@
          </div>
     </section>
 
+    <div id="videoOrderModal" class="modal-overlay">
+        <div class="modal-content !max-w-xl bg-slate-900 border border-blue-500/50">
+            <div class="modal-header">
+                <h3 class="text-2xl font-bold text-white"><i class="fas fa-list-ol text-blue-400 ml-2"></i>ניהול סדר סרטונים</h3>
+                <button onclick="closeModal('videoOrderModal')" class="text-white hover:text-blue-400 text-2xl"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body p-6">
+                <div class="text-slate-400 mb-6 text-sm bg-slate-800 p-4 rounded-lg border border-slate-700">השתמש בחצים כדי לסדר את הסרטונים למעלה ולמטה, ובסיום לחץ על "שמור סדר סרטונים".</div>
+                <div id="videoOrderList" class="flex flex-col gap-3"></div>
+                <button onclick="saveVideoOrder()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-xl mt-8 shadow-lg transition text-lg"><i class="fas fa-save ml-2"></i> שמור סדר סרטונים</button>
+            </div>
+        </div>
+    </div>
+
     <section id="gallery" class="py-24 bg-[#021029] relative overflow-hidden">
         <div class="container mx-auto px-6 relative z-10">
             <div class="text-center mb-12">
                  <h2 class="text-3xl md:text-5xl font-bold text-white"><i class="fas fa-video ml-3 text-amber-400"></i> דוגמאות מאירועים</h2>
             </div>
-            <div class="text-center mb-8 superadmin-only">
-                <button onclick="addNewVideo()" class="bg-green-600 hover:bg-green-500 text-white px-6 py-3 rounded-full font-bold shadow-lg transition items-center flex mx-auto">
+            <div class="text-center mb-8 superadmin-only flex flex-wrap justify-center gap-4">
+                <button onclick="addNewVideo()" class="bg-green-600 hover:bg-green-500 text-white px-6 py-3 rounded-full font-bold shadow-lg transition items-center flex">
                     <i class="fas fa-plus-circle ml-2 text-xl"></i> הוסף סרטון חדש
+                </button>
+                <button onclick="openVideoOrderModal()" class="bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 rounded-full font-bold shadow-lg transition items-center flex">
+                    <i class="fas fa-list-ol ml-2 text-xl"></i> סדר סרטונים
                 </button>
             </div>
             <div id="videoContainer" class="grid grid-cols-1 md:grid-cols-2 gap-10 mb-24"></div>
@@ -879,6 +889,20 @@
         </div>
     </div>
 
+    <div id="videoOrderModal" class="modal-overlay">
+        <div class="modal-content !max-w-xl bg-slate-900 border border-blue-500/50">
+            <div class="modal-header">
+                <h3 class="text-2xl font-bold text-white"><i class="fas fa-list-ol text-blue-400 ml-2"></i>ניהול סדר סרטונים</h3>
+                <button onclick="closeModal('videoOrderModal')" class="text-white hover:text-blue-400 text-2xl"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body p-6">
+                <div class="text-slate-400 mb-6 text-sm bg-slate-800 p-4 rounded-lg border border-slate-700">השתמש בחצים כדי לסדר את הסרטונים למעלה ולמטה, ובסיום לחץ על "שמור סדר סרטונים".</div>
+                <div id="videoOrderList" class="flex flex-col gap-3"></div>
+                <button onclick="saveVideoOrder()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-xl mt-8 shadow-lg transition text-lg"><i class="fas fa-save ml-2"></i> שמור סדר סרטונים</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             let isAdmin = false;
@@ -897,6 +921,7 @@
             let currentLightboxIndex = 0;
             let lightboxImageUrls = [];
             let editingReviewIndex = -1;
+            let currentVideoOrderEditing = [];
 
             const packagesData = {
                 'VIP': { t: 'חבילת הכל כלול VIP', p: '₪5,500', d: 'ליווי תפילה ופיוטים\nחזנות\nהגברה מקצועית\nקלידן\nזוג מתופפים\nכניסה מיוחדת עם חופה ושופרות\nליווי שירים בסעודה (אביב + קלידן)\nלימוד הפרשה (במידת הצורך)' },
@@ -954,7 +979,6 @@
                 window.location.href = 'students.html'; 
             }
 
-            // פונקציית תקשורת נסתרת העוקפת את חסימת ה-CORS של דפדפנים
             window.safeFetchPOST = function(payloadData, onSuccess) {
                 showLoader();
                 fetch(API_URL, {
@@ -1716,6 +1740,99 @@
                  }
             }
 
+            // פונקציה להזזת תמונות
+            window.moveImageItem = (url, direction) => {
+                const images = galleryImages.filter(item => typeof item === 'string' || item.type === 'image');
+                let imageOrder = [];
+                try { 
+                    let parsed = JSON.parse(siteConfig.imageOrderDB); 
+                    if (Array.isArray(parsed)) imageOrder = parsed;
+                } catch(e){}
+                
+                images.sort((a, b) => {
+                    let urlA = typeof a === 'string' ? a : a.url;
+                    let urlB = typeof b === 'string' ? b : b.url;
+                    let idxA = imageOrder.indexOf(urlA);
+                    let idxB = imageOrder.indexOf(urlB);
+                    if (idxA === -1) idxA = 9999;
+                    if (idxB === -1) idxB = 9999;
+                    return idxA - idxB;
+                });
+
+                let index = images.findIndex(i => (typeof i === 'string' ? i : i.url) === url);
+                if (index === -1 || index + direction < 0 || index + direction >= images.length) return;
+
+                const temp = images[index];
+                images[index] = images[index + direction];
+                images[index + direction] = temp;
+
+                const newOrder = images.map(i => typeof i === 'string' ? i : i.url);
+                siteConfig.imageOrderDB = JSON.stringify(newOrder); 
+                saveConfigToDB('imageOrderDB', JSON.stringify(newOrder), renderGallery);
+            }
+
+            // === פתיחת חלון סידור סרטונים (פתרון חסין לבעיות גרירה ו-iframes) ===
+            window.openVideoOrderModal = () => {
+                window.closeSideMenu();
+                const videos = galleryImages.filter(item => item.type === 'video');
+                
+                let videoOrder = [];
+                try { 
+                    let parsed = JSON.parse(siteConfig.videoOrderDB); 
+                    if (Array.isArray(parsed)) videoOrder = parsed;
+                } catch(e){}
+                
+                videos.forEach(v => { if (!videoOrder.includes(v.url)) videoOrder.push(v.url); });
+
+                videos.sort((a, b) => {
+                    return videoOrder.indexOf(a.url) - videoOrder.indexOf(b.url);
+                });
+
+                currentVideoOrderEditing = [...videos];
+                renderVideoOrderList();
+                window.openModal('videoOrderModal');
+            }
+
+            // רינדור רשימת הסרטונים בחלון החדש
+            window.renderVideoOrderList = () => {
+                const list = document.getElementById('videoOrderList');
+                list.innerHTML = '';
+                
+                currentVideoOrderEditing.forEach((vid, index) => {
+                    let title = vid.title || 'סרטון ללא כותרת';
+                    list.innerHTML += `
+                        <div class="bg-slate-800 p-3 rounded-lg border border-slate-700 flex justify-between items-center">
+                            <div class="text-white font-bold truncate pr-2 flex-1 text-right" dir="rtl">${index + 1}. ${title}</div>
+                            <div class="flex gap-1 pl-2" dir="ltr">
+                                <button class="bg-slate-700 hover:bg-amber-400 hover:text-black text-white w-8 h-8 rounded flex items-center justify-center transition disabled:opacity-30 disabled:hover:bg-slate-700 disabled:hover:text-white cursor-pointer" onclick="moveVideoListItem(${index}, -1)" ${index === 0 ? 'disabled' : ''}><i class="fas fa-arrow-up"></i></button>
+                                <button class="bg-slate-700 hover:bg-amber-400 hover:text-black text-white w-8 h-8 rounded flex items-center justify-center transition disabled:opacity-30 disabled:hover:bg-slate-700 disabled:hover:text-white cursor-pointer" onclick="moveVideoListItem(${index}, 1)" ${index === currentVideoOrderEditing.length - 1 ? 'disabled' : ''}><i class="fas fa-arrow-down"></i></button>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+
+            // הזזת סרטון למעלה או למטה ברשימה החדשה
+            window.moveVideoListItem = (index, direction) => {
+                if (index + direction < 0 || index + direction >= currentVideoOrderEditing.length) return;
+                const temp = currentVideoOrderEditing[index];
+                currentVideoOrderEditing[index] = currentVideoOrderEditing[index + direction];
+                currentVideoOrderEditing[index + direction] = temp;
+                renderVideoOrderList();
+            }
+
+            // שמירת הסדר החדש
+            window.saveVideoOrder = () => {
+                const newOrder = currentVideoOrderEditing.map(v => v.url);
+                siteConfig.videoOrderDB = JSON.stringify(newOrder); 
+                safeFetchPOST({ action: 'updateConfig', key: 'videoOrderDB', value: JSON.stringify(newOrder) }, () => {
+                    window.closeModal('videoOrderModal');
+                    renderGallery();
+                    customAlert('סדר הסרטונים נשמר בהצלחה!');
+                });
+            }
+
+
             function renderGallery() {
                 const c = document.getElementById('imageMarquee'); 
                 const v = document.getElementById('videoContainer');
@@ -1728,14 +1845,27 @@
                 const videos = galleryImages.filter(item => item.type === 'video');
 
                 let videoOrder = [];
+                let imageOrder = [];
                 try { 
                     let parsedV = JSON.parse(siteConfig.videoOrderDB); 
                     if (Array.isArray(parsedV)) videoOrder = parsedV;
+                    let parsedI = JSON.parse(siteConfig.imageOrderDB); 
+                    if (Array.isArray(parsedI)) imageOrder = parsedI;
                 } catch(e){}
                 
                 videos.sort((a, b) => {
                     let idxA = videoOrder.indexOf(a.url);
                     let idxB = videoOrder.indexOf(b.url);
+                    if (idxA === -1) idxA = 9999;
+                    if (idxB === -1) idxB = 9999;
+                    return idxA - idxB;
+                });
+
+                images.sort((a, b) => {
+                    let urlA = typeof a === 'string' ? a : a.url;
+                    let urlB = typeof b === 'string' ? b : b.url;
+                    let idxA = imageOrder.indexOf(urlA);
+                    let idxB = imageOrder.indexOf(urlB);
                     if (idxA === -1) idxA = 9999;
                     if (idxB === -1) idxB = 9999;
                     return idxA - idxB;
@@ -1753,6 +1883,10 @@
                              btns = `
                                 <div class="absolute top-2 right-2 flex gap-2 z-[9999]">
                                     <button class="bg-red-600 border-2 border-white text-white w-8 h-8 flex items-center justify-center rounded-full hover:bg-red-500 shadow-xl" onclick="deleteImage('${src}')"><i class="fas fa-trash text-sm"></i></button>
+                                </div>
+                                <div class="absolute top-2 left-2 flex gap-2 z-[9999]">
+                                    ${idx > 0 ? `<button class="bg-slate-900 border-2 border-amber-400 text-amber-400 w-8 h-8 flex items-center justify-center rounded-full hover:bg-amber-400 hover:text-black shadow-xl transition-all" onclick="moveImageItem('${src}', -1)" title="הזז ימינה"><i class="fas fa-arrow-right text-sm"></i></button>` : ''}
+                                    ${idx < lightboxImageUrls.length - 1 ? `<button class="bg-slate-900 border-2 border-amber-400 text-amber-400 w-8 h-8 flex items-center justify-center rounded-full hover:bg-amber-400 hover:text-black shadow-xl transition-all" onclick="moveImageItem('${src}', 1)" title="הזז שמאלה"><i class="fas fa-arrow-left text-sm"></i></button>` : ''}
                                 </div>`;
                         }
                         w.innerHTML += `<div class="gallery-item relative">${btns}<img src="${src}" class="gallery-img" onclick="openLightbox('${src}')"></div>`;
@@ -1789,21 +1923,14 @@
                     }
 
                     const div = document.createElement('div');
-                    // הוספנו את ה-class video-card שזיהוי הגרירה צריך
-                    div.className = "rounded-2xl overflow-hidden border border-slate-700 bg-slate-900 relative group shadow-2xl flex flex-col video-card";
-                    if (isSuper) div.setAttribute('data-url', vid.url);
+                    div.className = "rounded-2xl overflow-hidden border border-slate-700 bg-slate-900 relative group shadow-2xl flex flex-col";
                     
                     let delBtn = '';
-                    let dragHandle = '';
                     if (isSuper) {
                         delBtn = `
                             <div class="absolute top-3 right-3 flex gap-2 z-[9999]">
-                                <button class="bg-blue-600 border-2 border-white text-white w-10 h-10 flex items-center justify-center rounded-full hover:bg-blue-500 shadow-xl" onclick="editGalleryItem('${vid.url}')"><i class="fas fa-pencil-alt"></i></button>
-                                <button class="bg-red-600 border-2 border-white text-white w-10 h-10 flex items-center justify-center rounded-full hover:bg-red-500 shadow-xl" onclick="deleteImage('${vid.url}')"><i class="fas fa-trash"></i></button>
-                            </div>`;
-                        dragHandle = `
-                            <div class="drag-handle absolute top-3 left-3 flex gap-2 z-[9999]" title="גרור כדי לשנות סדר" style="touch-action: none;">
-                                <div class="bg-slate-900 border-2 border-amber-400 text-amber-400 w-10 h-10 rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(0,0,0,0.8)] hover:scale-110 transition-transform"><i class="fas fa-arrows-alt text-lg"></i></div>
+                                <button class="bg-blue-600 border-2 border-white text-white w-10 h-10 flex items-center justify-center rounded-full hover:bg-blue-500 shadow-xl" onclick="editGalleryItem('${vid.url}')" title="ערוך כותרת"><i class="fas fa-pencil-alt"></i></button>
+                                <button class="bg-red-600 border-2 border-white text-white w-10 h-10 flex items-center justify-center rounded-full hover:bg-red-500 shadow-xl" onclick="deleteImage('${vid.url}')" title="מחק סרטון"><i class="fas fa-trash"></i></button>
                             </div>`;
                     }
                     
@@ -1830,34 +1957,9 @@
                         titleHtml = `<div class="p-4 text-center font-bold text-amber-400 text-lg tracking-wide border-t border-slate-800 bg-slate-900/50">${vid.title}</div>`;
                     }
 
-                    div.innerHTML = videoHtml + titleHtml + delBtn + dragHandle;
+                    div.innerHTML = videoHtml + titleHtml + delBtn;
                     v.appendChild(div);
                 });
-
-                // אתחול ספריית הגרירה המקצועית על הקונטיינר של הסרטונים
-                if (isSuper && window.Sortable) {
-                    if(window.videoSortable) window.videoSortable.destroy();
-                    
-                    window.videoSortable = new Sortable(v, {
-                        animation: 200, // אנימציה חלקה לגרירה
-                        handle: '.drag-handle', // אומר לספרייה שגוררים רק מהכפתור הזה
-                        ghostClass: 'opacity-50', // הסרטון נהיה שקוף קצת בזמן גרירה
-                        onStart: function() { 
-                            // בזמן גרירה אנחנו מנטרלים את נגני הוידאו כדי שלא יבלעו את העכבר/מגע
-                            document.body.classList.add('is-dragging'); 
-                        },
-                        onEnd: function(evt) {
-                            document.body.classList.remove('is-dragging');
-                            const newOrder = [];
-                            v.querySelectorAll('.video-card').forEach(el => {
-                                newOrder.push(el.getAttribute('data-url'));
-                            });
-                            // שמירה לענן
-                            siteConfig.videoOrderDB = JSON.stringify(newOrder);
-                            saveConfigToDB('videoOrderDB', JSON.stringify(newOrder), () => {});
-                        }
-                    });
-                }
             }
 
             window.openLightbox = (src) => { 
