@@ -1716,8 +1716,6 @@
             }
 
             // === פונקציות גרירה (Drag & Drop) חדישות לסרטונים ===
-            let draggedVideoUrl = null;
-
             window.handleDragStart = function(e) {
                 draggedVideoUrl = this.getAttribute('data-url');
                 e.dataTransfer.effectAllowed = 'move';
@@ -2594,3 +2592,4 @@
     </script>
 </body>
 </html>
+
