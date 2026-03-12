@@ -28,17 +28,18 @@
         .loader { border: 5px solid rgba(255,255,255,0.1); border-top-color: #fbbf24; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 20px auto; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* --- עיצוב מיוחד לטופס נעול (מאושר) --- */
+        /* --- עיצוב מיוחד לטופס נעול (מאושר) - שומר על צבעים יפים --- */
         .locked-input {
-            opacity: 1 !important;
             background: rgba(15, 23, 42, 0.9) !important;
             border-color: #fbbf24 !important;
             color: #fbbf24 !important;
             font-weight: 900 !important;
             text-shadow: 0 0 10px rgba(251, 191, 36, 0.3);
         }
-        .radio-locked-unselected { opacity: 0.2 !important; pointer-events: none; }
-        .radio-locked-selected { border-color: #fbbf24 !important; background: rgba(251, 191, 36, 0.2) !important; opacity: 1 !important; color: #fbbf24 !important; font-weight: bold; pointer-events: none;}
+        input[type="checkbox"]:disabled, input[type="radio"]:disabled {
+            opacity: 1 !important;
+            accent-color: #fbbf24 !important;
+        }
     </style>
 </head>
 <body>
@@ -94,8 +95,8 @@
             <div class="section-title">4. תיעוד האירוע</div>
             <p class="mb-3 text-slate-300">אני מסכים/ה לשימוש בתמונות ובסרטוני וידאו מהאירוע לצורכי תיעוד ושיתוף (למשל באתר, ברשתות החברתיות או בפרסומי העסק): *</p>
             <div class="flex gap-4 radio-group mb-6">
-                <label><input type="radio" name="mediaConsent" value="yes" required> כן, מאשר/ת בשמחה</label>
-                <label><input type="radio" name="mediaConsent" value="no"> לא מעוניין/ת</label>
+                <label id="lblRadioYes"><input type="radio" name="mediaConsent" value="yes" required> כן, מאשר/ת בשמחה</label>
+                <label id="lblRadioNo"><input type="radio" name="mediaConsent" value="no"> לא מעוניין/ת</label>
             </div>
 
             <div class="section-title">5. אישור וסיכום</div>
@@ -147,7 +148,7 @@
                     currentEvent = data.events.find(e => String(e.id) === String(eventId));
                     if (currentEvent) {
                         
-                        // --- מילוי פרטים אישיים ---
+                        // מילוי פרטים אישיים
                         const nameParts = (currentEvent.clientName || '').trim().split(' ');
                         document.getElementById('inpFirstName').value = nameParts[0] || '';
                         document.getElementById('inpLastName').value = nameParts.slice(1).join(' ') || '';
@@ -159,7 +160,7 @@
                         document.getElementById('inpGuestTime').value = currentEvent.guestTime || '';
                         document.getElementById('inpStartTime').value = currentEvent.startTime || '';
 
-                        // --- לוגיקת סוג חבילה (כולל בדיקת תלמיד) ---
+                        // לוגיקת חבילות (עם התניית תלמיד)
                         let pkgName = currentEvent.packageType || 'טרם הוגדר';
                         let extPay = '0';
                         let desc = '';
@@ -184,7 +185,7 @@
                         if(desc) { document.getElementById('pkgDesc').innerText = desc; } else { document.getElementById('pkgDesc').style.display = 'none'; }
                         document.getElementById('lblPrice').innerText = currentEvent.price ? currentEvent.price + ' ₪' : 'טרם נקבע';
 
-                        // --- לוגיקת תנאי תשלום ---
+                        // תנאי תשלום
                         let termsHtml = '';
                         if (extPay !== '0') {
                             termsHtml += `<div><strong>תשלום לספקים חיצוניים (מתופפים, קלידן וכו'):</strong> <span class="bg-slate-800 px-2 py-1 rounded text-white">${extPay} ₪</span> ישולמו במזומן ביום האירוע עצמו.</div>`;
@@ -192,8 +193,18 @@
                         termsHtml += `<div><strong class="text-amber-400">יתרה לתשלום:</strong> את היתרה הנותרת ניתן לשלם באמצעות מזומן, ביט, פייבוקס, העברה בנקאית או צ'ק.</div>`;
                         document.getElementById('paymentTermsText').innerHTML = termsHtml;
 
-                        // --- נעילה חכמה ויוקרתית אם הטופס כבר אושר ---
+                        // נעילה חכמה ויוקרתית אם הטופס כבר אושר בעבר
                         if (currentEvent.notes && String(currentEvent.notes).includes("אישור לקוח")) {
+                            
+                            // קריאת הבחירה של הלקוח מתוך ההערה
+                            let isMediaYes = String(currentEvent.notes).includes("הסכמת צילום: כן");
+                            let isMediaNo = String(currentEvent.notes).includes("הסכמת צילום: לא");
+
+                            if(isMediaYes) document.querySelector('input[name="mediaConsent"][value="yes"]').checked = true;
+                            if(isMediaNo) document.querySelector('input[name="mediaConsent"][value="no"]').checked = true;
+                            document.getElementById('inpTerms').checked = true;
+
+                            // הפיכת כפתור השליחה לכפתור "נעול"
                             const btn = document.getElementById('submitBtn');
                             btn.innerHTML = '<i class="fas fa-check-circle"></i> הטופס מאושר ונעול';
                             btn.disabled = true;
@@ -202,22 +213,22 @@
                             btn.style.border = '2px solid #fbbf24';
                             btn.style.cursor = 'default';
                             
+                            // נעילת כל השדות תוך שמירה על עיצוב זוהר ולא אפור
                             const inputs = document.querySelectorAll('#bookingForm input');
                             inputs.forEach(input => {
-                                // מונע קליק אבל לא נותן לדפדפן לצבוע באפור
-                                input.readOnly = true; 
                                 input.style.pointerEvents = 'none';
-                                
-                                if(input.type === 'checkbox') {
-                                    input.parentElement.classList.add('locked-input');
-                                } else if(input.type === 'radio') {
-                                    if(input.checked) {
-                                        input.parentElement.classList.add('radio-locked-selected');
-                                    } else {
-                                        input.parentElement.classList.add('radio-locked-unselected');
-                                    }
-                                } else {
+                                if (input.type !== 'checkbox' && input.type !== 'radio') {
+                                    input.readOnly = true;
                                     input.classList.add('locked-input');
+                                } else {
+                                    if (!input.checked) {
+                                        input.parentElement.style.opacity = '0.3';
+                                    } else {
+                                        input.parentElement.style.border = '1px solid #fbbf24';
+                                        input.parentElement.style.background = 'rgba(251, 191, 36, 0.15)';
+                                        input.parentElement.style.color = '#fbbf24';
+                                        input.parentElement.style.fontWeight = 'bold';
+                                    }
                                 }
                             });
                         }
