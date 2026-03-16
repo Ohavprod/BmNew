@@ -2570,11 +2570,11 @@
                 
                 window.open(`https://wa.me/972${p.replace(/-/g,'').substring(1)}?text=${encodeURIComponent(msg)}`, '_blank');
             }
-
-            window.sendBookingForm = (eventId, phone) => {
+                window.sendBookingForm = (eventId, phone) => {
                 if (!phone) { customAlert("לא הוזן מספר טלפון לאירוע זה."); return; }
                 
-                let baseUrl = window.location.href.split('index.html')[0];
+                // התיקון: לוקח את הכתובת הנקייה בלי סולמיות (#) ותוספות
+                let baseUrl = window.location.origin + window.location.pathname.replace(/index\.html$/, '');
                 if (!baseUrl.endsWith('/')) baseUrl += '/';
                 const formLink = `${baseUrl}booking.html?id=${eventId}`;
                 
@@ -2582,7 +2582,6 @@
                 
                 window.open(`https://wa.me/972${phone.replace(/-/g,'').substring(1)}?text=${encodeURIComponent(msg)}`, '_blank');
             }
-
             window.openWhatsAppTool = () => { window.closeSideMenu(); window.openModal('whatsappModal'); }
             window.openProposalTool = () => { 
                 window.closeSideMenu(); 
