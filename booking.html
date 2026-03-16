@@ -36,10 +36,12 @@
             font-weight: 900 !important;
             text-shadow: 0 0 10px rgba(251, 191, 36, 0.3);
         }
-        input[type="checkbox"]:disabled, input[type="radio"]:disabled {
+        /* מבטל מראה אפור דהוי לדפדפנים */
+        input:disabled, input[readonly] {
+            -webkit-text-fill-color: currentcolor;
             opacity: 1 !important;
-            cursor: not-allowed !important;
         }
+        .locked-container { pointer-events: none; }
     </style>
 </head>
 <body>
@@ -75,9 +77,10 @@
                 <div><label class="block text-slate-300 mb-1">תאריך האירוע: *</label><input type="text" id="inpEventDate" class="form-input" disabled></div>
                 <div><label class="block text-slate-300 mb-1">תאריך לידה עברי: *</label><input type="text" id="inpHebrewDate" class="form-input" placeholder="לדוגמה: ו' באדר" required></div>
             </div>
+            
             <div class="mb-4">
                 <label class="block text-slate-300 mb-1">מיקום האירוע (בית כנסת/אולם): *</label>
-                <input type="text" id="inpLocation" class="form-input" disabled>
+                <input type="text" id="inpLocation" class="form-input">
             </div>
 
             <div class="section-title">3. לו"ז האירוע</div>
@@ -94,9 +97,9 @@
 
             <div class="section-title">4. תיעוד האירוע</div>
             <p class="mb-3 text-slate-300">אני מסכים/ה לשימוש בתמונות ובסרטוני וידאו מהאירוע לצורכי תיעוד ושיתוף (למשל באתר, ברשתות החברתיות או בפרסומי העסק): *</p>
-            <div class="flex gap-4 radio-group mb-6">
-                <label id="lblRadioYes"><input type="radio" name="mediaConsent" value="yes" required> כן, מאשר/ת בשמחה</label>
-                <label id="lblRadioNo"><input type="radio" name="mediaConsent" value="no"> לא מעוניין/ת</label>
+            <div class="flex gap-4 radio-group mb-6" id="mediaContainer">
+                <label id="lblRadioYes"><input type="radio" name="mediaConsent" id="radioYes" value="yes" required> כן, מאשר/ת בשמחה</label>
+                <label id="lblRadioNo"><input type="radio" name="mediaConsent" id="radioNo" value="no"> לא מעוניין/ת</label>
             </div>
 
             <div class="section-title">5. אישור וסיכום</div>
@@ -156,9 +159,19 @@
                         document.getElementById('inpChildName').value = currentEvent.childName || '';
                         document.getElementById('inpEventDate').value = currentEvent.date || '';
                         document.getElementById('inpHebrewDate').value = currentEvent.hebrewDate || '';
-                        document.getElementById('inpLocation').value = currentEvent.location || '';
                         document.getElementById('inpGuestTime').value = currentEvent.guestTime || '';
                         document.getElementById('inpStartTime').value = currentEvent.startTime || '';
+
+                        // --- לוגיקת פתיחת/נעילת המיקום ---
+                        const locInput = document.getElementById('inpLocation');
+                        locInput.value = currentEvent.location || '';
+                        if (currentEvent.location && String(currentEvent.location).trim() !== '') {
+                            locInput.disabled = true;
+                        } else {
+                            locInput.disabled = false;
+                            locInput.required = true;
+                            locInput.placeholder = "הזן עיר, רחוב ושם אולם / בית כנסת...";
+                        }
 
                         // לוגיקת חבילות (עם התניית תלמיד)
                         let pkgName = currentEvent.packageType || 'טרם הוגדר';
@@ -193,14 +206,14 @@
                         termsHtml += `<div><strong class="text-amber-400">יתרה לתשלום:</strong> את היתרה הנותרת ניתן לשלם באמצעות מזומן, ביט, פייבוקס, העברה בנקאית או צ'ק.</div>`;
                         document.getElementById('paymentTermsText').innerHTML = termsHtml;
 
-                        // נעילה מוחלטת ללקוח שכבר אישר - הכל נשאר זהב ובלתי ניתן ללחיצה
+                        // נעילה חכמה ויוקרתית אם הטופס כבר אושר
                         if (currentEvent.notes && String(currentEvent.notes).includes("אישור לקוח")) {
                             
                             let isMediaYes = String(currentEvent.notes).includes("הסכמת צילום: כן");
                             let isMediaNo = String(currentEvent.notes).includes("הסכמת צילום: לא");
 
-                            if(isMediaYes) document.querySelector('input[name="mediaConsent"][value="yes"]').checked = true;
-                            if(isMediaNo) document.querySelector('input[name="mediaConsent"][value="no"]').checked = true;
+                            if(isMediaYes) document.getElementById('radioYes').checked = true;
+                            if(isMediaNo) document.getElementById('radioNo').checked = true;
                             document.getElementById('inpTerms').checked = true;
 
                             const btn = document.getElementById('submitBtn');
@@ -211,25 +224,29 @@
                             btn.style.border = '2px solid #fbbf24';
                             btn.style.cursor = 'default';
                             
+                            document.getElementById('termsContainer').classList.add('locked-container');
+                            document.getElementById('mediaContainer').classList.add('locked-container');
+
                             const inputs = document.querySelectorAll('#bookingForm input');
                             inputs.forEach(input => {
+                                input.readOnly = true; 
+                                input.style.pointerEvents = 'none';
+                                
                                 if(input.type === 'checkbox' || input.type === 'radio') {
-                                    input.disabled = true; // נועל לחלוטין את אפשרות הלחיצה
-                                    input.parentElement.style.pointerEvents = 'none'; // חוסם לחיצה על הטקסט שסביבו
                                     if(input.checked) {
                                         input.parentElement.style.border = '1px solid #fbbf24';
                                         input.parentElement.style.background = 'rgba(251, 191, 36, 0.15)';
                                         input.parentElement.style.color = '#fbbf24';
                                         input.parentElement.style.fontWeight = 'bold';
                                     } else {
-                                        input.parentElement.style.opacity = '0.3';
+                                        input.parentElement.style.opacity = '0.2';
+                                        input.parentElement.style.filter = 'grayscale(100%)';
                                     }
                                 } else {
-                                    input.readOnly = true;
                                     input.classList.add('locked-input');
+                                    if(input.id === 'inpLocation') input.disabled = true;
                                 }
                             });
-                            document.getElementById('termsContainer').style.pointerEvents = 'none';
                         }
 
                         document.getElementById('loadingState').style.display = 'none';
@@ -251,9 +268,7 @@
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> מאשר הזמנה...';
             btn.disabled = true;
 
-            const fName = document.getElementById('inpFirstName').value.trim();
-            const lName = document.getElementById('inpLastName').value.trim();
-            
+            // שולחים את פרטי המיקום (אם היו חסרים)
             const updatedEvent = {
                 action: 'updateEventFromClient',
                 id: currentEvent.id,
@@ -261,6 +276,7 @@
                 hebrewDate: document.getElementById('inpHebrewDate').value.trim(),
                 guestTime: document.getElementById('inpGuestTime').value.trim(),
                 startTime: document.getElementById('inpStartTime').value.trim(),
+                location: document.getElementById('inpLocation').value.trim(),
                 mediaConsent: document.querySelector('input[name="mediaConsent"]:checked').value === 'yes'
             };
 
