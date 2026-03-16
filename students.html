@@ -743,9 +743,20 @@
                 if (s.nextLessonDate && !isDone) {
                     let timeStr = s.nextLessonTime ? ` בשעה ${formatTime(s.nextLessonTime)}` : '';
                     nextLessonHtml = `
-                        <div class="bg-gradient-to-r from-amber-400 to-amber-600 text-slate-900 p-4 rounded-xl border-2 border-amber-300 shadow-[0_0_15px_rgba(251,191,36,0.4)] mt-5 mb-2 text-center">
-                            <div class="font-black text-lg mb-1"><i class="far fa-clock"></i> מועד השיעור הבא שלך:</div>
-                            <div class="text-2xl font-bold">${formatDate(s.nextLessonDate)}${timeStr}</div>
+                        <div class="bg-gradient-to-r from-amber-400 to-amber-600 text-slate-900 p-4 rounded-xl border-2 border-amber-300 shadow-[0_0_15px_rgba(251,191,36,0.4)] mt-5 mb-2 relative">
+                            <div class="text-center">
+                                <div class="font-black text-lg mb-1"><i class="far fa-clock"></i> מועד השיעור הבא שלך:</div>
+                                <div class="text-2xl font-bold">${formatDate(s.nextLessonDate)}${timeStr}</div>
+                            </div>
+                            ${isAdmin ? `
+                            <div class="mt-4 flex gap-2 justify-center border-t border-slate-900/20 pt-4">
+                                 <button onclick="window.addToGoogleCalendar('${s.name}', '${s.nextLessonDate}', '${s.nextLessonTime}', '${s.parsha}')" class="bg-slate-900 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-slate-800 transition shadow flex-1 sm:flex-none">
+                                    <i class="fab fa-google text-blue-400 ml-1"></i> לגוגל
+                                </button>
+                                 <button onclick="window.deleteNextLesson('${s.id}', event)" class="bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-red-700 transition shadow flex-1 sm:flex-none">
+                                    <i class="fas fa-times ml-1"></i> בטל שיעור
+                                </button>
+                            </div>` : ''}
                         </div>
                     `;
                 }
@@ -808,14 +819,19 @@
                 list.innerHTML = '<div class="text-center text-slate-400 py-8 text-xl">לא נקבעו שיעורים עתידיים לאף תלמיד.</div>';
             } else {
                 list.innerHTML = upcoming.map(s => `
-                    <div class="bg-slate-800 p-4 rounded-xl border-l-4 border-indigo-500 flex justify-between items-center shadow-lg cursor-pointer hover:bg-slate-700 transition" onclick="window.openLessonModal('${s.id}')">
-                        <div>
+                    <div class="bg-slate-800 p-4 rounded-xl border-l-4 border-indigo-500 flex flex-col sm:flex-row justify-between items-start sm:items-center shadow-lg hover:bg-slate-700 transition gap-4">
+                        <div class="flex-1 cursor-pointer w-full" onclick="window.openLessonModal('${s.id}')">
                             <h4 class="text-white font-bold text-xl mb-1">${s.name}</h4>
                             <div class="text-slate-400 text-base">${s.parsha || ''}</div>
+                            <div class="text-amber-400 font-black text-xl mt-2">${formatDate(s.nextLessonDate)} | ${formatTime(s.nextLessonTime) || 'שעה לא צוינה'}</div>
                         </div>
-                        <div class="text-left">
-                            <div class="text-amber-400 font-black text-xl">${formatDate(s.nextLessonDate)}</div>
-                            <div class="text-white font-bold text-lg">${formatTime(s.nextLessonTime) || 'שעה לא צוינה'}</div>
+                        <div class="flex gap-2 w-full sm:w-auto mt-3 sm:mt-0 border-t border-slate-700 pt-3 sm:border-0 sm:pt-0">
+                            <button onclick="window.addToGoogleCalendar('${s.name}', '${s.nextLessonDate}', '${s.nextLessonTime}', '${s.parsha}')" class="bg-blue-600 hover:bg-blue-500 text-white p-3 rounded-lg flex-1 sm:flex-none flex justify-center items-center transition" title="הוסף ליומן גוגל">
+                                <i class="fab fa-google ml-2"></i> הוסף ליומן
+                            </button>
+                            <button onclick="window.deleteNextLesson('${s.id}', event)" class="bg-red-600 hover:bg-red-500 text-white p-3 rounded-lg flex-1 sm:flex-none flex justify-center items-center transition" title="בטל שיעור">
+                                <i class="fas fa-trash"></i>
+                            </button>
                         </div>
                     </div>
                 `).join('');
@@ -1273,6 +1289,59 @@
         window.refreshData = () => {
             window.loadFromGoogleSheets(() => { window.customAlert('נתונים רעננו בהצלחה'); window.renderStudents(); });
         }
+
+        // === הוספה ליומן גוגל ומחיקת שיעור עתידי ===
+        window.addToGoogleCalendar = (studentName, dateStr, timeStr, parsha) => {
+            if (!dateStr) return window.customAlert('אין תאריך לשיעור', true);
+            
+            let startDateTime = dateStr.replace(/-/g, '');
+            let endDateTime = dateStr.replace(/-/g, '');
+            
+            if (timeStr) {
+                const cleanTime = formatTime(timeStr).replace(':', '');
+                startDateTime += `T${cleanTime}00`;
+                
+                let [hours, minutes] = formatTime(timeStr).split(':').map(Number);
+                hours = (hours + 1) % 24;
+                const endCleanTime = `${String(hours).padStart(2, '0')}${String(minutes).padStart(2, '0')}00`;
+                endDateTime += `T${endCleanTime}`;
+            } else {
+                const d = new Date(dateStr);
+                d.setDate(d.getDate() + 1);
+                endDateTime = d.toISOString().split('T')[0].replace(/-/g, '');
+            }
+
+            const title = encodeURIComponent(`שיעור בר מצווה - ${studentName}`);
+            const details = encodeURIComponent(`שיעור בר מצווה לתלמיד ${studentName}.\nפרשה: ${parsha || 'לא צוינה'}`);
+            
+            const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${startDateTime}/${endDateTime}&details=${details}`;
+            window.open(url, '_blank');
+        };
+
+        window.deleteNextLesson = (studentId, event) => {
+            if (event) event.stopPropagation(); 
+            
+            window.showConfirmDialog('האם לבטל ולמחוק את מועד השיעור העתידי שנקבע?', () => {
+                const student = students.find(s => String(s.id) === String(studentId));
+                if (!student) return;
+                
+                student.nextLessonDate = "";
+                student.nextLessonTime = "";
+                
+                window.saveToGoogleSheets(student, (res) => {
+                    if(res.success) {
+                        window.customAlert('מועד השיעור בוטל!');
+                        window.renderStudents(); 
+                        const globalCal = document.getElementById('globalCalendarModal');
+                        if(globalCal && globalCal.classList.contains('active')) {
+                            window.openGlobalCalendar(); 
+                        }
+                    } else {
+                        window.customAlert('שגיאה במחיקת התאריך', true);
+                    }
+                });
+            });
+        };
 
         window.addEventListener('load', () => {
             window.loadFromGoogleSheets(() => {});
