@@ -779,23 +779,24 @@
                 // תצוגת מילים ממוקדות לתלמיד
                 let specificWordsHtml = '';
                 if (s.enableSpecificWords && s.specificWords && s.specificWords.length > 0) {
+                    const wordsButtons = s.specificWords.map(w => {
+                        let audioUrl = w.audio;
+                        if (audioUrl.includes('drive.google.com')) {
+                            let fileId = '';
+                            if (audioUrl.includes('/file/d/')) fileId = audioUrl.split('/file/d/')[1].split('/')[0];
+                            else if (audioUrl.includes('id=')) fileId = audioUrl.split('id=')[1].split('&')[0];
+                            if (fileId) audioUrl = 'https://drive.google.com/uc?export=download&id=' + fileId;
+                        }
+                        return `<button type="button" onclick="window.playWordAudio('${audioUrl}')" class="word-btn bg-slate-800 hover:bg-teal-700 text-white px-5 py-2 rounded-full border border-teal-500/50 flex items-center gap-2 shadow-md">
+                            <i class="fas fa-play text-teal-400"></i> <span class="font-bold text-lg">${w.word}</span>
+                        </button>`;
+                    }).join('');
+                    
                     specificWordsHtml = `
                         <div class="mt-5 bg-slate-900/60 p-4 rounded-xl border border-teal-700/50 shadow-inner">
                             <h4 class="text-teal-400 font-bold mb-3 text-lg"><i class="fas fa-headphones-alt ml-1"></i> מילים קשות לתרגול ממוקד</h4>
                             <div class="flex flex-wrap gap-3">
-                                ${s.specificWords.map(w => {
-                                    let audioUrl = w.audio;
-                                    if (audioUrl.includes('drive.google.com')) {
-                                        let fileId = '';
-                                        if (audioUrl.includes('/file/d/')) fileId = audioUrl.split('/file/d/')[1].split('/')[0];
-                                        else if (audioUrl.includes('id=')) fileId = audioUrl.split('id=')[1].split('&')[0];
-                                        if (fileId) audioUrl = \`https://drive.google.com/uc?export=download&id=\${fileId}\`;
-                                    }
-                                    return `
-                                    <button type="button" onclick="window.playWordAudio('${audioUrl}')" class="word-btn bg-slate-800 hover:bg-teal-700 text-white px-5 py-2 rounded-full border border-teal-500/50 flex items-center gap-2 shadow-md">
-                                        <i class="fas fa-play text-teal-400"></i> <span class="font-bold text-lg">${w.word}</span>
-                                    </button>`;
-                                }).join('')}
+                                ${wordsButtons}
                             </div>
                         </div>
                     `;
