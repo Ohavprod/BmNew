@@ -58,6 +58,9 @@
         .custom-scrollbar::-webkit-scrollbar-track { background: #000; border-radius: 8px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #475569; border-radius: 8px; }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #64748b; }
+        
+        .word-btn { transition: transform 0.1s, box-shadow 0.2s; }
+        .word-btn:active { transform: scale(0.95); }
 
         /* === התאמות למובייל === */
         @media (max-width: 768px) {
@@ -331,6 +334,26 @@
                     </div>
                 </div>
 
+                <div class="mt-6 bg-slate-800/50 p-4 md:p-5 rounded-xl border border-teal-700/50">
+                    <div class="flex items-center justify-between mb-4">
+                        <h4 class="text-teal-400 font-bold text-lg"><i class="fas fa-microphone-alt"></i> מילים קשות לתרגול ממוקד</h4>
+                        <label class="flex items-center cursor-pointer relative" title="הצג לתלמיד בכרטיסייה">
+                            <input type="checkbox" id="enableSpecificWords" class="sr-only" onchange="toggleSpecificWordsEditor()">
+                            <div class="w-12 h-6 bg-slate-600 rounded-full transition-colors" id="toggleBg"></div>
+                            <div class="w-4 h-4 bg-white rounded-full absolute right-1 top-1 transition-transform" id="toggleDot"></div>
+                        </label>
+                    </div>
+                    
+                    <div id="specificWordsEditor" class="hidden">
+                        <div class="flex flex-col sm:flex-row gap-2 mb-3">
+                            <input type="text" id="newSpecificWordText" placeholder="המילה (לדוגמה: וְהָאָ֗רֶץ)" class="form-input flex-1 p-3 rounded-lg text-base">
+                            <input type="url" id="newSpecificWordAudio" placeholder="לינק להקלטה של המילה" class="form-input flex-1 p-3 rounded-lg text-base">
+                            <button type="button" onclick="addSpecificWord()" class="bg-teal-600 text-white px-5 py-3 rounded-lg font-bold hover:bg-teal-500 transition shadow"><i class="fas fa-plus ml-1"></i> הוסף</button>
+                        </div>
+                        <div id="specificWordsList" class="space-y-2 max-h-40 overflow-y-auto custom-scrollbar pr-2 mt-4"></div>
+                    </div>
+                </div>
+
                 <div class="mt-8 border-t border-slate-700 pt-6 text-center">
                     <button type="submit" class="btn-primary w-full py-4 rounded-xl text-xl font-bold">💾 שמור פרטי תלמיד</button>
                 </div>
@@ -395,6 +418,9 @@
         let isAdmin = false;
         let currentEditingStudentId = null;
         let currentLibraryTab = 'parshiot';
+        
+        // משתנה זמני לעריכת מילים ספציפיות
+        let tempSpecificWords = [];
 
         window.customAlert = function(msg, isError = false) {
             const alm = document.getElementById('globalAlert');
@@ -584,6 +610,17 @@
             img.setAttribute('data-width', currentWidth);
             img.style.width = `${currentWidth}%`;
         };
+        
+        // נגן גלובלי למילים בודדות
+        let currentWordAudio = null;
+        window.playWordAudio = (url) => {
+            if (currentWordAudio) {
+                currentWordAudio.pause();
+                currentWordAudio.currentTime = 0;
+            }
+            currentWordAudio = new Audio(url);
+            currentWordAudio.play().catch(e => window.customAlert('שגיאה בהשמעת המילה. ודא שהקישור תקין וציבורי.', true));
+        };
 
         function calculateDaysRemaining(dateStr) {
             if (!dateStr) return 0;
@@ -738,6 +775,31 @@
                         `;
                     }
                 }
+                
+                // תצוגת מילים ממוקדות לתלמיד
+                let specificWordsHtml = '';
+                if (s.enableSpecificWords && s.specificWords && s.specificWords.length > 0) {
+                    specificWordsHtml = `
+                        <div class="mt-5 bg-slate-900/60 p-4 rounded-xl border border-teal-700/50 shadow-inner">
+                            <h4 class="text-teal-400 font-bold mb-3 text-lg"><i class="fas fa-headphones-alt ml-1"></i> מילים קשות לתרגול ממוקד</h4>
+                            <div class="flex flex-wrap gap-3">
+                                ${s.specificWords.map(w => {
+                                    let audioUrl = w.audio;
+                                    if (audioUrl.includes('drive.google.com')) {
+                                        let fileId = '';
+                                        if (audioUrl.includes('/file/d/')) fileId = audioUrl.split('/file/d/')[1].split('/')[0];
+                                        else if (audioUrl.includes('id=')) fileId = audioUrl.split('id=')[1].split('&')[0];
+                                        if (fileId) audioUrl = \`https://drive.google.com/uc?export=download&id=\${fileId}\`;
+                                    }
+                                    return `
+                                    <button type="button" onclick="window.playWordAudio('${audioUrl}')" class="word-btn bg-slate-800 hover:bg-teal-700 text-white px-5 py-2 rounded-full border border-teal-500/50 flex items-center gap-2 shadow-md">
+                                        <i class="fas fa-play text-teal-400"></i> <span class="font-bold text-lg">${w.word}</span>
+                                    </button>`;
+                                }).join('')}
+                            </div>
+                        </div>
+                    `;
+                }
 
                 let nextLessonHtml = '';
                 if (s.nextLessonDate && !isDone) {
@@ -749,12 +811,15 @@
                                 <div class="text-2xl font-bold">${formatDate(s.nextLessonDate)}${timeStr}</div>
                             </div>
                             ${isAdmin ? `
-                            <div class="mt-4 flex gap-2 justify-center border-t border-slate-900/20 pt-4">
-                                 <button onclick="window.addToGoogleCalendar('${s.name}', '${s.nextLessonDate}', '${s.nextLessonTime}', '${s.parsha}')" class="bg-slate-900 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-slate-800 transition shadow flex-1 sm:flex-none">
-                                    <i class="fab fa-google text-blue-400 ml-1"></i> לגוגל
+                            <div class="mt-4 flex flex-wrap gap-2 justify-center border-t border-slate-900/20 pt-4">
+                                 <button onclick="window.addToGoogleCalendar('${s.name}', '${s.nextLessonDate}', '${s.nextLessonTime}', '${s.parsha}')" class="bg-slate-900 text-white px-3 py-2 rounded-lg text-sm font-bold hover:bg-slate-800 transition shadow flex-1 sm:flex-none">
+                                    <i class="fab fa-google text-blue-400 ml-1"></i> יומן
                                 </button>
-                                 <button onclick="window.deleteNextLesson('${s.id}', event)" class="bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-red-700 transition shadow flex-1 sm:flex-none">
-                                    <i class="fas fa-times ml-1"></i> בטל שיעור
+                                <button onclick="window.sendWhatsAppReminder('${s.name}', '${s.studentPhone || s.parentPhone}', '${s.nextLessonDate}', '${s.nextLessonTime}')" class="bg-green-600 text-white px-3 py-2 rounded-lg text-sm font-bold hover:bg-green-500 transition shadow flex-1 sm:flex-none">
+                                    <i class="fab fa-whatsapp ml-1 text-lg"></i> תזכורת
+                                </button>
+                                 <button onclick="window.deleteNextLesson('${s.id}', event)" class="bg-red-600 text-white px-3 py-2 rounded-lg text-sm font-bold hover:bg-red-700 transition shadow flex-1 sm:flex-none">
+                                    <i class="fas fa-times ml-1"></i> בטל
                                 </button>
                             </div>` : ''}
                         </div>
@@ -784,6 +849,8 @@
                         </div>
 
                         ${materialsHtml}
+                        
+                        ${specificWordsHtml}
                         
                         ${lessonsBadge}
 
@@ -827,7 +894,10 @@
                         </div>
                         <div class="flex gap-2 w-full sm:w-auto mt-3 sm:mt-0 border-t border-slate-700 pt-3 sm:border-0 sm:pt-0">
                             <button onclick="window.addToGoogleCalendar('${s.name}', '${s.nextLessonDate}', '${s.nextLessonTime}', '${s.parsha}')" class="bg-blue-600 hover:bg-blue-500 text-white p-3 rounded-lg flex-1 sm:flex-none flex justify-center items-center transition" title="הוסף ליומן גוגל">
-                                <i class="fab fa-google ml-2"></i> הוסף ליומן
+                                <i class="fab fa-google ml-2"></i> ליומן
+                            </button>
+                            <button onclick="window.sendWhatsAppReminder('${s.name}', '${s.studentPhone || s.parentPhone}', '${s.nextLessonDate}', '${s.nextLessonTime}')" class="bg-green-500 hover:bg-green-400 text-white p-3 rounded-lg flex-1 sm:flex-none flex justify-center items-center transition" title="שלח תזכורת בוואטסאפ">
+                                <i class="fab fa-whatsapp text-xl"></i>
                             </button>
                             <button onclick="window.deleteNextLesson('${s.id}', event)" class="bg-red-600 hover:bg-red-500 text-white p-3 rounded-lg flex-1 sm:flex-none flex justify-center items-center transition" title="בטל שיעור">
                                 <i class="fas fa-trash"></i>
@@ -1099,6 +1169,47 @@
             });
         }
 
+        // --- מילים ספציפיות בטופס ---
+        window.toggleSpecificWordsEditor = () => {
+            const isChecked = document.getElementById('enableSpecificWords').checked;
+            document.getElementById('specificWordsEditor').classList.toggle('hidden', !isChecked);
+            document.getElementById('toggleBg').classList.toggle('bg-teal-500', isChecked);
+            document.getElementById('toggleBg').classList.toggle('bg-slate-600', !isChecked);
+            document.getElementById('toggleDot').style.transform = isChecked ? 'translateX(-24px)' : 'translateX(0)';
+        };
+
+        window.addSpecificWord = () => {
+            const word = document.getElementById('newSpecificWordText').value.trim();
+            const audio = document.getElementById('newSpecificWordAudio').value.trim();
+            if(!word || !audio) return window.customAlert('יש להזין מילה ולינק להקלטה', true);
+            
+            tempSpecificWords.push({ id: 'word-' + Date.now(), word: word, audio: audio });
+            
+            document.getElementById('newSpecificWordText').value = '';
+            document.getElementById('newSpecificWordAudio').value = '';
+            window.renderSpecificWordsList();
+        };
+
+        window.removeSpecificWord = (id) => {
+            tempSpecificWords = tempSpecificWords.filter(w => w.id !== id);
+            window.renderSpecificWordsList();
+        };
+
+        window.renderSpecificWordsList = () => {
+            const list = document.getElementById('specificWordsList');
+            if(tempSpecificWords.length === 0) {
+                list.innerHTML = '<div class="text-slate-400 text-base text-center py-4 bg-slate-900/50 rounded-lg">לא נוספו מילים לתרגול עדיין.</div>';
+                return;
+            }
+            list.innerHTML = tempSpecificWords.map(w => `
+                <div class="flex justify-between items-center bg-slate-900 p-3 rounded-lg border border-teal-800/50">
+                    <div class="flex-1 text-teal-300 font-bold text-lg">${w.word}</div>
+                    <button type="button" onclick="window.removeSpecificWord('${w.id}')" class="text-red-400 hover:text-red-300 p-2 bg-slate-800 rounded transition"><i class="fas fa-trash"></i></button>
+                </div>
+            `).join('');
+        };
+
+
         // טפסים להוספת תלמיד
         window.createLibrarySelectorHTML = function(type, targetImageId, targetAudioId, targetTitleId, placeholder) {
             const lib = recordingsLibrary[type] || {};
@@ -1155,6 +1266,13 @@
             document.getElementById('studentForm').removeAttribute('data-edit-id');
             document.getElementById('studentFormTitle').innerText = 'הוסף תלמיד חדש';
             document.getElementById('eventType').value = 'aliyah';
+            
+            // איפוס מילים ספציפיות
+            tempSpecificWords = [];
+            window.renderSpecificWordsList();
+            document.getElementById('enableSpecificWords').checked = false;
+            window.toggleSpecificWordsEditor();
+
             window.toggleEventDetails();
             window.updateMorningLibrarySelector();
             window.updateShabbatLibrarySelectors();
@@ -1196,7 +1314,10 @@
                 maftirAudio: document.getElementById('maftirAudio').value,
                 maftirAudioTitle: document.getElementById('maftirAudioTitle').value,
                 
-                hasRecording: !!(document.getElementById('morningAudio').value || document.getElementById('shabbatAudio').value || document.getElementById('rishonAudio').value)
+                hasRecording: !!(document.getElementById('morningAudio').value || document.getElementById('shabbatAudio').value || document.getElementById('rishonAudio').value),
+                
+                enableSpecificWords: document.getElementById('enableSpecificWords').checked,
+                specificWords: tempSpecificWords
             };
 
             if (editId) {
@@ -1258,6 +1379,12 @@
             document.getElementById('maftirAudio').value = s.maftirAudio || '';
             document.getElementById('maftirAudioTitle').value = s.maftirAudioTitle || '';
             
+            // טעינת מילים ספציפיות
+            tempSpecificWords = s.specificWords ? [...s.specificWords] : [];
+            window.renderSpecificWordsList();
+            document.getElementById('enableSpecificWords').checked = !!s.enableSpecificWords;
+            window.toggleSpecificWordsEditor();
+            
             window.updateMorningLibrarySelector();
             window.updateShabbatLibrarySelectors();
         }
@@ -1290,31 +1417,68 @@
             window.loadFromGoogleSheets(() => { window.customAlert('נתונים רעננו בהצלחה'); window.renderStudents(); });
         }
 
-        // === הוספה ליומן גוגל ומחיקת שיעור עתידי ===
+        // === הוספה ליומן גוגל, תזכורת וואטסאפ ומחיקת שיעור עתידי ===
         window.addToGoogleCalendar = (studentName, dateStr, timeStr, parsha) => {
             if (!dateStr) return window.customAlert('אין תאריך לשיעור', true);
             
-            let startDateTime = dateStr.replace(/-/g, '');
-            let endDateTime = dateStr.replace(/-/g, '');
+            let startDateTime, endDateTime;
             
             if (timeStr) {
-                const cleanTime = formatTime(timeStr).replace(':', '');
-                startDateTime += `T${cleanTime}00`;
+                const cleanTime = formatTime(timeStr);
+                const [year, month, day] = dateStr.split('-').map(Number);
+                const [hours, minutes] = cleanTime.split(':').map(Number);
                 
-                let [hours, minutes] = formatTime(timeStr).split(':').map(Number);
-                hours = (hours + 1) % 24;
-                const endCleanTime = `${String(hours).padStart(2, '0')}${String(minutes).padStart(2, '0')}00`;
-                endDateTime += `T${endCleanTime}`;
+                const startDate = new Date(year, month - 1, day, hours, minutes);
+                const endDate = new Date(startDate.getTime() + 60 * 60 * 1000);
+                
+                const formatForGCal = (d) => {
+                    const y = d.getFullYear();
+                    const m = String(d.getMonth() + 1).padStart(2, '0');
+                    const dd = String(d.getDate()).padStart(2, '0');
+                    const hh = String(d.getHours()).padStart(2, '0');
+                    const mm = String(d.getMinutes()).padStart(2, '0');
+                    return `${y}${m}${dd}T${hh}${mm}00`;
+                };
+                
+                startDateTime = formatForGCal(startDate);
+                endDateTime = formatForGCal(endDate);
             } else {
-                const d = new Date(dateStr);
-                d.setDate(d.getDate() + 1);
-                endDateTime = d.toISOString().split('T')[0].replace(/-/g, '');
+                const [year, month, day] = dateStr.split('-').map(Number);
+                const startDate = new Date(year, month - 1, day);
+                const endDate = new Date(year, month - 1, day + 1);
+                
+                const formatForGCalDate = (d) => {
+                    const y = d.getFullYear();
+                    const m = String(d.getMonth() + 1).padStart(2, '0');
+                    const dd = String(d.getDate()).padStart(2, '0');
+                    return `${y}${m}${dd}`;
+                };
+                
+                startDateTime = formatForGCalDate(startDate);
+                endDateTime = formatForGCalDate(endDate);
             }
 
             const title = encodeURIComponent(`שיעור בר מצווה - ${studentName}`);
             const details = encodeURIComponent(`שיעור בר מצווה לתלמיד ${studentName}.\nפרשה: ${parsha || 'לא צוינה'}`);
             
-            const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${startDateTime}/${endDateTime}&details=${details}`;
+            const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${startDateTime}/${endDateTime}&details=${details}&ctz=Asia/Jerusalem`;
+            window.open(url, '_blank');
+        };
+
+        window.sendWhatsAppReminder = (studentName, phone, dateStr, timeStr) => {
+            if (!phone) return window.customAlert('לא מוזן מספר טלפון לתלמיד (או להורה) זה', true);
+            
+            let formattedPhone = phone.replace(/\D/g, ''); 
+            if (formattedPhone.startsWith('0')) {
+                formattedPhone = '972' + formattedPhone.substring(1);
+            }
+
+            const time = formatTime(timeStr) ? `בשעה ${formatTime(timeStr)}` : '';
+            const message = `היי ${studentName} אלוף! 👑\nרציתי להזכיר שיש לנו מחר שיעור בר מצווה ${time}.\nנתראה, אביב!`;
+            
+            const encodedMessage = encodeURIComponent(message);
+            const url = `https://wa.me/${formattedPhone}?text=${encodedMessage}`;
+            
             window.open(url, '_blank');
         };
 
