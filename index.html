@@ -389,20 +389,6 @@
          </div>
     </section>
 
-    <div id="videoOrderModal" class="modal-overlay">
-        <div class="modal-content !max-w-xl bg-slate-900 border border-blue-500/50">
-            <div class="modal-header">
-                <h3 class="text-2xl font-bold text-white"><i class="fas fa-list-ol text-blue-400 ml-2"></i>ניהול סדר סרטונים</h3>
-                <button onclick="closeModal('videoOrderModal')" class="text-white hover:text-blue-400 text-2xl"><i class="fas fa-times"></i></button>
-            </div>
-            <div class="modal-body p-6">
-                <div class="text-slate-400 mb-6 text-sm bg-slate-800 p-4 rounded-lg border border-slate-700">השתמש בחצים כדי לסדר את הסרטונים למעלה ולמטה, ובסיום לחץ על "שמור סדר סרטונים".</div>
-                <div id="videoOrderList" class="flex flex-col gap-3"></div>
-                <button onclick="saveVideoOrder()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-xl mt-8 shadow-lg transition text-lg"><i class="fas fa-save ml-2"></i> שמור סדר סרטונים</button>
-            </div>
-        </div>
-    </div>
-
     <section id="gallery" class="py-24 bg-[#021029] relative overflow-hidden">
         <div class="container mx-auto px-6 relative z-10">
             <div class="text-center mb-12">
@@ -466,6 +452,7 @@
         <i id="loginIcon" class="fas fa-user-circle footer-login-btn" onclick="openLoginModal()" title="כניסת מורשים"></i>
     </footer>
 
+    <!-- MODALS -->
     <div id="lightboxModal" class="modal-overlay" onclick="closeModal('lightboxModal')">
         <button onclick="closeModal('lightboxModal')" class="absolute top-4 right-4 text-white text-4xl z-[100] hover:text-amber-400 transition"><i class="fas fa-times"></i></button>
         <button class="lightbox-nav lightbox-prev" onclick="prevImage(event)"><i class="fas fa-chevron-right"></i></button>
@@ -511,21 +498,16 @@
             </div>
             <div class="modal-body p-4 md:p-6">
                 <div id="alertsContainer"></div>
-
                 <div class="bg-slate-800 p-5 rounded-xl mb-8 border border-slate-700 shadow-lg">
                     <h4 id="leadFormTitle" class="text-amber-400 font-bold mb-4 border-b border-slate-700 pb-2 text-xl"><i class="fas fa-plus-circle ml-2"></i>הוספת פנייה / תזכורת חדשה</h4>
-                    
                     <input type="hidden" id="editLeadId" value="">
-                    
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         <input type="text" id="newLeadName" placeholder="שם הלקוח" class="bg-slate-900 text-white p-3 rounded-lg border border-slate-600 outline-none focus:border-amber-400 text-lg">
                         <input type="tel" id="newLeadPhone" placeholder="טלפון" class="bg-slate-900 text-white p-3 rounded-lg border border-slate-600 outline-none focus:border-amber-400 text-lg">
-                        
                         <div class="relative">
                             <label class="absolute -top-3 right-3 bg-slate-800 px-1 text-sm text-slate-400 font-bold">תאריך הפנייה</label>
                             <input type="date" id="newLeadDate" onchange="autoSetReminder()" class="w-full bg-slate-900 text-white p-3 rounded-lg border border-slate-600 outline-none focus:border-amber-400 text-lg">
                         </div>
-                        
                         <div class="flex flex-col gap-2">
                             <select id="newLeadStatus" onchange="toggleLeadStatusOther()" class="bg-slate-900 text-white p-3 rounded-lg border border-slate-600 outline-none focus:border-amber-400 text-lg">
                                 <option value="נשלח פירוט חבילות">נשלח פירוט חבילות</option>
@@ -535,21 +517,16 @@
                             </select>
                             <input type="text" id="newLeadStatusOther" placeholder="הקלד סטטוס..." class="hidden bg-slate-900 text-white p-3 rounded-lg border border-slate-600 outline-none focus:border-amber-400 text-lg">
                         </div>
-
                         <div class="relative">
                             <label class="absolute -top-3 right-3 bg-slate-800 px-1 text-sm text-amber-400 font-bold">תאריך תזכורת</label>
                             <input type="date" id="newLeadReminder" class="w-full bg-slate-900 text-white p-3 rounded-lg border border-slate-600 outline-none focus:border-amber-400 text-lg">
                         </div>
-                        
                         <textarea id="newLeadNotes" placeholder="פרטים נוספים / פירוט על הפנייה..." class="col-span-1 md:col-span-3 bg-slate-900 text-white p-3 rounded-lg border border-slate-600 outline-none focus:border-amber-400 text-lg h-24"></textarea>
-
                         <button onclick="saveLead()" class="col-span-1 md:col-span-3 bg-amber-500 text-black font-bold py-4 rounded-lg hover:bg-amber-400 transition shadow-lg text-xl">שמור נתוני פנייה</button>
                     </div>
                 </div>
-
                 <h4 class="text-white font-bold mb-4 border-b border-slate-700 pb-2 text-xl">רשימת פניות פתוחות:</h4>
                 <div id="leadsList" class="flex flex-col gap-4"></div>
-                
                 <div class="mt-8 text-center border-t border-slate-700 pt-6">
                     <button onclick="openArchiveModal()" class="text-slate-300 hover:text-white underline text-lg"><i class="fas fa-archive ml-1"></i> הצג ארכיון פניות ואירועים שנסגרו</button>
                 </div>
@@ -615,16 +592,13 @@
             <div class="modal-body p-4">
                 <form id="paymentForm">
                     <input type="hidden" id="payEventId">
-                    
                     <div class="bg-slate-800 p-5 rounded-xl mb-6 border border-slate-700 shadow-lg">
                         <h4 class="text-xl font-bold text-amber-400 mb-4 border-b border-slate-600 pb-2"><i class="fas fa-user-tie ml-2"></i>תשלום מלקוח</h4>
-                        
                         <div class="mb-5 bg-slate-900/50 p-4 rounded-lg border border-slate-700">
                             <label class="flex items-center gap-3 text-white text-lg cursor-pointer mb-3 font-bold">
                                 <input type="checkbox" id="payClientDeposit" class="w-6 h-6 accent-green-500" onchange="document.getElementById('depositDetailsContainer').style.display = this.checked ? 'flex' : 'none'"> 
                                 שולמה מקדמה
                             </label>
-                            
                             <div id="depositDetailsContainer" class="flex-wrap gap-3" style="display:none;">
                                 <input type="date" id="payDepositDate" class="bg-slate-800 text-white p-2 rounded border border-slate-600 flex-1 min-w-[140px]" title="תאריך תשלום המקדמה">
                                 <select id="payDepositMethod" class="bg-slate-800 text-white p-2 rounded border border-slate-600 flex-1 min-w-[140px]" onchange="togglePayMethodNotes('payDepositMethod', 'payDepositNotes')">
@@ -638,7 +612,6 @@
                                 <input type="text" id="payDepositNotes" placeholder="הערה (למשל: מספר צ'ק)..." class="bg-slate-800 text-white p-2 rounded border border-slate-600 flex-1 min-w-[140px] hidden">
                             </div>
                         </div>
-
                         <div class="mb-4">
                             <label class="block text-slate-300 mb-2 font-bold"><i class="fas fa-link ml-1"></i> קישורים לקבלות דיגיטליות:</label>
                             <div class="flex gap-2 mb-2">
@@ -650,7 +623,6 @@
                                 <a href="#" id="openReceiptBtn2" target="_blank" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded flex items-center justify-center transition" title="פתח קבלה" style="display:none;"><i class="fas fa-external-link-alt"></i></a>
                             </div>
                         </div>
-
                         <div class="mt-4 pt-4 border-t border-slate-700 hidden" id="payClientFullContainer">
                             <label class="flex items-center gap-3 text-white text-lg cursor-pointer font-bold">
                                 <input type="checkbox" id="payClientFull" class="w-6 h-6 accent-green-500"> 
@@ -658,12 +630,10 @@
                             </label>
                         </div>
                     </div>
-
                     <div id="staffPaymentsContainer" class="bg-slate-800 p-5 rounded-xl border border-slate-700 shadow-lg hidden">
                         <h4 class="text-xl font-bold text-blue-400 mb-4 border-b border-slate-600 pb-2"><i class="fas fa-users ml-2"></i>תשלומים לאנשי צוות</h4>
                         <div id="staffPaymentsList" class="flex flex-col gap-4"></div>
                     </div>
-
                     <button type="button" onclick="savePaymentData()" class="w-full bg-green-600 hover:bg-green-500 text-white font-black py-4 rounded-xl mt-6 shadow-[0_0_15px_rgba(34,197,94,0.3)] transition text-lg">שמור נתוני תשלומים</button>
                 </form>
             </div>
@@ -676,8 +646,7 @@
                 <h3 class="text-2xl font-bold text-white"><i class="fas fa-wallet text-green-400 ml-2"></i>היסטוריית התשלומים שלי</h3>
                 <button onclick="closeModal('myPaymentsModal')" class="text-white hover:text-green-400 text-2xl"><i class="fas fa-times"></i></button>
             </div>
-            <div class="modal-body" id="myPaymentsBody">
-                </div>
+            <div class="modal-body" id="myPaymentsBody"></div>
         </div>
     </div>
     
@@ -782,8 +751,7 @@
                 <h3 class="text-2xl font-bold text-white">מחירון המערכת</h3>
                 <button onclick="closeModal('priceListEditorModal')" class="text-white text-2xl hover:text-purple-400"><i class="fas fa-times"></i></button>
             </div>
-            <div class="modal-body" id="priceListBody">
-                </div>
+            <div class="modal-body" id="priceListBody"></div>
         </div>
     </div>
 
@@ -792,7 +760,6 @@
             <div class="modal-header"><h3 class="text-2xl font-bold text-white">הפקת הצעת מחיר</h3><button onclick="closeModal('proposalSetupModal')" class="text-white"><i class="fas fa-times"></i></button></div>
             <div class="modal-body">
                 <div class="grid gap-4 text-right">
-                    
                     <div>
                         <label class="text-xs font-bold text-gray-500">סוג אירוע</label>
                         <select id="propEventType" onchange="toggleProposalFields()" class="w-full bg-gray-100 p-3 rounded border border-gray-300 text-black font-bold focus:border-blue-500 outline-none">
@@ -800,20 +767,14 @@
                             <option value="other">אירוע אחר (חופה, שבת חתן וכו')</option>
                         </select>
                     </div>
-
                     <div><label class="text-xs font-bold text-gray-500">שם הלקוח</label><input type="text" id="propName" class="w-full bg-gray-100 p-3 rounded border border-gray-300 text-black"></div>
-                    
                     <div id="propChildContainer"><label class="text-xs font-bold text-gray-500">שם הילד</label><input type="text" id="propChild" class="w-full bg-gray-100 p-3 rounded border border-gray-300 text-black"></div>
-                    
                     <div class="grid grid-cols-2 gap-4">
                         <div><label class="text-xs font-bold text-gray-500">תאריך לועזי</label><input type="text" id="propDate" class="w-full bg-gray-100 p-3 rounded border border-gray-300 text-black"></div>
                         <div><label class="text-xs font-bold text-gray-500">תאריך עברי</label><input type="text" id="propHebrewDateGen" class="w-full bg-gray-100 p-3 rounded border border-gray-300 text-black"></div>
                     </div>
-                    
                     <div id="propSabbathContainer"><label class="text-xs font-bold text-gray-500">תאריך שבת חתן / עלייה לתורה</label><input type="text" id="propHebDate" class="w-full bg-gray-100 p-3 rounded border border-gray-300 text-black"></div>
-                    
                     <div><label class="text-xs font-bold text-gray-500">מיקום האירוע</label><input type="text" id="propLocation" class="w-full bg-gray-100 p-3 rounded border border-gray-300 text-black"></div>
-                    
                     <div id="propPackageContainer">
                         <label class="text-xs font-bold text-gray-500">חבילה נבחרת</label>
                         <select id="propType" onchange="updateProposalFields()" class="w-full bg-gray-100 p-3 rounded border border-gray-300 text-black">
@@ -824,14 +785,12 @@
                             <option value="CUSTOM">התאמה אישית</option>
                         </select>
                     </div>
-                    
                     <div id="proposalEditArea" class="border p-4 rounded bg-gray-50 mt-2">
                         <label class="text-xs font-bold text-gray-500">פירוט השירותים (ניתן לעריכה חופשית)</label>
                         <textarea id="propCustomDetails" class="w-full bg-white p-2 rounded border border-gray-300 h-32 mb-2 text-black"></textarea>
                         <label class="text-xs font-bold text-gray-500">מחיר כולל (יוצג אוטומטית עם סימן ₪ במסמך)</label>
                         <input type="text" id="propCustomPrice" class="w-full bg-white p-2 rounded border border-gray-300 font-bold text-lg text-green-600" placeholder="לדוגמא: 4500">
                     </div>
-                    
                     <button onclick="generateProposal()" class="bg-blue-600 text-white font-bold py-4 rounded-xl text-lg shadow hover:bg-blue-700 mt-4 w-full transition">הפק מסמך להדפסה</button>
                 </div>
             </div>
@@ -847,9 +806,7 @@
             <div class="modal-body">
                 <form id="eventForm" class="form-grid">
                     <input type="hidden" name="id" id="eventIdField">
-                    
                     <div class="input-group col-span-1 md:col-span-2"><label>שם האירוע (כותרת)</label><input type="text" name="eventName" placeholder="לדוגמה: בר מצווה - משפחת כהן"></div>
-                    
                     <div class="input-group"><label>תאריך לועזי</label><input type="date" name="date" required></div>
                     <div class="input-group"><label>תאריך עברי</label><input type="text" name="hebrewDate"></div>
                     <div class="input-group"><label>שם הלקוח</label><input type="text" name="clientName"></div>
@@ -858,7 +815,6 @@
                     <div class="input-group"><label>מיקום האירוע</label><input type="text" name="location"></div>
                     <div class="input-group"><label>לינק ל-Waze</label><input type="text" name="wazeLink"></div>
                     
-                    <!-- השדה שעודכן בשביל החבילה המותאמת -->
                     <div class="input-group">
                         <label>סוג חבילה</label>
                         <select name="packageType" onchange="toggleCustomPackageField()">
@@ -1154,7 +1110,6 @@
                 });
             }
 
-            // פונקציה להצגה/הסתרה של שדה חבילה מותאמת אישית
             window.toggleCustomPackageField = () => {
                 const form = document.getElementById('eventForm');
                 const container = document.getElementById('customPackageDescContainer');
@@ -1169,7 +1124,7 @@
                 const form = document.getElementById('eventForm');
                 form.reset();
                 form.elements['id'].value = ""; 
-                window.toggleCustomPackageField(); // מסתיר כברירת מחדל בטופס חדש
+                window.toggleCustomPackageField(); 
 
                 if (id && typeof id !== 'object') {
                     const evt = events.find(e => e.id == id);
@@ -1179,8 +1134,7 @@
                         for (let key in evt) { 
                             if(form.elements[key]) {
                                 if(key === 'packageType') {
-                                    // מזהה אם יש פירוט שמור בתוך סוג החבילה
-                                    let pType = evt[key] || '';
+                                    let pType = String(evt[key] || '');
                                     if (pType.startsWith('מותאמת אישית')) {
                                         form.elements['packageType'].value = 'מותאמת אישית';
                                         if(form.elements['customPackageDesc']) {
@@ -1216,7 +1170,6 @@
                 const form = document.getElementById('eventForm');
                 const id = form.elements['id'].value;
                 
-                // חיבור סוג החבילה יחד עם הפירוט אם צריך
                 let finalPackageType = form.packageType.value;
                 if (finalPackageType === 'מותאמת אישית') {
                     finalPackageType = 'מותאמת אישית|' + form.customPackageDesc.value;
@@ -1849,10 +1802,41 @@
                  }
             }
 
+            // פונקציה להזזת תמונות
+            window.moveImageItem = (url, direction) => {
+                const images = galleryImages.filter(item => typeof item === 'string' || item.type === 'image');
+                let imageOrder = [];
+                try { 
+                    let parsed = JSON.parse(siteConfig.imageOrderDB); 
+                    if (Array.isArray(parsed)) imageOrder = parsed;
+                } catch(e){}
+                
+                images.sort((a, b) => {
+                    let urlA = typeof a === 'string' ? a : a.url;
+                    let urlB = typeof b === 'string' ? b : b.url;
+                    let idxA = imageOrder.indexOf(urlA);
+                    let idxB = imageOrder.indexOf(urlB);
+                    if (idxA === -1) idxA = 9999;
+                    if (idxB === -1) idxB = 9999;
+                    return idxA - idxB;
+                });
+
+                let index = images.findIndex(i => (typeof i === 'string' ? i : i.url) === url);
+                if (index === -1 || index + direction < 0 || index + direction >= images.length) return;
+
+                const temp = images[index];
+                images[index] = images[index + direction];
+                images[index + direction] = temp;
+
+                const newOrder = images.map(i => typeof i === 'string' ? i : i.url);
+                siteConfig.imageOrderDB = JSON.stringify(newOrder); 
+                saveConfigToDB('imageOrderDB', JSON.stringify(newOrder), renderGallery);
+            }
+
             window.sendBookingForm = (eventId, phone) => {
                 if (!phone) { customAlert("לא הוזן מספר טלפון לאירוע זה."); return; }
                 
-                // לוקח את הכתובת הנקייה בלי סולמיות ותוספות מיותרות
+                // התיקון: לוקח את הכתובת הנקייה בלי סולמיות (#) ותוספות
                 let baseUrl = window.location.origin + window.location.pathname.replace(/index\.html$/, '');
                 if (!baseUrl.endsWith('/')) baseUrl += '/';
                 const formLink = `${baseUrl}booking.html?id=${eventId}`;
@@ -1862,7 +1846,147 @@
                 window.open(`https://wa.me/972${phone.replace(/-/g,'').substring(1)}?text=${encodeURIComponent(msg)}`, '_blank');
             }
 
-            // Init Load
+            window.openWhatsAppTool = () => { window.closeSideMenu(); window.openModal('whatsappModal'); }
+            
+            window.openProposalTool = () => { 
+                window.closeSideMenu(); 
+                document.getElementById('propEventType').value = 'barmitzvah';
+                window.toggleProposalFields();
+                window.openModal('proposalSetupModal'); 
+            }
+
+            function renderGallery() {
+                const c = document.getElementById('imageMarquee'); 
+                const v = document.getElementById('videoContainer');
+                if(!c || !v) return;
+                
+                c.innerHTML = '';
+                v.innerHTML = '';
+
+                const images = galleryImages.filter(item => typeof item === 'string' || item.type === 'image');
+                const videos = galleryImages.filter(item => item.type === 'video');
+
+                let videoOrder = [];
+                let imageOrder = [];
+                try { 
+                    let parsedV = JSON.parse(siteConfig.videoOrderDB); 
+                    if (Array.isArray(parsedV)) videoOrder = parsedV;
+                } catch(e){}
+                try {
+                    let parsedI = JSON.parse(siteConfig.imageOrderDB); 
+                    if (Array.isArray(parsedI)) imageOrder = parsedI;
+                } catch(e){}
+                
+                videos.sort((a, b) => {
+                    let idxA = videoOrder.indexOf(a.url);
+                    let idxB = videoOrder.indexOf(b.url);
+                    if (idxA === -1) idxA = 9999;
+                    if (idxB === -1) idxB = 9999;
+                    return idxA - idxB;
+                });
+
+                images.sort((a, b) => {
+                    let urlA = typeof a === 'string' ? a : a.url;
+                    let urlB = typeof b === 'string' ? b : b.url;
+                    let idxA = imageOrder.indexOf(urlA);
+                    let idxB = imageOrder.indexOf(urlB);
+                    if (idxA === -1) idxA = 9999;
+                    if (idxB === -1) idxB = 9999;
+                    return idxA - idxB;
+                });
+
+                lightboxImageUrls = images.map(i => (typeof i === 'string' ? i : i.url));
+
+                const isSuper = (currentUser && currentUser.role === 'superadmin');
+
+                const createSet = (clone) => {
+                    const w = document.createElement('div'); w.className = clone ? 'clone-set flex' : 'flex';
+                    lightboxImageUrls.forEach((src, idx) => {
+                        let btns = '';
+                        if (isSuper && !clone) {
+                             btns = `
+                                <div class="absolute top-2 right-2 flex gap-2 z-[9999]">
+                                    <button class="bg-red-600 border-2 border-white text-white w-8 h-8 flex items-center justify-center rounded-full hover:bg-red-500 shadow-xl" onclick="deleteImage('${src}')"><i class="fas fa-trash text-sm"></i></button>
+                                </div>
+                                <div class="absolute top-2 left-2 flex gap-2 z-[9999]">
+                                    ${idx > 0 ? `<button class="bg-slate-900 border-2 border-amber-400 text-amber-400 w-8 h-8 flex items-center justify-center rounded-full hover:bg-amber-400 hover:text-black shadow-xl transition-all" onclick="moveImageItem('${src}', -1)" title="הזז ימינה"><i class="fas fa-arrow-right text-sm"></i></button>` : ''}
+                                    ${idx < lightboxImageUrls.length - 1 ? `<button class="bg-slate-900 border-2 border-amber-400 text-amber-400 w-8 h-8 flex items-center justify-center rounded-full hover:bg-amber-400 hover:text-black shadow-xl transition-all" onclick="moveImageItem('${src}', 1)" title="הזז שמאלה"><i class="fas fa-arrow-left text-sm"></i></button>` : ''}
+                                </div>`;
+                        }
+                        w.innerHTML += `<div class="gallery-item relative">${btns}<img src="${src}" class="gallery-img" onclick="openLightbox('${src}')"></div>`;
+                    });
+                    return w;
+                };
+                if(lightboxImageUrls.length > 0) {
+                    c.appendChild(createSet(false)); 
+                    c.appendChild(createSet(true));
+                }
+
+                videos.forEach((vid, index) => {
+                    let embedUrl = vid.url;
+                    let isDirectFile = false;
+                    let poster = ''; 
+
+                    if (vid.url.match(/\.(mp4|webm|ogg)$/i) || vid.url.includes('drive.google.com/file')) {
+                        isDirectFile = true;
+                        if(vid.url.includes('drive.google.com/file')) {
+                            const fileId = vid.url.match(/d\/([a-zA-Z0-9_-]+)/)?.[1];
+                            if(fileId) embedUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
+                        }
+                    } 
+                    else if (vid.url.includes('vimeo')) {
+                        const vimeoId = vid.url.match(/vimeo\.com\/(?:.*#|.*\/videos\/)?([0-9]+)/);
+                        if (vimeoId && vimeoId[1]) {
+                             embedUrl = `https://player.vimeo.com/video/${vimeoId[1]}?title=0&byline=0&portrait=0&badge=0&autopause=0&player_id=0&app_id=58479`; 
+                        }
+                    } 
+                    else if (vid.url.includes('youtu')) {
+                        let id = vid.url.includes('v=') ? vid.url.split('v=')[1].split('&')[0] : vid.url.split('youtu.be/')[1].split('?')[0];
+                        embedUrl = `https://www.youtube.com/embed/${id}?autoplay=1&rel=0`;
+                        poster = `https://img.youtube.com/vi/${id}/maxresdefault.jpg`;
+                    }
+
+                    const div = document.createElement('div');
+                    div.className = "rounded-2xl overflow-hidden border border-slate-700 bg-slate-900 relative group shadow-2xl flex flex-col";
+                    
+                    let delBtn = '';
+                    if (isSuper) {
+                        delBtn = `
+                            <div class="absolute top-3 right-3 flex gap-2 z-[9999]">
+                                <button class="bg-blue-600 border-2 border-white text-white w-10 h-10 flex items-center justify-center rounded-full hover:bg-blue-500 shadow-xl" onclick="editGalleryItem('${vid.url}')" title="ערוך כותרת"><i class="fas fa-pencil-alt"></i></button>
+                                <button class="bg-red-600 border-2 border-white text-white w-10 h-10 flex items-center justify-center rounded-full hover:bg-red-500 shadow-xl" onclick="deleteImage('${vid.url}')" title="מחק סרטון"><i class="fas fa-trash"></i></button>
+                            </div>`;
+                    }
+                    
+                    let videoHtml = '';
+                    if (isDirectFile) {
+                        videoHtml = `<div class="bg-black aspect-video relative w-full"><video src="${embedUrl}" class="w-full h-full" controls playsinline controlsList="nodownload"></video></div>`;
+                    } 
+                    else if (poster) { 
+                        videoHtml = `
+                            <div class="bg-black aspect-video relative cursor-pointer group w-full" onclick="this.innerHTML='<iframe class=\\'w-full h-full\\' src=\\'${embedUrl}\\' frameborder=\\'0\\' allowfullscreen allow=\\'autoplay\\'></iframe>'">
+                                <img src="${poster}" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition duration-500">
+                                <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                    <div class="bg-red-600 text-white rounded-full w-16 h-16 flex items-center justify-center shadow-lg group-hover:scale-110 transition"><i class="fas fa-play text-2xl ml-1"></i></div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                    else { 
+                        videoHtml = `<div class="bg-black aspect-video relative w-full"><iframe class="w-full h-full" src="${embedUrl}" frameborder="0" allowfullscreen allow="autoplay; fullscreen; picture-in-picture"></iframe></div>`;
+                    }
+
+                    let titleHtml = '';
+                    if(vid.title) {
+                        titleHtml = `<div class="p-4 text-center font-bold text-amber-400 text-lg tracking-wide border-t border-slate-800 bg-slate-900/50">${vid.title}</div>`;
+                    }
+
+                    div.innerHTML = videoHtml + titleHtml + delBtn;
+                    v.appendChild(div);
+                });
+            }
+
+            // Init Load בשיטה הבטוחה
             async function loadData() {
                 try {
                     showLoader(); 
