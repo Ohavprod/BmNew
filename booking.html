@@ -173,10 +173,18 @@
                             locInput.placeholder = "הזן עיר, רחוב ושם אולם / בית כנסת...";
                         }
 
-                        // לוגיקת חבילות (עם התניית תלמיד)
-                        let pkgName = currentEvent.packageType || 'טרם הוגדר';
+                        // === לוגיקת החבילות (הקוד המעודכן לחבילה מותאמת אישית) ===
+                        let rawPkgName = currentEvent.packageType || 'טרם הוגדר';
+                        let pkgName = rawPkgName;
                         let extPay = '0';
                         let desc = '';
+
+                        // אם זה חבילה מותאמת אישית שיש בה קו מפריד
+                        if (rawPkgName.includes('|')) {
+                            let parts = rawPkgName.split('|');
+                            pkgName = parts[0].trim();
+                            desc = parts[1].trim();
+                        }
 
                         let isStudent = currentEvent.isStudent === true || String(currentEvent.isStudent).toUpperCase() === 'TRUE';
                         let studentText = isStudent ? '\nלימוד הפרשה (במידת הצורך)' : '';
@@ -193,9 +201,21 @@
                             extPay = '0'; 
                             desc = 'לימוד יסודי של קריאת התורה בטעמי המקרא\nליווי אישי צמוד'; 
                         }
+                        else if (pkgName.includes('מותאמת אישית')) {
+                            extPay = '0'; // התשלומים מגולמים במחיר הסופי
+                            if(isStudent) desc += (desc ? '\n' : '') + studentText.trim();
+                        }
 
                         document.getElementById('lblPackage').innerText = pkgName;
-                        if(desc) { document.getElementById('pkgDesc').innerText = desc; } else { document.getElementById('pkgDesc').style.display = 'none'; }
+                        
+                        const pkgDescEl = document.getElementById('pkgDesc');
+                        if(desc) { 
+                            pkgDescEl.innerText = desc;
+                            pkgDescEl.style.display = 'block'; 
+                        } else { 
+                            pkgDescEl.style.display = 'none'; 
+                        }
+                        
                         document.getElementById('lblPrice').innerText = currentEvent.price ? currentEvent.price + ' ₪' : 'טרם נקבע';
 
                         // תנאי תשלום
