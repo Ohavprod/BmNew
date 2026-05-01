@@ -858,6 +858,7 @@
                     <div class="input-group"><label>מיקום האירוע</label><input type="text" name="location"></div>
                     <div class="input-group"><label>לינק ל-Waze</label><input type="text" name="wazeLink"></div>
                     
+                    <!-- השדה שעודכן בשביל החבילה המותאמת -->
                     <div class="input-group">
                         <label>סוג חבילה</label>
                         <select name="packageType" onchange="toggleCustomPackageField()">
@@ -869,6 +870,7 @@
                         </select>
                     </div>
                     
+                    <!-- שדה הפירוט שמופיע רק כשיש "מותאמת אישית" -->
                     <div class="input-group col-span-1 md:col-span-2 hidden" id="customPackageDescContainer">
                         <label class="text-amber-400 font-bold">מה כוללת החבילה המותאמת אישית? (יופיע ללקוח בטופס)</label>
                         <textarea name="customPackageDesc" class="h-24 notes-area bg-slate-900 border-amber-500" placeholder="לדוגמה: הגברה בלבד, חזנות ושופרות..."></textarea>
