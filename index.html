@@ -389,6 +389,20 @@
          </div>
     </section>
 
+    <div id="videoOrderModal" class="modal-overlay">
+        <div class="modal-content !max-w-xl bg-slate-900 border border-blue-500/50">
+            <div class="modal-header">
+                <h3 class="text-2xl font-bold text-white"><i class="fas fa-list-ol text-blue-400 ml-2"></i>ניהול סדר סרטונים</h3>
+                <button onclick="closeModal('videoOrderModal')" class="text-white hover:text-blue-400 text-2xl"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body p-6">
+                <div class="text-slate-400 mb-6 text-sm bg-slate-800 p-4 rounded-lg border border-slate-700">השתמש בחצים כדי לסדר את הסרטונים למעלה ולמטה, ובסיום לחץ על "שמור סדר סרטונים".</div>
+                <div id="videoOrderList" class="flex flex-col gap-3"></div>
+                <button onclick="saveVideoOrder()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-xl mt-8 shadow-lg transition text-lg"><i class="fas fa-save ml-2"></i> שמור סדר סרטונים</button>
+            </div>
+        </div>
+    </div>
+
     <section id="gallery" class="py-24 bg-[#021029] relative overflow-hidden">
         <div class="container mx-auto px-6 relative z-10">
             <div class="text-center mb-12">
@@ -452,7 +466,6 @@
         <i id="loginIcon" class="fas fa-user-circle footer-login-btn" onclick="openLoginModal()" title="כניסת מורשים"></i>
     </footer>
 
-    <!-- MODALS -->
     <div id="lightboxModal" class="modal-overlay" onclick="closeModal('lightboxModal')">
         <button onclick="closeModal('lightboxModal')" class="absolute top-4 right-4 text-white text-4xl z-[100] hover:text-amber-400 transition"><i class="fas fa-times"></i></button>
         <button class="lightbox-nav lightbox-prev" onclick="prevImage(event)"><i class="fas fa-chevron-right"></i></button>
@@ -857,20 +870,6 @@
                     <button type="button" onclick="deleteEvent()" id="deleteEventBtn" class="text-red-500 font-bold px-4">מחק אירוע</button>
                     <button type="button" onclick="saveEvent()" class="bg-green-600 hover:bg-green-500 text-white font-bold py-3 px-10 rounded-xl text-lg shadow-lg">שמור</button>
                 </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="videoOrderModal" class="modal-overlay">
-        <div class="modal-content !max-w-xl bg-slate-900 border border-blue-500/50">
-            <div class="modal-header">
-                <h3 class="text-2xl font-bold text-white"><i class="fas fa-list-ol text-blue-400 ml-2"></i>ניהול סדר סרטונים</h3>
-                <button onclick="closeModal('videoOrderModal')" class="text-white hover:text-blue-400 text-2xl"><i class="fas fa-times"></i></button>
-            </div>
-            <div class="modal-body p-6">
-                <div class="text-slate-400 mb-6 text-sm bg-slate-800 p-4 rounded-lg border border-slate-700">השתמש בחצים כדי לסדר את הסרטונים למעלה ולמטה, ובסיום לחץ על "שמור סדר סרטונים".</div>
-                <div id="videoOrderList" class="flex flex-col gap-3"></div>
-                <button onclick="saveVideoOrder()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-xl mt-8 shadow-lg transition text-lg"><i class="fas fa-save ml-2"></i> שמור סדר סרטונים</button>
             </div>
         </div>
     </div>
@@ -1716,7 +1715,6 @@
                 window.openModal('myPaymentsModal');
             }
 
-            // === חלון עריכת סדר סרטונים ===
             window.openVideoOrderModal = () => {
                 window.closeSideMenu();
                 const videos = galleryImages.filter(item => item.type === 'video');
@@ -1773,7 +1771,6 @@
                     customAlert('סדר הסרטונים נשמר בהצלחה!');
                 });
             }
-            // =============================
 
             window.addNewVideo = () => {
                 const url = prompt("הכנס קישור ליוטיוב או Vimeo או קובץ MP4:");
@@ -1802,7 +1799,6 @@
                  }
             }
 
-            // פונקציה להזזת תמונות
             window.moveImageItem = (url, direction) => {
                 const images = galleryImages.filter(item => typeof item === 'string' || item.type === 'image');
                 let imageOrder = [];
@@ -1836,7 +1832,6 @@
             window.sendBookingForm = (eventId, phone) => {
                 if (!phone) { customAlert("לא הוזן מספר טלפון לאירוע זה."); return; }
                 
-                // התיקון: לוקח את הכתובת הנקייה בלי סולמיות (#) ותוספות
                 let baseUrl = window.location.origin + window.location.pathname.replace(/index\.html$/, '');
                 if (!baseUrl.endsWith('/')) baseUrl += '/';
                 const formLink = `${baseUrl}booking.html?id=${eventId}`;
@@ -1986,7 +1981,6 @@
                 });
             }
 
-            // Init Load בשיטה הבטוחה
             async function loadData() {
                 try {
                     showLoader(); 
