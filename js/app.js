@@ -89,6 +89,33 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     window.logout = () => { location.reload(); }
+    // --- Video Sound Toggle ---
+    let isVideoMuted = true;
+    window.toggleSound = () => {
+        const iframe = document.getElementById('promoIframe');
+        const icon = document.getElementById('soundBtnIcon');
+        
+        if (!iframe || !icon) return;
+
+        isVideoMuted = !isVideoMuted;
+        
+        // שליחת פקודת ווליום לנגן של Vimeo
+        iframe.contentWindow.postMessage(JSON.stringify({
+            method: 'setVolume',
+            value: isVideoMuted ? 0 : 1
+        }), '*');
+        
+        // החלפת האייקון של הרמקול
+        if (isVideoMuted) {
+            icon.className = 'fas fa-volume-mute';
+            icon.parentElement.classList.remove('bg-amber-500', 'text-black');
+            icon.parentElement.classList.add('bg-black/60', 'text-white');
+        } else {
+            icon.className = 'fas fa-volume-up';
+            icon.parentElement.classList.remove('bg-black/60', 'text-white');
+            icon.parentElement.classList.add('bg-amber-500', 'text-black'); // הדגשת הכפתור כשהסאונד פועל
+        }
+    };
 
     document.getElementById('uName').addEventListener('keypress', function(e) { if(e.key === 'Enter') login(); });
     document.getElementById('uPass').addEventListener('keypress', function(e) { if(e.key === 'Enter') login(); });
