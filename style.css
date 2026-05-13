@@ -1,0 +1,172 @@
+/* --- בסיס --- */
+html { font-size: 14px; }
+body { font-family: 'Heebo', sans-serif; background-color: #051c42; color: #ffffff; min-height: 100vh; overflow-x: hidden; margin: 0; padding: 0; display: flex; flex-direction: column; }
+#fixed-background { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; background-image: linear-gradient(180deg, #051c42 0%, #021029 100%); pointer-events: none; }
+#bg-image-layer { width: 100%; height: 100%; background-size: cover; background-position: center top; background-repeat: no-repeat; background-attachment: scroll; }
+body.no-scroll { overflow: hidden !important; height: 100vh; }
+.gold-text { background: linear-gradient(45deg, #fbbf24, #d97706); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 900; text-shadow: 0px 0px 20px rgba(251, 191, 36, 0.3); }
+
+/* --- Loader --- */
+#globalLoader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); z-index: 9999999; display: none; justify-content: center; align-items: center; flex-direction: column; backdrop-filter: blur(5px); }
+.spinner { border: 6px solid rgba(255, 255, 255, 0.3); border-top: 6px solid #fbbf24; border-radius: 50%; width: 60px; height: 60px; animation: spin 1s linear infinite; margin-bottom: 20px; }
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+/* --- כרטיסיות חבילות --- */
+.glass-card { background: rgba(13, 49, 105, 0.4); backdrop-filter: blur(12px); border: 1px solid rgba(59, 130, 246, 0.2); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); border-radius: 1.5rem; padding: 1.5rem; text-align: center; display: flex; flex-direction: column; justify-content: flex-start; margin-bottom: 1rem; }
+.pkg-list { text-align: right; margin-top: 1rem; }
+.pkg-list li { font-weight: 700; font-size: 1.1rem; color: #e2e8f0; display: flex; align-items: flex-start; margin-bottom: 0.6rem; line-height: 1.3; }
+.pkg-list i { margin-left: 10px; width: 20px; text-align: center; margin-top: 3px; flex-shrink: 0; }
+.pkg-header { margin-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; }
+
+/* --- ניהול והרשאות --- */
+.auth-only { display: none !important; }
+body.is-logged-in .auth-only { display: block !important; }
+.admin-controls { display: none !important; }
+body.admin-mode .admin-controls { display: flex !important; }
+.superadmin-only { display: none !important; }
+body.superadmin-mode .superadmin-only { display: flex !important; }
+#adminPanel { display: none !important; }
+body.admin-mode #adminPanel { display: flex !important; }
+.editable-active { border: 2px dashed #ef4444; background: rgba(0,0,0,0.2); outline: none; cursor: text; }
+.footer-login-btn { color: #1e293b; font-size: 1.2rem; cursor: pointer; transition: 0.3s; padding: 10px; }
+.whatsapp-float { position: fixed; bottom: 20px; right: 20px; z-index: 100; background: #25D366; color: white; padding: 12px; border-radius: 50%; font-size: 2rem; box-shadow: 0 4px 10px rgba(0,0,0,0.3); transition: 0.3s; display: flex; align-items: center; justify-content: center; width: 55px; height: 55px; }
+
+#loggedInMenuBtn { position: fixed; top: 20px; right: 20px; z-index: 99999; background: transparent; width: 45px; height: 45px; color: white; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; cursor: pointer; text-shadow: 0 2px 5px rgba(0,0,0,0.5); }
+#sideMenu { position: fixed; top: 0; right: -320px; width: 280px; height: 100%; background: #0f172a; z-index: 100000; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); border-left: 4px solid #fbbf24; padding: 2rem; padding-top: 80px; display: flex; flex-direction: column; gap: 1rem; box-shadow: -20px 0 50px rgba(0,0,0,0.9); overflow-y: auto;}
+#sideMenu.open { right: 0; }
+.menu-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 99998; display: none; backdrop-filter: blur(8px); }
+.menu-overlay.show { display: block; }
+.menu-item { background: #1e293b; color: white; padding: 15px; border-radius: 12px; text-align: right; cursor: pointer; border: 1px solid #334155; display: flex; align-items: center; gap: 15px; font-weight: bold; font-size: 1.1rem; }
+
+/* --- צבעי רשתות חברתיות במעבר עכבר --- */
+.hover-fb:hover { color: #1877F2 !important; }
+.hover-yt:hover { color: #FF0000 !important; }
+.hover-ig:hover { background: -webkit-linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; transform: translateY(-4px);}
+.hover-sp:hover { color: #1DB954 !important; }
+
+/* --- כרטיס אירוע מודרני --- */
+.event-card { background: linear-gradient(145deg, rgba(40, 56, 84, 0.9), rgba(15, 23, 42, 0.95)); backdrop-filter: blur(12px); border: 1px solid rgba(96, 165, 250, 0.25); border-top: 1px solid rgba(251, 191, 36, 0.4); border-radius: 1.5rem; padding: 0; overflow: hidden; position: relative; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 15px 35px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.1); color: #f8fafc; margin-bottom: 2rem; }
+.event-card:hover { transform: translateY(-8px); box-shadow: 0 20px 40px rgba(0,0,0,0.8), 0 0 20px rgba(251, 191, 36, 0.2); border-top: 1px solid rgba(251, 191, 36, 0.8); border-color: rgba(96, 165, 250, 0.4); }
+.next-event-label { position: absolute; top: 0; left: 50%; transform: translateX(-50%); background: linear-gradient(to right, #fbbf24, #f59e0b); color: #000; font-weight: 900; padding: 6px 20px; border-bottom-left-radius: 1rem; border-bottom-right-radius: 1rem; z-index: 10; font-size: 0.9rem; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4); letter-spacing: 0.5px; }
+.card-header { background: transparent; padding: 2.5rem 1.5rem 1rem 1.5rem; display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid rgba(255,255,255,0.08); }
+.date-badge { background: linear-gradient(135deg, #f59e0b, #d97706); border: none; color: #fff; padding: 10px 20px; border-radius: 1rem; text-align: center; font-weight: 900; box-shadow: 0 8px 20px rgba(217, 119, 6, 0.4); }
+.date-badge .day { font-size: 2.2rem; line-height: 0.9; text-shadow: 1px 1px 2px rgba(0,0,0,0.2); }
+.date-badge .month { font-size: 1rem; color: #fff; text-transform: uppercase; font-weight: 700; opacity: 0.9; }
+.card-body { padding: 1.5rem; }
+.location-title { font-size: 1.8rem; font-weight: 900; color: #fff; line-height: 1.2; margin-bottom: 1.5rem; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+.info-bubble { background: rgba(15, 23, 42, 0.5); border: 1px solid rgba(255,255,255,0.1); border-radius: 1rem; padding: 12px 15px; margin-bottom: 12px; display: flex; align-items: center; gap: 15px; font-size: 1.05rem; color: #e2e8f0; font-weight: 500; transition: 0.3s; }
+.info-bubble a { color: #60a5fa; transition: 0.2s; }
+.info-bubble a:hover { color: #fbbf24; }
+.info-bubble:hover { background: rgba(15, 23, 42, 0.8); border-color: rgba(251, 191, 36, 0.4); }
+.info-bubble i { width: 25px; text-align: center; font-size: 1.3rem; color: #fbbf24; }
+.comp-badges { display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap; }
+.comp-badge { padding: 6px 12px; border-radius: 8px; font-weight: bold; font-size: 0.85rem; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); }
+.comp-badge-key { background: linear-gradient(135deg, #7e22ce, #9333ea); color: white; }
+.comp-badge-drum { background: linear-gradient(135deg, #be185d, #db2777); color: white; }
+.card-actions { padding: 1.5rem; background: rgba(15, 23, 42, 0.6); display: grid; grid-template-columns: 1fr 1fr; gap: 12px; border-top: 1px solid rgba(255,255,255,0.08); }
+.action-btn { text-align: center; padding: 12px; border-radius: 1rem; font-weight: 900; font-size: 1.05rem; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); cursor: pointer; text-decoration: none; }
+.action-btn:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0,0,0,0.4); }
+.btn-waze { background: linear-gradient(135deg, #2563eb, #1d4ed8); color: white; border: none; } 
+.btn-cal { background: linear-gradient(135deg, #7c3aed, #6d28d9); color: white; border: none; } 
+.btn-media { grid-column: span 2; background: linear-gradient(135deg, #ec4899, #e11d48); color: white; font-size: 1.2rem; padding: 15px; border: none; } 
+.btn-edit { background: linear-gradient(135deg, #475569, #334155); color: white; border: 1px solid #64748b; } 
+.btn-wa-green { background: linear-gradient(135deg, #16a34a, #15803d); color: white; border: none; }
+.notes-area { background: rgba(2, 6, 23, 0.4) !important; color: #cbd5e1 !important; border: 1px solid rgba(255,255,255,0.1); font-size: 0.95rem; padding: 15px; border-radius: 12px; line-height: 1.5; box-shadow: inset 0 2px 10px rgba(0,0,0,0.3); }
+
+.floating-badges { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; }
+.status-pill, .special-badge { padding: 4px 12px; border-radius: 99px; font-weight: 900; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.5px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+.status-sagoor { background: linear-gradient(to bottom, #10b981, #047857); color: white; } 
+.status-process { background: linear-gradient(to bottom, #f59e0b, #b45309); color: white; } 
+.status-done { background: linear-gradient(to bottom, #64748b, #334155); color: #cbd5e1; }
+.badge-all-inclusive { background: linear-gradient(to bottom, #3b82f6, #1d4ed8); color: white; }
+.badge-student { background: linear-gradient(to bottom, #ec4899, #be185d); color: white; }
+
+/* --- תשלומים --- */
+.payment-card { background: #0f172a; border: 3px solid #334155; border-radius: 1rem; padding: 1rem; margin-bottom: 1rem; position: relative; transition: 0.3s; }
+.payment-ok { border-color: #22c55e !important; box-shadow: 0 0 10px rgba(34, 197, 94, 0.3); }
+.payment-bad { border-color: #ef4444 !important; box-shadow: 0 0 10px rgba(239, 68, 68, 0.3); }
+
+/* --- גלריה והמלצות (Marquee) --- */
+.marquee-wrapper { overflow: hidden; width: 100%; position: relative; direction: ltr; }
+.marquee-track { display: flex; width: max-content; gap: 0; animation: scroll-loop 500s linear infinite; } 
+.marquee-track:hover { animation-play-state: paused; }
+@keyframes scroll-loop { 0% { transform: translateX(-50%); } 100% { transform: translateX(0%); } }
+
+.gallery-item { margin: 0 5px; }
+.gallery-img { height: 250px; width: auto; aspect-ratio: 3/2; object-fit: cover; border-radius: 16px; cursor: pointer; transition: 0.3s; border: 2px solid transparent; }
+.gallery-img:hover { border-color: #fbbf24; transform: scale(1.05); }
+
+.review-card { background: linear-gradient(145deg, rgba(30,41,59,0.9), rgba(15,23,42,0.95)); border: 1px solid rgba(251,191,36,0.3); border-radius: 1.5rem; padding: 1.5rem; width: 350px; margin: 0 15px; flex-shrink: 0; direction: rtl; text-align: right; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+.review-stars { color: #fbbf24; font-size: 1.2rem; margin-bottom: 10px; }
+.review-text { color: #cbd5e1; font-size: 1.05rem; line-height: 1.5; margin-bottom: 15px; font-style: italic; }
+.review-author { font-weight: 900; color: #fff; font-size: 1.1rem; }
+
+.blue-card { background: rgba(13, 49, 105, 0.6); border: 1px solid rgba(59, 130, 246, 0.2); backdrop-filter: blur(10px); padding: 1.5rem; }
+.calendar-day { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; border-radius: 0.5rem; font-weight: bold; cursor: pointer; position: relative; font-size: 0.9rem; }
+.day-available { background-color: rgba(251, 191, 36, 0.1); border: 1px solid rgba(251, 191, 36, 0.3); color: #fbbf24; }
+.day-booked { background-color: rgba(220, 38, 38, 0.1); border: 1px solid #dc2626; color: #f87171; text-decoration: line-through; opacity: 0.7; }
+body.admin-mode .calendar-day:hover { transform: scale(1.1); cursor: pointer; border-color: white; }
+
+/* --- וידאו ורקע --- */
+.promo-video-container { width: 98%; max-width: 1800px; margin: 30px auto; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.7); border: 2px solid #334155; position: relative; background: black; aspect-ratio: 21/9; }
+.promo-video-iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; z-index: 10; }
+.sound-toggle-btn { position: absolute; bottom: 15px; left: 15px; background: rgba(0,0,0,0.6); color: white; border: 1px solid rgba(255,255,255,0.5); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 50; }
+
+#heroOverlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #051c42; opacity: 0.6; z-index: 0; pointer-events: none; }
+.site-logo { height: 80px; width: auto; object-fit: contain; filter: drop-shadow(0 0 10px rgba(255,255,255,0.2)); position: relative; z-index: 50; }
+#siteFooter { background: #020617; padding: 20px; text-align: center; border-top: 1px solid #1e293b; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 10px; }
+.copyright { color: #64748b; font-size: 0.9rem; }
+
+/* --- מודאלים --- */
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 50000; justify-content: center; align-items: center; backdrop-filter: blur(5px); padding: 10px; }
+.modal-content { background: #0f172a; padding: 0; border-radius: 1.5rem; border: 1px solid #334155; width: 95% !important; max-width: 600px; max-height: 85vh; overflow-y: auto; overscroll-behavior: contain; position: relative; margin: auto; display: flex; flex-direction: column; }
+#paymentModal .modal-content { max-width: 900px; }
+#proposalSetupModal .modal-content { max-width: 700px; }
+#eventEditor .modal-content { max-width: 800px; }
+#loginModal .modal-content { max-width: 480px; padding: 40px 20px; border: 2px solid #fbbf24; }
+
+#confirmModal, #alertModal { z-index: 60000 !important; }
+#confirmModal .modal-content, #alertModal .modal-content { max-width: 400px; text-align: center; padding: 20px; border: 1px solid #fbbf24; background: #0f172a; height: auto; }
+
+.modal-header { background: #1e293b; padding: 1rem; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 10; flex-shrink: 0; }
+.modal-body { padding: 1rem; overflow-y: auto; flex-grow: 1; }
+.form-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+.input-group label { display: block; color: #94a3b8; margin-bottom: 3px; font-size: 0.85rem; }
+.input-group input, .input-group select, .input-group textarea { width: 100%; background: #1e293b; border: 1px solid #475569; color: white; padding: 10px; border-radius: 8px; font-size: 1rem; outline: none; }
+.checkbox-group { display: flex; gap: 15px; align-items: center; background: #1e293b; padding: 10px; border-radius: 8px; border: 1px solid #475569; flex-wrap: wrap; }
+.checkbox-group input { width: 20px; height: 20px; accent-color: #fbbf24; }
+
+.lightbox-nav { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); color: white; border: none; padding: 15px; cursor: pointer; font-size: 2rem; z-index: 100; transition: 0.3s; border-radius: 50%; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; }
+.lightbox-nav:hover { background: #fbbf24; color: black; }
+.lightbox-prev { left: 20px; }
+.lightbox-next { right: 20px; }
+
+/* --- עיצוב ללשונית ניהול משימות ופניות (CRM) --- */
+.lead-card { background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(251, 191, 36, 0.2); border-radius: 1rem; padding: 1.2rem; margin-bottom: 1rem; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+.alert-banner { background: linear-gradient(90deg, #ef4444, #b91c1c); color: white; padding: 12px; border-radius: 8px; margin-bottom: 15px; font-weight: bold; font-size: 1.1rem; animation: pulse 2s infinite; display: flex; align-items: center; gap: 10px; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3); }
+@keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.8; } 100% { opacity: 1; } }
+
+/* ========= התאמות אגרסיביות לנייד ========= */
+@media (max-width: 768px) {
+    html { font-size: 12px; }
+    .container { padding-left: 1rem; padding-right: 1rem; }
+    .form-grid { grid-template-columns: 1fr; } 
+    .gallery-item { width: 300px !important; height: 200px !important; flex-shrink: 0; margin: 0 5px; }
+    .gallery-img { height: 100% !important; width: 100% !important; object-fit: cover !important; border-radius: 8px !important; }
+    .promo-video-container { width: 100% !important; margin: 10px auto 20px auto !important; aspect-ratio: 1 / 1 !important; border-radius: 0 !important; border-left: none !important; border-right: none !important; }
+    .modal-content { width: 95vw !important; margin: 0 auto !important; max-width: none !important; }
+    .lightbox-nav { width: 45px; height: 45px; font-size: 1.5rem; padding: 10px; }
+    .lightbox-prev { left: 10px; }
+    .lightbox-next { right: 10px; }
+    .review-card { width: 280px; padding: 1rem; }
+}
+
+@media (min-width: 769px) { .form-grid { grid-template-columns: 1fr 1fr; } }
+@media print { 
+    @page { size: A3 portrait; margin: 0; } 
+    body * { visibility: hidden; } 
+    #adminPanel, .fixed, .sticky, #loggedInMenuBtn, .whatsapp-float, .sound-toggle-btn, #confirmModal, #alertModal, #globalLoader { display: none !important; }
+    #proposalPrintArea { display: block !important; position: absolute; left: 0; top: 0; width: 100%; background: white !important; color: black !important; z-index: 2147483647; margin: 0; padding: 0; }
+    #proposalPrintArea * { visibility: visible !important; color: black !important; }
+    html, body { background-color: white !important; height: auto !important; overflow: visible !important; }
+}
