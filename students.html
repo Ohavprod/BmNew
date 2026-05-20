@@ -1355,6 +1355,22 @@
     <div id="imageModal" onclick="closeImageModal(event)">
         <button class="close-img-btn" onclick="closeImageModal(event)" title="סגור"><i class="fas fa-times"></i></button>
         <img id="fullScreenImage" src="" alt="תמונה מוגדלת" onclick="event.stopPropagation()">
+        // פתיחה וסגירה של תמונה במסך מלא
+        window.openImageModal = (src) => {
+            if (!src) return;
+            document.getElementById('fullScreenImage').src = src;
+            document.getElementById('imageModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        };
+
+        window.closeImageModal = (e) => {
+            // מוודא שלא סוגר אם לוחצים על התמונה עצמה (רק על הרקע או האיקס)
+            if (e && e.target.id === 'fullScreenImage') return;
+            document.getElementById('imageModal').classList.remove('active');
+            document.body.style.overflow = 'auto';
+            // מרוקן את התמונה אחרי חצי שנייה כדי שלא תהיה קפיצה בפתיחה הבאה
+            setTimeout(() => { document.getElementById('fullScreenImage').src = ''; }, 300);
+        };
     </div>
 </body>
 </html>
