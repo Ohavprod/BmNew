@@ -723,9 +723,13 @@
                 const et = s.eventType || 'rishon_only'; 
                 const isLegacyShabbatOnly = (et === 'shabbat-chatan');
 
-                // 1. עליית ראשון
+             // 1. עליית ראשון
                 if (et !== 'other_single' && !isLegacyShabbatOnly) {
-                    if (s.morningAudio || s.kohenAudio) {
+                    // בדיקה מקיפה: האם יש איזושהי תמונה או הקלטה באחד מהשדות?
+                    const hasFullRishon = s.morningImage || s.morningAudio;
+                    const hasSplitRishon = s.kohenImage || s.kohenAudio || s.leviImage || s.leviAudio || s.yisraelImage || s.yisraelAudio;
+                    
+                    if (hasFullRishon || hasSplitRishon) {
                         materialsHtml += `<div class="mt-5"><h4 class="text-amber-400 font-bold border-b border-slate-700 pb-2 mb-3 text-xl"><i class="fas fa-sun ml-1"></i> עליית ראשון</h4>`;
                         if (s.rishonDisplayType === 'split') {
                             materialsHtml += buildInlineMaterial(s.kohenImage, s.kohenAudio, "כהן", `${s.id}-kohen`);
@@ -737,7 +741,6 @@
                         materialsHtml += `</div>`;
                     }
                 }
-
                 // 2. כל הפרשה
                 if (et === 'full_parsha') {
                     materialsHtml += `<div class="mt-5"><h4 class="text-purple-400 font-bold border-b border-slate-700 pb-2 mb-3 text-xl"><i class="fas fa-scroll ml-1"></i> שאר עליות הפרשה</h4>`;
