@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ניהול תלמידי בר מצווה | אביב ויצמן</title>
-<link rel="icon" href="https://i.postimg.cc/CMcRF8Nm/Logo.gif" type="image/gif">
+    <link rel="icon" href="https://i.postimg.cc/CMcRF8Nm/Logo.gif" type="image/gif">
     <meta property="og:title" content="מערכת תלמידים | אביב ויצמן">
     <meta property="og:description" content="מערכת מתקדמת ללימוד קריאת התורה לבר המצווה.">
     <meta property="og:image" content="https://i.postimg.cc/8PFH5RRC/BIMG_2271A_(103).jpg">
@@ -15,7 +15,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&display=swap" rel="stylesheet">
     <style>
         /* --- בסיס עיצובי --- */
-        html { font-size: 16px; } /* פונט בסיס למחשב */
+        html { font-size: 16px; } 
         body { font-family: 'Heebo', sans-serif; background-color: #051c42; color: #ffffff; min-height: 100vh; overflow-x: hidden; margin: 0; padding: 0; }
         #fixed-background { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; background-image: linear-gradient(180deg, #051c42 0%, #021029 100%); pointer-events: none; }
         .gold-text { background: linear-gradient(45deg, #fbbf24, #d97706); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 900; }
@@ -64,7 +64,7 @@
 
         /* === התאמות למובייל === */
         @media (max-width: 768px) {
-            html { font-size: 13px; } /* הקטנת יחס פונט בסיסי לנייד */
+            html { font-size: 13px; } 
             .student-card { padding: 1.2rem; }
             .inline-material-box { padding: 1rem; }
             .info-bubble { padding: 8px 12px; font-size: 1rem; }
@@ -267,69 +267,101 @@
                     <div>
                         <label class="block text-base text-slate-400 mb-1">סוג קריאה באירוע</label>
                         <select id="eventType" onchange="toggleEventDetails()" class="form-input w-full p-3 rounded-xl text-lg">
-                            <option value="aliyah">עליית ראשון בלבד (ללא שבת)</option>
-                            <option value="shabbat-chatan">שבת חתן בלבד (ללא עליית ראשון)</option>
-                            <option value="both">עליית ראשון + שבת חתן</option>
+                            <option value="rishon_only">א. עליית ראשון בלבד</option>
+                            <option value="rishon_maftir_haftarah">ב. ראשון, מפטיר והפטרה</option>
+                            <option value="full_parsha">ג. כל הפרשה (7 עליות + מפטיר והפטרה)</option>
+                            <option value="other_single">ד. קטע אחר בודד (שני, שלישי וכו')</option>
                         </select>
                     </div>
                 </div>
 
-                <div id="shabbatChatanDateField" class="hidden">
-                    <label class="block text-base text-slate-400 mb-1">תאריך שבת חתן</label>
+                <div id="shabbatChatanDateField" class="hidden mt-4">
+                    <label class="block text-base text-slate-400 mb-1">תאריך שבת חתן (הפטרה)</label>
                     <input type="date" id="shabbatChatanDate" class="form-input w-full p-3 rounded-xl text-lg">
                 </div>
 
-                <div id="morningDetails" class="bg-slate-800/50 p-4 md:p-5 rounded-xl border border-slate-700 mt-4">
-                    <h4 class="text-amber-400 font-bold mb-4 text-lg"><i class="fas fa-sun"></i> חומרי עליית ראשון</h4>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <select id="morningReading" onchange="updateMorningLibrarySelector()" class="form-input w-full p-3 rounded-lg mb-3 text-base">
-                                <option value="parsha">פרשה רגילה</option>
-                                <option value="rosh-chodesh">ראש חודש</option>
-                                <option value="holiday">חג / אחר</option>
-                            </select>
-                            <div id="morningLibrarySelector"></div>
+                <!-- מקטע עליית ראשון -->
+                <div id="sectionRishon" class="bg-slate-800/50 p-4 md:p-5 rounded-xl border border-slate-700 mt-4">
+                    <div class="flex justify-between items-center mb-4">
+                        <h4 class="text-amber-400 font-bold text-lg"><i class="fas fa-sun"></i> עליית ראשון</h4>
+                        <select id="rishonDisplayType" onchange="toggleRishonSplit()" class="form-input p-2 rounded-lg text-sm bg-slate-900 border-slate-600">
+                            <option value="full">הקלטה אחת מלאה</option>
+                            <option value="split">מחולק: כהן, לוי, ישראל</option>
+                        </select>
+                    </div>
+
+                    <!-- ראשון מלא -->
+                    <div id="rishonFullInputs">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div><input type="url" id="morningImage" placeholder="לינק לתמונה (עליית ראשון)" class="form-input w-full p-3 rounded-lg"></div>
+                            <div><input type="url" id="morningAudio" placeholder="לינק להקלטה" class="form-input w-full p-3 rounded-lg"></div>
                         </div>
-                        <div>
-                            <input type="url" id="morningImage" placeholder="לינק לתמונה (קטע טקסט)" class="form-input w-full p-3 rounded-lg mb-3 text-base">
-                            <input type="url" id="morningAudio" placeholder="לינק להקלטה" class="form-input w-full p-3 rounded-lg mb-3 text-base">
-                            <input type="text" id="morningAudioTitle" placeholder="כותרת להקלטה" value="עליית ראשון" class="form-input w-full p-3 rounded-lg text-base">
+                    </div>
+
+                    <!-- ראשון מחולק -->
+                    <div id="rishonSplitInputs" class="hidden space-y-4">
+                        <div class="border border-slate-700 p-3 rounded-lg bg-slate-900/50">
+                            <h5 class="text-white font-bold mb-2">כהן</h5>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                                <input type="url" id="kohenImage" placeholder="לינק לתמונה (כהן)" class="form-input w-full p-2 rounded-lg">
+                                <input type="url" id="kohenAudio" placeholder="לינק להקלטה (כהן)" class="form-input w-full p-2 rounded-lg">
+                            </div>
+                        </div>
+                        <div class="border border-slate-700 p-3 rounded-lg bg-slate-900/50">
+                            <h5 class="text-white font-bold mb-2">לוי</h5>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                                <input type="url" id="leviImage" placeholder="לינק לתמונה (לוי)" class="form-input w-full p-2 rounded-lg">
+                                <input type="url" id="leviAudio" placeholder="לינק להקלטה (לוי)" class="form-input w-full p-2 rounded-lg">
+                            </div>
+                        </div>
+                        <div class="border border-slate-700 p-3 rounded-lg bg-slate-900/50">
+                            <h5 class="text-white font-bold mb-2">ישראל</h5>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                                <input type="url" id="yisraelImage" placeholder="לינק לתמונה (ישראל)" class="form-input w-full p-2 rounded-lg">
+                                <input type="url" id="yisraelAudio" placeholder="לינק להקלטה (ישראל)" class="form-input w-full p-2 rounded-lg">
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div id="shabbatChatanDetails" class="hidden bg-slate-800/50 p-4 md:p-5 rounded-xl border border-slate-700 mt-4">
-                    <h4 class="text-blue-400 font-bold mb-4 text-lg"><i class="fas fa-star-of-david"></i> חומרי שבת חתן</h4>
-                    <select id="shabbatReading" onchange="toggleShabbatImages(); updateShabbatLibrarySelectors()" class="form-input w-full p-3 rounded-lg mb-4 text-base">
-                        <option value="ראשון בלבד">עליית ראשון בלבד בשבת</option>
-                        <option value="ראשון ומפטיר">הפטרה + מפטיר</option>
-                        <option value="other">אחר (הקלדה חופשית)</option>
-                    </select>
-                    <input type="text" id="otherReading" placeholder="פרט..." class="form-input w-full p-3 rounded-lg mb-4 text-base hidden">
-                    
-                    <div id="singleShabbatImage" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div id="shabbatLibrarySelector"></div>
-                        <div>
-                            <input type="url" id="shabbatImage" placeholder="לינק לתמונה" class="form-input w-full p-3 rounded-lg mb-3 text-base">
-                            <input type="url" id="shabbatAudio" placeholder="לינק להקלטה" class="form-input w-full p-3 rounded-lg mb-3 text-base">
-                            <input type="text" id="shabbatAudioTitle" placeholder="כותרת להקלטה" value="הפטרה" class="form-input w-full p-3 rounded-lg text-base">
-                        </div>
+                <!-- מקטע כל הפרשה -->
+                <div id="sectionFullParsha" class="hidden bg-slate-800/50 p-4 md:p-5 rounded-xl border border-purple-900/50 mt-4">
+                    <h4 class="text-purple-400 font-bold mb-4 text-lg"><i class="fas fa-scroll"></i> שאר עליות הפרשה</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="border border-slate-700 p-3 rounded-lg"><h5 class="text-white font-bold mb-2">שני</h5><input type="url" id="sheniImage" placeholder="תמונה" class="form-input w-full p-2 rounded-lg mb-2"><input type="url" id="sheniAudio" placeholder="הקלטה" class="form-input w-full p-2 rounded-lg"></div>
+                        <div class="border border-slate-700 p-3 rounded-lg"><h5 class="text-white font-bold mb-2">שלישי</h5><input type="url" id="shlishiImage" placeholder="תמונה" class="form-input w-full p-2 rounded-lg mb-2"><input type="url" id="shlishiAudio" placeholder="הקלטה" class="form-input w-full p-2 rounded-lg"></div>
+                        <div class="border border-slate-700 p-3 rounded-lg"><h5 class="text-white font-bold mb-2">רביעי</h5><input type="url" id="reviiImage" placeholder="תמונה" class="form-input w-full p-2 rounded-lg mb-2"><input type="url" id="reviiAudio" placeholder="הקלטה" class="form-input w-full p-2 rounded-lg"></div>
+                        <div class="border border-slate-700 p-3 rounded-lg"><h5 class="text-white font-bold mb-2">חמישי</h5><input type="url" id="chamishiImage" placeholder="תמונה" class="form-input w-full p-2 rounded-lg mb-2"><input type="url" id="chamishiAudio" placeholder="הקלטה" class="form-input w-full p-2 rounded-lg"></div>
+                        <div class="border border-slate-700 p-3 rounded-lg"><h5 class="text-white font-bold mb-2">שישי</h5><input type="url" id="shishiImage" placeholder="תמונה" class="form-input w-full p-2 rounded-lg mb-2"><input type="url" id="shishiAudio" placeholder="הקלטה" class="form-input w-full p-2 rounded-lg"></div>
+                        <div class="border border-slate-700 p-3 rounded-lg"><h5 class="text-white font-bold mb-2">שביעי</h5><input type="url" id="shviiImage" placeholder="תמונה" class="form-input w-full p-2 rounded-lg mb-2"><input type="url" id="shviiAudio" placeholder="הקלטה" class="form-input w-full p-2 rounded-lg"></div>
                     </div>
+                </div>
 
-                    <div id="multipleShabbatImages" class="hidden space-y-5">
-                        <div class="border border-slate-700 p-4 rounded-xl">
-                            <h5 class="text-base font-bold text-slate-300 mb-3">ראשון / קריאה 1</h5>
-                            <div id="rishonLibrarySelector" class="mb-3"></div>
-                            <input type="url" id="rishonImage" placeholder="לינק לתמונה" class="form-input w-full p-3 rounded-lg mb-3 text-base">
-                            <input type="url" id="rishonAudio" placeholder="לינק לאודיו" class="form-input w-full p-3 rounded-lg text-base">
-                            <input type="hidden" id="rishonAudioTitle" value="קריאה ראשונה">
+                <!-- מקטע קטע בודד אחר -->
+                <div id="sectionOtherSingle" class="hidden bg-slate-800/50 p-4 md:p-5 rounded-xl border border-teal-900/50 mt-4">
+                    <h4 class="text-teal-400 font-bold mb-4 text-lg"><i class="fas fa-bookmark"></i> קטע בודד לבחירה</h4>
+                    <select id="otherSingleName" class="form-input w-full p-3 rounded-lg mb-4 text-base">
+                        <option value="שני">שני</option><option value="שלישי">שלישי</option><option value="רביעי">רביעי</option><option value="חמישי">חמישי</option><option value="שישי">שישי</option><option value="שביעי">שביעי</option>
+                    </select>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div><input type="url" id="otherSingleImage" placeholder="לינק לתמונה" class="form-input w-full p-3 rounded-lg mb-3"></div>
+                        <div><input type="url" id="otherSingleAudio" placeholder="לינק להקלטה" class="form-input w-full p-3 rounded-lg mb-3"></div>
+                    </div>
+                </div>
+
+                <!-- מקטע מפטיר והפטרה -->
+                <div id="sectionMaftirHaftarah" class="hidden bg-slate-800/50 p-4 md:p-5 rounded-xl border border-blue-900/50 mt-4">
+                    <h4 class="text-blue-400 font-bold mb-4 text-lg"><i class="fas fa-star-of-david"></i> מפטיר והפטרה</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="border border-slate-700 p-3 rounded-lg">
+                            <h5 class="text-white font-bold mb-2">מפטיר</h5>
+                            <input type="url" id="maftirImage" placeholder="לינק לתמונה" class="form-input w-full p-2 rounded-lg mb-2">
+                            <input type="url" id="maftirAudio" placeholder="לינק להקלטה" class="form-input w-full p-2 rounded-lg">
                         </div>
-                        <div class="border border-slate-700 p-4 rounded-xl">
-                            <h5 class="text-base font-bold text-slate-300 mb-3">הפטרה / מפטיר</h5>
-                            <div id="maftirLibrarySelector" class="mb-3"></div>
-                            <input type="url" id="maftirImage" placeholder="לינק לתמונה" class="form-input w-full p-3 rounded-lg mb-3 text-base">
-                            <input type="url" id="maftirAudio" placeholder="לינק לאודיו" class="form-input w-full p-3 rounded-lg text-base">
-                            <input type="hidden" id="maftirAudioTitle" value="קריאת מפטיר">
+                        <div class="border border-slate-700 p-3 rounded-lg">
+                            <h5 class="text-white font-bold mb-2">הפטרה</h5>
+                            <input type="url" id="shabbatImage" placeholder="לינק לתמונה" class="form-input w-full p-2 rounded-lg mb-2">
+                            <input type="url" id="shabbatAudio" placeholder="לינק להקלטה" class="form-input w-full p-2 rounded-lg">
                         </div>
                     </div>
                 </div>
@@ -648,9 +680,12 @@
         }
 
         function getEventTypeText(eventType) {
-            if(eventType === 'aliyah') return 'עליית ראשון (ללא שבת)';
-            if(eventType === 'shabbat-chatan') return 'שבת חתן בלבד';
-            return 'עליית ראשון + שבת חתן';
+            if(eventType === 'rishon_only' || eventType === 'aliyah') return 'עליית ראשון בלבד';
+            if(eventType === 'rishon_maftir_haftarah' || eventType === 'both') return 'ראשון, מפטיר והפטרה';
+            if(eventType === 'full_parsha') return 'כל הפרשה';
+            if(eventType === 'other_single') return 'קטע בודד אחר';
+            if(eventType === 'shabbat-chatan') return 'שבת חתן בלבד (ישן)';
+            return 'מותאם אישית';
         }
 
         function buildInlineMaterial(imgSrc, audioSrc, audioTitle, elementIdPrefix) {
@@ -734,45 +769,54 @@
                     ? `<button type="button" onclick="window.openLessonModal('${s.id}')" class="action-btn btn-lesson w-full mt-5 text-lg"><i class="fas fa-book"></i> מעקב שיעורים (${lessonCount})</button>`
                     : `<div class="bg-blue-900/40 text-blue-200 text-center py-3 rounded-xl font-bold text-lg border border-blue-800/50 mt-5 shadow-inner"><i class="fas fa-trophy text-amber-400 ml-1"></i> מספר שיעורים עד כה: ${lessonCount}</div>`;
 
-                const includesMorning = (s.eventType === 'aliyah' || s.eventType === 'both');
-                const includesShabbat = (s.eventType === 'shabbat-chatan' || s.eventType === 'both');
-
                 let materialsHtml = '';
-                
-                if (includesMorning && (s.morningImage || s.morningAudio)) {
-                    materialsHtml += `
-                        <div class="mt-5">
-                            <h4 class="text-amber-400 font-bold border-b border-slate-700 pb-2 mb-3 text-xl"><i class="fas fa-sun ml-1"></i> עליית ראשון</h4>
-                            ${buildInlineMaterial(s.morningImage, s.morningAudio, s.morningAudioTitle || "עליית ראשון", `${s.id}-morning`)}
-                        </div>
-                    `;
+                const et = s.eventType || 'aliyah'; 
+                const isLegacyShabbatOnly = (et === 'shabbat-chatan');
+
+                // 1. עליית ראשון (מחולק או מלא)
+                if (et !== 'other_single' && !isLegacyShabbatOnly) {
+                    if (s.morningAudio || s.kohenAudio) {
+                        materialsHtml += `<div class="mt-5"><h4 class="text-amber-400 font-bold border-b border-slate-700 pb-2 mb-3 text-xl"><i class="fas fa-sun ml-1"></i> עליית ראשון</h4>`;
+                        if (s.rishonDisplayType === 'split') {
+                            materialsHtml += buildInlineMaterial(s.kohenImage, s.kohenAudio, "כהן", `${s.id}-kohen`);
+                            materialsHtml += buildInlineMaterial(s.leviImage, s.leviAudio, "לוי", `${s.id}-levi`);
+                            materialsHtml += buildInlineMaterial(s.yisraelImage, s.yisraelAudio, "ישראל", `${s.id}-yisrael`);
+                        } else {
+                            materialsHtml += buildInlineMaterial(s.morningImage, s.morningAudio, "עליית ראשון", `${s.id}-morning`);
+                        }
+                        materialsHtml += `</div>`;
+                    }
                 }
 
-                if (includesShabbat) {
-                    if (s.shabbatReading === 'ראשון ומפטיר') {
-                        if(s.rishonImage || s.rishonAudio) {
-                            materialsHtml += `
-                                <div class="mt-5">
-                                    <h4 class="text-blue-400 font-bold border-b border-slate-700 pb-2 mb-3 text-xl"><i class="fas fa-star-of-david ml-1"></i> קריאת ראשון (שבת)</h4>
-                                    ${buildInlineMaterial(s.rishonImage, s.rishonAudio, s.rishonAudioTitle || "ראשון", `${s.id}-rishon`)}
-                                </div>
-                            `;
-                        }
-                        if(s.maftirImage || s.maftirAudio) {
-                            materialsHtml += `
-                                <div class="mt-5">
-                                    <h4 class="text-purple-400 font-bold border-b border-slate-700 pb-2 mb-3 text-xl"><i class="fas fa-scroll ml-1"></i> קריאת מפטיר / הפטרה</h4>
-                                    ${buildInlineMaterial(s.maftirImage, s.maftirAudio, s.maftirAudioTitle || "מפטיר", `${s.id}-maftir`)}
-                                </div>
-                            `;
-                        }
-                    } else if (s.shabbatImage || s.shabbatAudio) {
-                        materialsHtml += `
-                            <div class="mt-5">
-                                <h4 class="text-purple-400 font-bold border-b border-slate-700 pb-2 mb-3 text-xl"><i class="fas fa-star-of-david ml-1"></i> הפטרה / שבת חתן</h4>
-                                ${buildInlineMaterial(s.shabbatImage, s.shabbatAudio, s.shabbatAudioTitle || "הפטרה", `${s.id}-shabbat`)}
-                            </div>
-                        `;
+                // 2. כל הפרשה (שני עד שביעי)
+                if (et === 'full_parsha') {
+                    materialsHtml += `<div class="mt-5"><h4 class="text-purple-400 font-bold border-b border-slate-700 pb-2 mb-3 text-xl"><i class="fas fa-scroll ml-1"></i> שאר עליות הפרשה</h4>`;
+                    if(s.sheniAudio) materialsHtml += buildInlineMaterial(s.sheniImage, s.sheniAudio, "שני", `${s.id}-sheni`);
+                    if(s.shlishiAudio) materialsHtml += buildInlineMaterial(s.shlishiImage, s.shlishiAudio, "שלישי", `${s.id}-shlishi`);
+                    if(s.reviiAudio) materialsHtml += buildInlineMaterial(s.reviiImage, s.reviiAudio, "רביעי", `${s.id}-revii`);
+                    if(s.chamishiAudio) materialsHtml += buildInlineMaterial(s.chamishiImage, s.chamishiAudio, "חמישי", `${s.id}-chamishi`);
+                    if(s.shishiAudio) materialsHtml += buildInlineMaterial(s.shishiImage, s.shishiAudio, "שישי", `${s.id}-shishi`);
+                    if(s.shviiAudio) materialsHtml += buildInlineMaterial(s.shviiImage, s.shviiAudio, "שביעי", `${s.id}-shvii`);
+                    materialsHtml += `</div>`;
+                }
+
+                // 3. קטע בודד אחר
+                if (et === 'other_single') {
+                    materialsHtml += `<div class="mt-5"><h4 class="text-teal-400 font-bold border-b border-slate-700 pb-2 mb-3 text-xl"><i class="fas fa-bookmark ml-1"></i> ${s.otherSingleName || 'קטע נבחר'}</h4>`;
+                    materialsHtml += buildInlineMaterial(s.otherSingleImage, s.otherSingleAudio, s.otherSingleName || "קטע בודד", `${s.id}-other`);
+                    materialsHtml += `</div>`;
+                }
+
+                // 4. מפטיר והפטרה
+                if (['rishon_maftir_haftarah', 'full_parsha', 'both', 'shabbat-chatan'].includes(et)) {
+                    if (s.maftirAudio || s.rishonAudio || s.shabbatAudio) {
+                        materialsHtml += `<div class="mt-5"><h4 class="text-blue-400 font-bold border-b border-slate-700 pb-2 mb-3 text-xl"><i class="fas fa-star-of-david ml-1"></i> מפטיר והפטרה</h4>`;
+                        const mfImg = s.maftirImage || s.rishonImage; 
+                        const mfAud = s.maftirAudio || s.rishonAudio;
+                        
+                        if(mfAud) materialsHtml += buildInlineMaterial(mfImg, mfAud, "מפטיר", `${s.id}-maftir`);
+                        if(s.shabbatAudio) materialsHtml += buildInlineMaterial(s.shabbatImage, s.shabbatAudio, "הפטרה", `${s.id}-haftarah`);
+                        materialsHtml += `</div>`;
                     }
                 }
                 
@@ -846,7 +890,7 @@
 
                         <div class="space-y-3 mb-4 mt-4">
                             <div class="info-bubble"><i class="far fa-calendar-alt"></i> תאריך האירוע: <span class="font-bold text-white">${formatDate(s.eventDate)}</span></div>
-                            ${includesShabbat && s.shabbatChatanDate ? `<div class="info-bubble"><i class="fas fa-wine-glass-alt text-purple-400"></i> שבת חתן: <span class="font-bold text-white">${formatDate(s.shabbatChatanDate)}</span></div>` : ''}
+                            ${['rishon_maftir_haftarah', 'full_parsha', 'both', 'shabbat-chatan'].includes(et) && s.shabbatChatanDate ? `<div class="info-bubble"><i class="fas fa-wine-glass-alt text-purple-400"></i> שבת חתן: <span class="font-bold text-white">${formatDate(s.shabbatChatanDate)}</span></div>` : ''}
                         </div>
 
                         ${materialsHtml}
@@ -1211,7 +1255,7 @@
         };
 
 
-        // טפסים להוספת תלמיד
+        // פונקציות סיוע לספרייה (נשמרות לאחור למקרה שתרצה להשתמש בהן)
         window.createLibrarySelectorHTML = function(type, targetImageId, targetAudioId, targetTitleId, placeholder) {
             const lib = recordingsLibrary[type] || {};
             let options = Object.keys(lib).map(k => `<option value="${k}">${k}</option>`).join('');
@@ -1226,57 +1270,60 @@
         window.populateFromLibrary = (type, selection, targetImageId, targetAudioId, targetTitleId) => {
             const recording = recordingsLibrary[type]?.[selection];
             if(recording) {
-                if(targetImageId) document.getElementById(targetImageId).value = recording.image || '';
-                if(targetAudioId) document.getElementById(targetAudioId).value = recording.audio || '';
-                if(targetTitleId) document.getElementById(targetTitleId).value = `${selection}`;
+                if(targetImageId && document.getElementById(targetImageId)) document.getElementById(targetImageId).value = recording.image || '';
+                if(targetAudioId && document.getElementById(targetAudioId)) document.getElementById(targetAudioId).value = recording.audio || '';
+                if(targetTitleId && document.getElementById(targetTitleId)) document.getElementById(targetTitleId).value = `${selection}`;
             }
         }
 
-        window.updateMorningLibrarySelector = () => {
-            const reading = document.getElementById('morningReading').value;
-            const type = reading === 'parsha' ? 'parshiot' : 'special';
-            document.getElementById('morningLibrarySelector').innerHTML = window.createLibrarySelectorHTML(type, 'morningImage', 'morningAudio', 'morningAudioTitle', '📚 ייבוא מהספרייה...');
-        }
-
-        window.updateShabbatLibrarySelectors = () => {
-            const shabbatReading = document.getElementById('shabbatReading').value;
-            if(shabbatReading === 'ראשון בלבד' || shabbatReading === 'other') {
-                document.getElementById('shabbatLibrarySelector').innerHTML = window.createLibrarySelectorHTML('shabbat', 'shabbatImage', 'shabbatAudio', 'shabbatAudioTitle', '📚 ייבוא הפטרה מהספרייה...');
-            } else {
-                document.getElementById('rishonLibrarySelector').innerHTML = window.createLibrarySelectorHTML('parshiot', 'rishonImage', 'rishonAudio', 'rishonAudioTitle', '📚 ייבוא קטע ראשון...');
-                document.getElementById('maftirLibrarySelector').innerHTML = window.createLibrarySelectorHTML('shabbat', 'maftirImage', 'maftirAudio', 'maftirAudioTitle', '📚 ייבוא קטע מפטיר...');
-            }
-        }
-
-        window.toggleShabbatImages = () => {
-            const val = document.getElementById('shabbatReading').value;
-            document.getElementById('otherReading').classList.toggle('hidden', val !== 'other');
-            document.getElementById('singleShabbatImage').classList.toggle('hidden', val === 'ראשון ומפטיר');
-            document.getElementById('multipleShabbatImages').classList.toggle('hidden', val !== 'ראשון ומפטיר');
-        }
-
+        // לוגיקה חדשה לתצוגת השדות
         window.toggleEventDetails = () => {
             const val = document.getElementById('eventType').value;
-            document.getElementById('shabbatChatanDateField').classList.toggle('hidden', val === 'aliyah');
-            document.getElementById('shabbatChatanDetails').classList.toggle('hidden', val === 'aliyah');
-            document.getElementById('morningDetails').classList.toggle('hidden', val === 'shabbat-chatan');
-        }
+            
+            document.getElementById('sectionRishon').classList.add('hidden');
+            document.getElementById('sectionMaftirHaftarah').classList.add('hidden');
+            document.getElementById('sectionFullParsha').classList.add('hidden');
+            document.getElementById('sectionOtherSingle').classList.add('hidden');
+            document.getElementById('shabbatChatanDateField').classList.add('hidden');
+            
+            if (val === 'rishon_only' || val === 'aliyah') {
+                document.getElementById('sectionRishon').classList.remove('hidden');
+            } 
+            else if (val === 'rishon_maftir_haftarah' || val === 'both') {
+                document.getElementById('sectionRishon').classList.remove('hidden');
+                document.getElementById('sectionMaftirHaftarah').classList.remove('hidden');
+                document.getElementById('shabbatChatanDateField').classList.remove('hidden');
+            }
+            else if (val === 'full_parsha') {
+                document.getElementById('sectionRishon').classList.remove('hidden');
+                document.getElementById('sectionMaftirHaftarah').classList.remove('hidden');
+                document.getElementById('sectionFullParsha').classList.remove('hidden');
+                document.getElementById('shabbatChatanDateField').classList.remove('hidden');
+            }
+            else if (val === 'other_single') {
+                document.getElementById('sectionOtherSingle').classList.remove('hidden');
+            }
+        };
+
+        window.toggleRishonSplit = () => {
+            const isSplit = document.getElementById('rishonDisplayType').value === 'split';
+            document.getElementById('rishonFullInputs').classList.toggle('hidden', isSplit);
+            document.getElementById('rishonSplitInputs').classList.toggle('hidden', !isSplit);
+        };
 
         window.showAddStudentForm = () => {
             document.getElementById('studentForm').reset();
             document.getElementById('studentForm').removeAttribute('data-edit-id');
             document.getElementById('studentFormTitle').innerText = 'הוסף תלמיד חדש';
-            document.getElementById('eventType').value = 'aliyah';
+            document.getElementById('eventType').value = 'rishon_only'; 
             
-            // איפוס מילים ספציפיות
             tempSpecificWords = [];
             window.renderSpecificWordsList();
             document.getElementById('enableSpecificWords').checked = false;
             window.toggleSpecificWordsEditor();
 
             window.toggleEventDetails();
-            window.updateMorningLibrarySelector();
-            window.updateShabbatLibrarySelectors();
+            window.toggleRishonSplit();
             window.openModal('addStudentForm');
         }
 
@@ -1294,28 +1341,33 @@
                 studentPhone: document.getElementById('studentPhone').value,
                 parentName: document.getElementById('parentName').value,
                 parentPhone: document.getElementById('parentPhone').value,
+                
                 eventType: document.getElementById('eventType').value,
                 shabbatChatanDate: document.getElementById('shabbatChatanDate').value,
                 
-                morningReading: document.getElementById('morningReading').value,
-                morningImage: document.getElementById('morningImage').value,
-                morningAudio: document.getElementById('morningAudio').value,
-                morningAudioTitle: document.getElementById('morningAudioTitle').value,
+                rishonDisplayType: document.getElementById('rishonDisplayType')?.value || 'full',
+                morningImage: document.getElementById('morningImage')?.value,
+                morningAudio: document.getElementById('morningAudio')?.value,
                 
-                shabbatReading: document.getElementById('shabbatReading').value === 'other' ? document.getElementById('otherReading').value : document.getElementById('shabbatReading').value,
-                shabbatImage: document.getElementById('shabbatImage').value,
-                shabbatAudio: document.getElementById('shabbatAudio').value,
-                shabbatAudioTitle: document.getElementById('shabbatAudioTitle').value,
+                kohenImage: document.getElementById('kohenImage')?.value, kohenAudio: document.getElementById('kohenAudio')?.value,
+                leviImage: document.getElementById('leviImage')?.value, leviAudio: document.getElementById('leviAudio')?.value,
+                yisraelImage: document.getElementById('yisraelImage')?.value, yisraelAudio: document.getElementById('yisraelAudio')?.value,
                 
-                rishonImage: document.getElementById('rishonImage').value,
-                rishonAudio: document.getElementById('rishonAudio').value,
-                rishonAudioTitle: document.getElementById('rishonAudioTitle').value,
+                sheniImage: document.getElementById('sheniImage')?.value, sheniAudio: document.getElementById('sheniAudio')?.value,
+                shlishiImage: document.getElementById('shlishiImage')?.value, shlishiAudio: document.getElementById('shlishiAudio')?.value,
+                reviiImage: document.getElementById('reviiImage')?.value, reviiAudio: document.getElementById('reviiAudio')?.value,
+                chamishiImage: document.getElementById('chamishiImage')?.value, chamishiAudio: document.getElementById('chamishiAudio')?.value,
+                shishiImage: document.getElementById('shishiImage')?.value, shishiAudio: document.getElementById('shishiAudio')?.value,
+                shviiImage: document.getElementById('shviiImage')?.value, shviiAudio: document.getElementById('shviiAudio')?.value,
                 
-                maftirImage: document.getElementById('maftirImage').value,
-                maftirAudio: document.getElementById('maftirAudio').value,
-                maftirAudioTitle: document.getElementById('maftirAudioTitle').value,
+                otherSingleName: document.getElementById('otherSingleName')?.value,
+                otherSingleImage: document.getElementById('otherSingleImage')?.value,
+                otherSingleAudio: document.getElementById('otherSingleAudio')?.value,
                 
-                hasRecording: !!(document.getElementById('morningAudio').value || document.getElementById('shabbatAudio').value || document.getElementById('rishonAudio').value),
+                maftirImage: document.getElementById('maftirImage')?.value,
+                maftirAudio: document.getElementById('maftirAudio')?.value,
+                shabbatImage: document.getElementById('shabbatImage')?.value,
+                shabbatAudio: document.getElementById('shabbatAudio')?.value,
                 
                 enableSpecificWords: document.getElementById('enableSpecificWords').checked,
                 specificWords: tempSpecificWords
@@ -1343,51 +1395,54 @@
             document.getElementById('studentFormTitle').innerText = `ערוך: ${s.name}`;
             document.getElementById('studentForm').setAttribute('data-edit-id', s.id);
             
-            document.getElementById('studentName').value = s.name || '';
-            try { if(s.eventDate) document.getElementById('eventDate').value = new Date(s.eventDate).toISOString().split('T')[0]; }catch(e){}
-            try { if(s.shabbatChatanDate) document.getElementById('shabbatChatanDate').value = new Date(s.shabbatChatanDate).toISOString().split('T')[0]; }catch(e){}
-            document.getElementById('hebrewBirthDate').value = s.hebrewBirthDate || '';
-            document.getElementById('parsha').value = s.parsha || '';
-            document.getElementById('studentPhone').value = s.studentPhone || '';
-            document.getElementById('parentName').value = s.parentName || '';
-            document.getElementById('parentPhone').value = s.parentPhone || '';
+            const setVal = (id, val) => { if(document.getElementById(id)) document.getElementById(id).value = val || ''; };
+
+            setVal('studentName', s.name);
+            try { if(s.eventDate) setVal('eventDate', new Date(s.eventDate).toISOString().split('T')[0]); } catch(e){}
+            try { if(s.shabbatChatanDate) setVal('shabbatChatanDate', new Date(s.shabbatChatanDate).toISOString().split('T')[0]); } catch(e){}
             
-            document.getElementById('eventType').value = s.eventType || 'both';
+            setVal('hebrewBirthDate', s.hebrewBirthDate);
+            setVal('parsha', s.parsha);
+            setVal('studentPhone', s.studentPhone);
+            setVal('parentName', s.parentName);
+            setVal('parentPhone', s.parentPhone);
+            
+            // תמיכה לאחור בערכים הישנים של Event Type
+            let et = s.eventType || 'rishon_only';
+            if(et === 'aliyah') et = 'rishon_only';
+            if(et === 'both') et = 'rishon_maftir_haftarah';
+            setVal('eventType', et);
             window.toggleEventDetails();
 
-            document.getElementById('morningReading').value = s.morningReading || 'parsha';
-            document.getElementById('morningImage').value = s.morningImage || '';
-            document.getElementById('morningAudio').value = s.morningAudio || '';
-            document.getElementById('morningAudioTitle').value = s.morningAudioTitle || '';
+            setVal('rishonDisplayType', s.rishonDisplayType || 'full');
+            window.toggleRishonSplit();
 
-            if (s.shabbatReading === 'ראשון בלבד' || s.shabbatReading === 'ראשון ומפטיר') {
-                document.getElementById('shabbatReading').value = s.shabbatReading;
-            } else {
-                document.getElementById('shabbatReading').value = 'other';
-                document.getElementById('otherReading').value = s.shabbatReading || '';
-            }
-            window.toggleShabbatImages();
+            setVal('morningImage', s.morningImage); setVal('morningAudio', s.morningAudio);
+            
+            setVal('kohenImage', s.kohenImage); setVal('kohenAudio', s.kohenAudio);
+            setVal('leviImage', s.leviImage); setVal('leviAudio', s.leviAudio);
+            setVal('yisraelImage', s.yisraelImage); setVal('yisraelAudio', s.yisraelAudio);
+            
+            setVal('sheniImage', s.sheniImage); setVal('sheniAudio', s.sheniAudio);
+            setVal('shlishiImage', s.shlishiImage); setVal('shlishiAudio', s.shlishiAudio);
+            setVal('reviiImage', s.reviiImage); setVal('reviiAudio', s.reviiAudio);
+            setVal('chamishiImage', s.chamishiImage); setVal('chamishiAudio', s.chamishiAudio);
+            setVal('shishiImage', s.shishiImage); setVal('shishiAudio', s.shishiAudio);
+            setVal('shviiImage', s.shviiImage); setVal('shviiAudio', s.shviiAudio);
+            
+            setVal('otherSingleName', s.otherSingleName || 'שני');
+            setVal('otherSingleImage', s.otherSingleImage); setVal('otherSingleAudio', s.otherSingleAudio);
 
-            document.getElementById('shabbatImage').value = s.shabbatImage || '';
-            document.getElementById('shabbatAudio').value = s.shabbatAudio || '';
-            document.getElementById('shabbatAudioTitle').value = s.shabbatAudioTitle || '';
-            
-            document.getElementById('rishonImage').value = s.rishonImage || '';
-            document.getElementById('rishonAudio').value = s.rishonAudio || '';
-            document.getElementById('rishonAudioTitle').value = s.rishonAudioTitle || '';
-            
-            document.getElementById('maftirImage').value = s.maftirImage || '';
-            document.getElementById('maftirAudio').value = s.maftirAudio || '';
-            document.getElementById('maftirAudioTitle').value = s.maftirAudioTitle || '';
+            setVal('maftirImage', s.maftirImage || s.rishonImage); 
+            setVal('maftirAudio', s.maftirAudio || s.rishonAudio);
+            setVal('shabbatImage', s.shabbatImage); 
+            setVal('shabbatAudio', s.shabbatAudio);
             
             // טעינת מילים ספציפיות
             tempSpecificWords = s.specificWords ? [...s.specificWords] : [];
             window.renderSpecificWordsList();
             document.getElementById('enableSpecificWords').checked = !!s.enableSpecificWords;
             window.toggleSpecificWordsEditor();
-            
-            window.updateMorningLibrarySelector();
-            window.updateShabbatLibrarySelectors();
         }
 
         window.deleteStudent = (id) => {
