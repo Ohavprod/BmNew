@@ -62,6 +62,13 @@
         .word-btn { transition: transform 0.1s, box-shadow 0.2s; }
         .word-btn:active { transform: scale(0.95); }
 
+        /* מודאל תמונה על מסך מלא */
+        #imageModal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 9999999; display: none; justify-content: center; align-items: center; padding: 15px; flex-direction: column; backdrop-filter: blur(5px); }
+        #imageModal.active { display: flex; }
+        #imageModal img { max-width: 100%; max-height: 90vh; border-radius: 10px; border: 2px solid #fbbf24; object-fit: contain; box-shadow: 0 10px 40px rgba(0,0,0,0.8); }
+        .close-img-btn { position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.1); color: white; width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; cursor: pointer; transition: 0.2s; border: 1px solid rgba(255,255,255,0.3); z-index: 10; }
+        .close-img-btn:hover { background: #ef4444; border-color: #ef4444; transform: scale(1.1); }
+
         /* === התאמות למובייל === */
         @media (max-width: 768px) {
             html { font-size: 13px; } 
@@ -73,6 +80,7 @@
             .action-btn { padding: 10px; font-size: 1rem; }
             h1.text-4xl { font-size: 2.2rem; }
             .modal-content { padding: 15px; }
+            .close-img-btn { top: 10px; right: 10px; width: 35px; height: 35px; font-size: 1.2rem; }
         }
     </style>
 </head>
@@ -194,6 +202,9 @@
                 <button onclick="refreshData(); toggleAdminSidebar();" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white p-4 rounded-xl text-right font-bold transition flex items-center text-lg">
                     <i class="fas fa-sync-alt w-8 text-blue-400 text-2xl"></i> רענן נתונים
                 </button>
+                <a href="index.html" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white p-4 rounded-xl text-right font-bold transition flex items-center block mt-6 text-lg">
+                    <i class="fas fa-home w-8 text-purple-400 text-2xl"></i> חזור לאתר הראשי
+                </a>
             </div>
         </div>
     </div>
@@ -254,7 +265,7 @@
         <div class="modal-content !max-w-4xl">
             <div class="flex justify-between items-center mb-6 border-b border-slate-700 pb-4">
                 <h3 class="text-2xl md:text-3xl font-bold text-white" id="studentFormTitle">הוסף תלמיד חדש</h3>
-                <button onclick="hideAddStudentForm()" class="text-slate-400 hover:text-white text-3xl"><i class="fas fa-times"></i></button>
+                <button type="button" onclick="hideAddStudentForm()" class="text-slate-400 hover:text-white text-3xl"><i class="fas fa-times"></i></button>
             </div>
             <form id="studentForm" onsubmit="addStudent(event)" class="space-y-5">
                 <input type="hidden" id="data-edit-id" value="">
@@ -379,6 +390,7 @@
                             <div class="w-4 h-4 bg-white rounded-full absolute right-1 top-1 transition-transform" id="toggleDot"></div>
                         </label>
                     </div>
+                    
                     <div id="specificWordsEditor" class="hidden">
                         <div class="flex flex-col sm:flex-row gap-2 mb-3">
                             <input type="text" id="newSpecificWordText" placeholder="המילה (לדוגמה: וְהָאָ֗רֶץ)" class="form-input flex-1 p-3 rounded-lg text-base">
@@ -403,12 +415,15 @@
                 <h3 class="text-2xl md:text-3xl font-black text-white"><i class="fas fa-headphones text-amber-400 ml-2"></i> עריכת ספריית הקלטות</h3>
                 <button onclick="closeModal('libraryEditor')" class="text-slate-400 hover:text-white text-3xl"><i class="fas fa-times"></i></button>
             </div>
+            
             <div class="flex mb-6 bg-slate-800 rounded-xl p-2 border border-slate-700 text-sm md:text-lg gap-1">
                 <button onclick="switchLibraryTab('parshiot')" id="tab-parshiot" class="flex-1 py-3 px-1 rounded-lg font-bold transition-all duration-300 bg-blue-600 text-white">📖 עליות</button>
                 <button onclick="switchLibraryTab('shabbat')" id="tab-shabbat" class="flex-1 py-3 px-1 rounded-lg font-bold transition-all duration-300 text-slate-400 hover:text-white hover:bg-slate-700">✡️ הפטרות</button>
                 <button onclick="switchLibraryTab('special')" id="tab-special" class="flex-1 py-3 px-1 rounded-lg font-bold transition-all duration-300 text-slate-400 hover:text-white hover:bg-slate-700">🎯 מיוחדות</button>
             </div>
+
             <div id="library-content"></div>
+
             <div class="text-center mt-8 pt-6 border-t border-slate-700 flex flex-col md:flex-row justify-center gap-4">
                 <button onclick="addNewLibraryItem()" class="bg-green-600 text-white px-8 py-4 rounded-xl font-bold hover:bg-green-500 transition shadow-lg text-lg w-full md:w-auto"><i class="fas fa-plus ml-2"></i> הוסף פריט חדש</button>
                 <button onclick="saveLibraryChanges()" class="bg-blue-600 text-white px-8 py-4 rounded-xl font-bold hover:bg-blue-500 transition shadow-lg text-lg w-full md:w-auto"><i class="fas fa-save ml-2"></i> שמור שינויים לגיליון</button>
@@ -416,7 +431,7 @@
         </div>
     </div>
 
-    <!-- מודלים כלליים -->
+    <!-- מודלים כלליים (אישור וקלט) -->
     <div id="confirmDialog" class="modal-overlay">
         <div class="modal-content !max-w-sm text-center border-red-500/50">
             <i class="fas fa-exclamation-triangle text-5xl text-amber-400 mb-4"></i>
@@ -442,8 +457,14 @@
         </div>
     </div>
 
+    <!-- מודאל תמונה בגדול -->
+    <div id="imageModal" onclick="closeImageModal(event)">
+        <button class="close-img-btn" onclick="closeImageModal(event)" title="סגור"><i class="fas fa-times"></i></button>
+        <img id="fullScreenImage" src="" alt="תמונה מוגדלת" onclick="event.stopPropagation()">
+    </div>
+
     <script>
-        // === שים פה את הלינק שלך מגוגל שיטס ===
+        // === הלינק שלך לכאן ===
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxxWyhjHXAUmXmc3yYtRh3FHwsrbzD0BkwoWkaZBIZJS7er3no50wDNvnB28qMNwvz5lw/exec";
         
         let students = [];
@@ -471,12 +492,14 @@
             document.getElementById('confirmTitle').textContent = title;
             document.getElementById('confirmMessage').textContent = message;
             window.openModal('confirmDialog');
+            
             const yesBtn = document.getElementById('confirmYes');
             const noBtn = document.getElementById('confirmNo');
             const newYes = yesBtn.cloneNode(true);
             const newNo = noBtn.cloneNode(true);
             yesBtn.parentNode.replaceChild(newYes, yesBtn);
             noBtn.parentNode.replaceChild(newNo, noBtn);
+            
             newYes.addEventListener('click', () => { window.closeModal('confirmDialog'); if(onConfirm) onConfirm(); });
             newNo.addEventListener('click', () => window.closeModal('confirmDialog'));
         };
@@ -486,27 +509,43 @@
             document.getElementById('inputMessage').textContent = message;
             const inputEl = document.getElementById('inputField');
             inputEl.value = defaultValue;
+            
             window.openModal('inputDialog');
             setTimeout(() => inputEl.focus(), 100);
+
             const submitBtn = document.getElementById('inputSubmit');
             const cancelBtn = document.getElementById('inputCancel');
             const newSubmit = submitBtn.cloneNode(true);
             const newCancel = cancelBtn.cloneNode(true);
             submitBtn.parentNode.replaceChild(newSubmit, submitBtn);
             cancelBtn.parentNode.replaceChild(newCancel, cancelBtn);
-            const handleSub = () => { const val = document.getElementById('inputField').value.trim(); window.closeModal('inputDialog'); if(onSubmit && val) onSubmit(val); };
+            
+            const handleSub = () => {
+                const val = document.getElementById('inputField').value.trim();
+                window.closeModal('inputDialog');
+                if(onSubmit && val) onSubmit(val);
+            };
+
             newSubmit.addEventListener('click', handleSub);
             newCancel.addEventListener('click', () => window.closeModal('inputDialog'));
             inputEl.onkeydown = (e) => { if(e.key === 'Enter') handleSub(); };
         };
 
+        // סנכרון POST
         window.syncToGoogleSheets = async function(action, data, callback) {
             if (!GOOGLE_SCRIPT_URL) return callback && callback({ success: false });
             document.getElementById('globalLoader').style.display = 'flex';
+            
             let baseUrl = GOOGLE_SCRIPT_URL;
             if (baseUrl.includes('?mode=api')) baseUrl = baseUrl.replace('?mode=api', '');
+            
             try {
-                const response = await fetch(baseUrl, { method: 'POST', body: JSON.stringify({ action: action, data: data }), headers: { 'Content-Type': 'text/plain;charset=utf-8' } });
+                const response = await fetch(baseUrl, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: action, data: data }),
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+                });
+                
                 const resData = await response.json();
                 document.getElementById('globalLoader').style.display = 'none';
                 if(callback) callback(resData);
@@ -520,21 +559,25 @@
             document.getElementById('globalLoader').style.display = 'flex';
             let baseUrl = GOOGLE_SCRIPT_URL;
             if (baseUrl.includes('?mode=api')) baseUrl = baseUrl.replace('?mode=api', '');
-            fetch(baseUrl + '?action=load').then(res => res.json()).then(response => {
-                document.getElementById('globalLoader').style.display = 'none';
-                if (response && response.success && response.data) {
-                    students = response.data;
-                    if (response.library) recordingsLibrary = response.library;
-                    localStorage.setItem('barMitzvahStudents', JSON.stringify(students));
-                } else {
+            
+            fetch(baseUrl + '?action=load')
+                .then(res => res.json())
+                .then(response => {
+                    document.getElementById('globalLoader').style.display = 'none';
+                    if (response && response.success && response.data) {
+                        students = response.data;
+                        if (response.library) recordingsLibrary = response.library;
+                        localStorage.setItem('barMitzvahStudents', JSON.stringify(students));
+                    } else {
+                        students = JSON.parse(localStorage.getItem('barMitzvahStudents')) || [];
+                    }
+                    if (callback) callback();
+                })
+                .catch(err => {
+                    document.getElementById('globalLoader').style.display = 'none';
                     students = JSON.parse(localStorage.getItem('barMitzvahStudents')) || [];
-                }
-                if (callback) callback();
-            }).catch(err => {
-                document.getElementById('globalLoader').style.display = 'none';
-                students = JSON.parse(localStorage.getItem('barMitzvahStudents')) || [];
-                if (callback) callback();
-            });
+                    if (callback) callback();
+                });
         };
 
         window.saveToGoogleSheets = function(studentData, callback) {
@@ -547,6 +590,7 @@
             const phoneSection = document.getElementById('phoneSection');
             const passwordSection = document.getElementById('passwordSection');
             const passwordInput = document.getElementById('loginPassword');
+
             if (name.toLowerCase() === 'admin') {
                 phoneSection.classList.add('hidden');
                 passwordSection.classList.remove('hidden');
@@ -555,6 +599,7 @@
                 passwordSection.classList.add('hidden');
                 passwordInput.removeAttribute('required');
                 passwordInput.value = '';
+                
                 const matches = students.filter(s => String(s.name || '').trim() === name);
                 if (matches.length > 1) phoneSection.classList.remove('hidden');
                 else phoneSection.classList.add('hidden');
@@ -566,8 +611,14 @@
             const name = document.getElementById('loginName').value.trim();
             const phone = document.getElementById('loginPhone').value.trim();
             const password = document.getElementById('loginPassword').value.trim();
+            
             if (name.toLowerCase() === 'admin') {
-                if (password === 'aviv123') { isAdmin = true; currentUser = { name: 'מנהל המערכת' }; } else { return window.customAlert('סיסמה שגויה!', true); }
+                if (password === 'aviv123') {
+                    isAdmin = true;
+                    currentUser = { name: 'מנהל המערכת' };
+                } else {
+                    return window.customAlert('סיסמה שגויה!', true);
+                }
             } else {
                 const matches = students.filter(s => String(s.name || '').trim() === name);
                 if (matches.length === 0) return window.customAlert('תלמיד לא נמצא במערכת', true);
@@ -576,25 +627,35 @@
                     const exact = matches.find(s => String(s.studentPhone || '').trim() === phone || String(s.parentPhone || '').trim() === phone);
                     if (!exact) return window.customAlert('הנייד לא תואם', true);
                     currentUser = exact;
-                } else { currentUser = matches[0]; }
+                } else {
+                    currentUser = matches[0];
+                }
                 isAdmin = false;
             }
+
             document.getElementById('loginScreen').style.display = 'none';
             document.getElementById('mainSystem').classList.remove('hidden');
             document.getElementById('welcomeMessage').innerText = `שלום, ${currentUser.name}!`;
+            
             if (isAdmin) {
                 document.getElementById('adminToolsBtn').classList.remove('hidden');
                 document.getElementById('addStudentBtnWrapper').classList.remove('hidden');
             }
+            
             window.renderStudents();
         };
 
         window.logout = () => { location.reload(); };
 
-        // פונקציות נגן וזום
-        window.skipAudio = (audioId, seconds) => { const audio = document.getElementById(audioId); if (audio) { audio.currentTime = Math.max(0, Math.min(audio.duration || 0, audio.currentTime + seconds)); } };
+        // שליטה בנגן וזום
+        window.skipAudio = (audioId, seconds) => {
+            const audio = document.getElementById(audioId);
+            if (audio) { audio.currentTime = Math.max(0, Math.min(audio.duration || 0, audio.currentTime + seconds)); }
+        };
+
         window.zoomImg = (imgId, direction) => {
-            const img = document.getElementById(imgId); if(!img) return;
+            const img = document.getElementById(imgId);
+            if(!img) return;
             let currentWidth = parseFloat(img.getAttribute('data-width')) || 100;
             currentWidth += (direction * 25); 
             if(currentWidth < 100) currentWidth = 100;
@@ -602,17 +663,37 @@
             img.setAttribute('data-width', currentWidth);
             img.style.width = `${currentWidth}%`;
         };
+
+        // פתיחה וסגירה של תמונה במסך מלא
+        window.openImageModal = (src) => {
+            if (!src) return;
+            document.getElementById('fullScreenImage').src = src;
+            document.getElementById('imageModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        };
+
+        window.closeImageModal = (e) => {
+            if (e && e.target.id === 'fullScreenImage') return;
+            document.getElementById('imageModal').classList.remove('active');
+            document.body.style.overflow = 'auto';
+            setTimeout(() => { document.getElementById('fullScreenImage').src = ''; }, 300);
+        };
         
+        // נגן גלובלי למילים בודדות
         let currentWordAudio = null;
         window.playWordAudio = (url) => {
-            if (currentWordAudio) { currentWordAudio.pause(); currentWordAudio.currentTime = 0; }
+            if (currentWordAudio) {
+                currentWordAudio.pause();
+                currentWordAudio.currentTime = 0;
+            }
             currentWordAudio = new Audio(url);
             currentWordAudio.play().catch(e => window.customAlert('שגיאה בהשמעת המילה. ודא שהקישור תקין וציבורי.', true));
         };
 
         function calculateDaysRemaining(dateStr) {
             if (!dateStr) return 0;
-            const eventDate = new Date(dateStr); const today = new Date();
+            const eventDate = new Date(dateStr);
+            const today = new Date();
             eventDate.setHours(0,0,0,0); today.setHours(0,0,0,0);
             return Math.round((eventDate - today) / (1000 * 60 * 60 * 24));
         }
@@ -627,7 +708,10 @@
         function formatTime(timeStr) {
             if (!timeStr) return '';
             let t = String(timeStr).replace(/'/g, '').trim();
-            if (t.includes('T')) { const match = t.match(/T(\d{2}:\d{2})/); if (match && match[1]) return match[1]; }
+            if (t.includes('T')) {
+                const match = t.match(/T(\d{2}:\d{2})/);
+                if (match && match[1]) return match[1];
+            }
             return t;
         }
 
@@ -650,7 +734,7 @@
                             <button type="button" onclick="window.zoomImg('img-${elementIdPrefix}', -1)" class="zoom-btn" title="הקטן"><i class="fas fa-search-minus"></i></button>
                         </div>
                         <div class="rounded-xl border border-slate-700 bg-slate-950 overflow-auto max-h-[70vh] custom-scrollbar shadow-inner text-center">
-                            <img id="img-${elementIdPrefix}" src="${imgSrc}" class="inline-block" style="width: 100%; max-width: none !important; height: auto; transition: width 0.2s ease; image-rendering: high-quality;" data-width="100" onerror="this.style.display='none';">
+                            <img id="img-${elementIdPrefix}" src="${imgSrc}" class="inline-block" style="width: 100%; max-width: none !important; height: auto; transition: width 0.2s ease; image-rendering: high-quality; cursor: zoom-in;" data-width="100" onclick="window.openImageModal('${imgSrc}')" onerror="this.style.display='none';" title="לחץ להגדלה">
                         </div>
                     </div>
                 `;
@@ -704,11 +788,13 @@
 
             let activeStudents = displayStudents.filter(s => calculateDaysRemaining(s.eventDate) >= 0);
             activeStudents.sort((a,b) => new Date(a.eventDate) - new Date(b.eventDate));
+
             let pastStudents = displayStudents.filter(s => calculateDaysRemaining(s.eventDate) < 0);
             pastStudents.sort((a,b) => new Date(b.eventDate) - new Date(a.eventDate));
 
             const renderCard = (s, isDone) => {
                 const days = calculateDaysRemaining(s.eventDate);
+                
                 let badgeClass = 'bg-blue-600 border-2 border-white/30 text-lg py-2 px-5';
                 let badgeText = `נותרו ${days} ימים`;
                 if(days === 0) { badgeClass = 'bg-amber-500 text-black border-2 border-white/50 text-lg py-2 px-5'; badgeText = 'האירוע היום! 🎉'; }
@@ -720,12 +806,11 @@
                     : `<div class="bg-blue-900/40 text-blue-200 text-center py-3 rounded-xl font-bold text-lg border border-blue-800/50 mt-5 shadow-inner"><i class="fas fa-trophy text-amber-400 ml-1"></i> מספר שיעורים עד כה: ${lessonCount}</div>`;
 
                 let materialsHtml = '';
-                const et = s.eventType || 'rishon_only'; 
+                const et = s.eventType || 'aliyah'; 
                 const isLegacyShabbatOnly = (et === 'shabbat-chatan');
 
-             // 1. עליית ראשון
+                // 1. עליית ראשון (מחולק או מלא)
                 if (et !== 'other_single' && !isLegacyShabbatOnly) {
-                    // בדיקה מקיפה: האם יש איזושהי תמונה או הקלטה באחד מהשדות?
                     const hasFullRishon = s.morningImage || s.morningAudio;
                     const hasSplitRishon = s.kohenImage || s.kohenAudio || s.leviImage || s.leviAudio || s.yisraelImage || s.yisraelAudio;
                     
@@ -741,19 +826,20 @@
                         materialsHtml += `</div>`;
                     }
                 }
-                // 2. כל הפרשה
+
+                // 2. כל הפרשה (שני עד שביעי)
                 if (et === 'full_parsha') {
                     materialsHtml += `<div class="mt-5"><h4 class="text-purple-400 font-bold border-b border-slate-700 pb-2 mb-3 text-xl"><i class="fas fa-scroll ml-1"></i> שאר עליות הפרשה</h4>`;
-                    if(s.sheniAudio) materialsHtml += buildInlineMaterial(s.sheniImage, s.sheniAudio, "שני", `${s.id}-sheni`);
-                    if(s.shlishiAudio) materialsHtml += buildInlineMaterial(s.shlishiImage, s.shlishiAudio, "שלישי", `${s.id}-shlishi`);
-                    if(s.reviiAudio) materialsHtml += buildInlineMaterial(s.reviiImage, s.reviiAudio, "רביעי", `${s.id}-revii`);
-                    if(s.chamishiAudio) materialsHtml += buildInlineMaterial(s.chamishiImage, s.chamishiAudio, "חמישי", `${s.id}-chamishi`);
-                    if(s.shishiAudio) materialsHtml += buildInlineMaterial(s.shishiImage, s.shishiAudio, "שישי", `${s.id}-shishi`);
-                    if(s.shviiAudio) materialsHtml += buildInlineMaterial(s.shviiImage, s.shviiAudio, "שביעי", `${s.id}-shvii`);
+                    if(s.sheniImage || s.sheniAudio) materialsHtml += buildInlineMaterial(s.sheniImage, s.sheniAudio, "שני", `${s.id}-sheni`);
+                    if(s.shlishiImage || s.shlishiAudio) materialsHtml += buildInlineMaterial(s.shlishiImage, s.shlishiAudio, "שלישי", `${s.id}-shlishi`);
+                    if(s.reviiImage || s.reviiAudio) materialsHtml += buildInlineMaterial(s.reviiImage, s.reviiAudio, "רביעי", `${s.id}-revii`);
+                    if(s.chamishiImage || s.chamishiAudio) materialsHtml += buildInlineMaterial(s.chamishiImage, s.chamishiAudio, "חמישי", `${s.id}-chamishi`);
+                    if(s.shishiImage || s.shishiAudio) materialsHtml += buildInlineMaterial(s.shishiImage, s.shishiAudio, "שישי", `${s.id}-shishi`);
+                    if(s.shviiImage || s.shviiAudio) materialsHtml += buildInlineMaterial(s.shviiImage, s.shviiAudio, "שביעי", `${s.id}-shvii`);
                     materialsHtml += `</div>`;
                 }
 
-                // 3. קטע בודד
+                // 3. קטע בודד אחר
                 if (et === 'other_single') {
                     materialsHtml += `<div class="mt-5"><h4 class="text-teal-400 font-bold border-b border-slate-700 pb-2 mb-3 text-xl"><i class="fas fa-bookmark ml-1"></i> ${s.otherSingleName || 'קטע נבחר'}</h4>`;
                     materialsHtml += buildInlineMaterial(s.otherSingleImage, s.otherSingleAudio, s.otherSingleName || "קטע בודד", `${s.id}-other`);
@@ -762,16 +848,17 @@
 
                 // 4. מפטיר והפטרה
                 if (['rishon_maftir_haftarah', 'full_parsha', 'both', 'shabbat-chatan'].includes(et)) {
-                    if (s.maftirAudio || s.rishonAudio || s.shabbatAudio) {
+                    const mfImg = s.maftirImage || s.rishonImage; 
+                    const mfAud = s.maftirAudio || s.rishonAudio;
+                    if (mfImg || mfAud || s.shabbatImage || s.shabbatAudio) {
                         materialsHtml += `<div class="mt-5"><h4 class="text-blue-400 font-bold border-b border-slate-700 pb-2 mb-3 text-xl"><i class="fas fa-star-of-david ml-1"></i> מפטיר והפטרה</h4>`;
-                        const mfImg = s.maftirImage || s.rishonImage; 
-                        const mfAud = s.maftirAudio || s.rishonAudio;
-                        if(mfAud) materialsHtml += buildInlineMaterial(mfImg, mfAud, "מפטיר", `${s.id}-maftir`);
-                        if(s.shabbatAudio) materialsHtml += buildInlineMaterial(s.shabbatImage, s.shabbatAudio, "הפטרה", `${s.id}-haftarah`);
+                        if(mfImg || mfAud) materialsHtml += buildInlineMaterial(mfImg, mfAud, "מפטיר", `${s.id}-maftir`);
+                        if(s.shabbatImage || s.shabbatAudio) materialsHtml += buildInlineMaterial(s.shabbatImage, s.shabbatAudio, "הפטרה", `${s.id}-haftarah`);
                         materialsHtml += `</div>`;
                     }
                 }
                 
+                // תצוגת מילים ממוקדות לתלמיד
                 let specificWordsHtml = '';
                 if (s.enableSpecificWords && s.specificWords && s.specificWords.length > 0) {
                     const wordsButtons = s.specificWords.map(w => {
@@ -790,7 +877,9 @@
                     specificWordsHtml = `
                         <div class="mt-5 bg-slate-900/60 p-4 rounded-xl border border-teal-700/50 shadow-inner">
                             <h4 class="text-teal-400 font-bold mb-3 text-lg"><i class="fas fa-headphones-alt ml-1"></i> מילים קשות לתרגול ממוקד</h4>
-                            <div class="flex flex-wrap gap-3">${wordsButtons}</div>
+                            <div class="flex flex-wrap gap-3">
+                                ${wordsButtons}
+                            </div>
                         </div>
                     `;
                 }
@@ -843,7 +932,9 @@
                         </div>
 
                         ${materialsHtml}
+                        
                         ${specificWordsHtml}
+                        
                         ${lessonsBadge}
 
                         ${isAdmin ? `
@@ -863,16 +954,20 @@
             if(isAdmin) pastStudents.forEach(s => renderCard(s, true));
         };
 
-        window.openGlobalCalendar = () => { /* הלוגיקה שלך ליומן - נשארה זהה */
+        // יומן גלובלי למנהל
+        window.openGlobalCalendar = () => {
             const list = document.getElementById('globalCalendarList');
             let upcoming = students.filter(s => s.nextLessonDate);
+            
             upcoming.sort((a, b) => {
                 const dateA = new Date(a.nextLessonDate + 'T' + (a.nextLessonTime ? formatTime(a.nextLessonTime) : '00:00'));
                 const dateB = new Date(b.nextLessonDate + 'T' + (b.nextLessonTime ? formatTime(b.nextLessonTime) : '00:00'));
                 return dateA - dateB;
             });
-            if(upcoming.length === 0) { list.innerHTML = '<div class="text-center text-slate-400 py-8 text-xl">לא נקבעו שיעורים עתידיים לאף תלמיד.</div>'; }
-            else {
+
+            if(upcoming.length === 0) {
+                list.innerHTML = '<div class="text-center text-slate-400 py-8 text-xl">לא נקבעו שיעורים עתידיים לאף תלמיד.</div>';
+            } else {
                 list.innerHTML = upcoming.map(s => `
                     <div class="bg-slate-800 p-4 rounded-xl border-l-4 border-indigo-500 flex flex-col sm:flex-row justify-between items-start sm:items-center shadow-lg hover:bg-slate-700 transition gap-4">
                         <div class="flex-1 cursor-pointer w-full" onclick="window.openLessonModal('${s.id}')">
@@ -881,9 +976,15 @@
                             <div class="text-amber-400 font-black text-xl mt-2">${formatDate(s.nextLessonDate)} | ${formatTime(s.nextLessonTime) || 'שעה לא צוינה'}</div>
                         </div>
                         <div class="flex gap-2 w-full sm:w-auto mt-3 sm:mt-0 border-t border-slate-700 pt-3 sm:border-0 sm:pt-0">
-                            <button onclick="window.addToGoogleCalendar('${s.name}', '${s.nextLessonDate}', '${s.nextLessonTime}', '${s.parsha}')" class="bg-blue-600 hover:bg-blue-500 text-white p-3 rounded-lg flex-1 sm:flex-none flex justify-center items-center transition" title="הוסף ליומן גוגל"><i class="fab fa-google ml-2"></i> ליומן</button>
-                            <button onclick="window.sendWhatsAppReminder('${s.name}', '${s.studentPhone || s.parentPhone}', '${s.nextLessonDate}', '${s.nextLessonTime}')" class="bg-green-500 hover:bg-green-400 text-white p-3 rounded-lg flex-1 sm:flex-none flex justify-center items-center transition" title="שלח תזכורת בוואטסאפ"><i class="fab fa-whatsapp text-xl"></i></button>
-                            <button onclick="window.deleteNextLesson('${s.id}', event)" class="bg-red-600 hover:bg-red-500 text-white p-3 rounded-lg flex-1 sm:flex-none flex justify-center items-center transition" title="בטל שיעור"><i class="fas fa-trash"></i></button>
+                            <button onclick="window.addToGoogleCalendar('${s.name}', '${s.nextLessonDate}', '${s.nextLessonTime}', '${s.parsha}')" class="bg-blue-600 hover:bg-blue-500 text-white p-3 rounded-lg flex-1 sm:flex-none flex justify-center items-center transition" title="הוסף ליומן גוגל">
+                                <i class="fab fa-google ml-2"></i> ליומן
+                            </button>
+                            <button onclick="window.sendWhatsAppReminder('${s.name}', '${s.studentPhone || s.parentPhone}', '${s.nextLessonDate}', '${s.nextLessonTime}')" class="bg-green-500 hover:bg-green-400 text-white p-3 rounded-lg flex-1 sm:flex-none flex justify-center items-center transition" title="שלח תזכורת בוואטסאפ">
+                                <i class="fab fa-whatsapp text-xl"></i>
+                            </button>
+                            <button onclick="window.deleteNextLesson('${s.id}', event)" class="bg-red-600 hover:bg-red-500 text-white p-3 rounded-lg flex-1 sm:flex-none flex justify-center items-center transition" title="בטל שיעור">
+                                <i class="fas fa-trash"></i>
+                            </button>
                         </div>
                     </div>
                 `).join('');
@@ -891,14 +992,17 @@
             window.openModal('globalCalendarModal');
         };
 
+        // מעקב שיעורים פרטני
         window.openLessonModal = (id) => {
             const student = students.find(s => String(s.id) === String(id));
             if(!student) return;
             currentEditingStudentId = id;
             document.getElementById('lessonModalTitle').innerText = `יומן שיעורים: ${student.name}`;
+            
             const nDate = student.nextLessonDate ? new Date(student.nextLessonDate).toISOString().split('T')[0] : '';
             document.getElementById('modalNextLessonDate').value = nDate;
             document.getElementById('modalNextLessonTime').value = formatTime(student.nextLessonTime) || '';
+            
             window.resetLessonForm();
             window.renderLessonsList(student);
             window.openModal('lessonModal');
@@ -908,10 +1012,17 @@
             const dateVal = document.getElementById('modalNextLessonDate').value;
             const timeVal = document.getElementById('modalNextLessonTime').value;
             const student = students.find(s => String(s.id) === String(currentEditingStudentId));
-            student.nextLessonDate = dateVal; student.nextLessonTime = timeVal;
+            
+            student.nextLessonDate = dateVal;
+            student.nextLessonTime = timeVal;
+            
             window.saveToGoogleSheets(student, (res) => {
-                if(res.success) { window.customAlert('מועד השיעור הבא עודכן!'); window.renderStudents(); } 
-                else { window.customAlert('שגיאה בעדכון התאריך', true); }
+                if(res.success) {
+                    window.customAlert('מועד השיעור הבא עודכן!');
+                    window.renderStudents();
+                } else {
+                    window.customAlert('שגיאה בעדכון התאריך', true);
+                }
             });
         };
 
@@ -919,8 +1030,10 @@
             const list = document.getElementById('lessonsList');
             const lessons = student.lessons || [];
             document.getElementById('lessonCountBadge').innerText = `סה"כ עבר ${lessons.length} שיעורים`;
-            if (lessons.length === 0) { list.innerHTML = '<div class="text-slate-500 text-center py-6 bg-slate-800/30 rounded-xl border border-slate-700 text-lg">טרם תועדו שיעורים לתלמיד זה.</div>'; } 
-            else {
+            
+            if (lessons.length === 0) {
+                list.innerHTML = '<div class="text-slate-500 text-center py-6 bg-slate-800/30 rounded-xl border border-slate-700 text-lg">טרם תועדו שיעורים לתלמיד זה.</div>';
+            } else {
                 const sorted = [...lessons].sort((a,b) => new Date(b.date) - new Date(a.date));
                 list.innerHTML = sorted.map((l, idx) => `
                     <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 flex justify-between items-start hover:border-blue-500/50 transition group">
@@ -941,10 +1054,12 @@
             document.getElementById('newLessonDate').value = new Date().toISOString().split('T')[0];
             document.getElementById('newLessonSummary').value = '';
             document.getElementById('editingLessonId').value = '';
+            
             const btn = document.getElementById('saveLessonBtn');
             btn.innerText = 'שמור שיעור חדש';
             btn.className = 'bg-green-600 hover:bg-green-500 text-white font-bold py-3 rounded-lg transition shadow-md flex-1 text-lg';
             btn.onclick = window.addNewLesson;
+            
             document.getElementById('cancelEditLessonBtn').classList.add('hidden');
         };
 
@@ -952,14 +1067,23 @@
             const date = document.getElementById('newLessonDate').value;
             const summary = document.getElementById('newLessonSummary').value.trim();
             if (!date || !summary) return window.customAlert('יש להזין תאריך וסיכום שיעור', true);
+
             const student = students.find(s => String(s.id) === String(currentEditingStudentId));
             if (!student.lessons) student.lessons = [];
+            
             const lessonId = 'lsn-' + Date.now();
             student.lessons.push({ id: lessonId, date, summary });
+            
             const lessonData = { lessonId: lessonId, studentId: student.id, date: date, summary: summary };
             window.syncToGoogleSheets('addLesson', lessonData, function(res) {
-                if(res.success) { window.customAlert('השיעור תועד בהצלחה!'); window.renderLessonsList(student); window.renderStudents(); window.resetLessonForm(); } 
-                else { window.customAlert('שגיאה: ' + (res.error || 'שגיאת תקשורת'), true); }
+                if(res.success) {
+                    window.customAlert('השיעור תועד בהצלחה!');
+                    window.renderLessonsList(student);
+                    window.renderStudents();
+                    window.resetLessonForm();
+                } else {
+                    window.customAlert('שגיאה: ' + (res.error || 'שגיאת תקשורת'), true);
+                }
             });
         };
 
@@ -967,13 +1091,16 @@
             const student = students.find(s => String(s.id) === String(currentEditingStudentId));
             const sorted = [...student.lessons].sort((a,b) => new Date(b.date) - new Date(a.date));
             const lessonToEdit = sorted[index];
+
             document.getElementById('newLessonDate').value = lessonToEdit.date ? new Date(lessonToEdit.date).toISOString().split('T')[0] : '';
             document.getElementById('newLessonSummary').value = lessonToEdit.summary;
             document.getElementById('editingLessonId').value = lessonToEdit.id;
+
             const btn = document.getElementById('saveLessonBtn');
             btn.innerHTML = 'עדכן שיעור <i class="fas fa-save ml-1"></i>';
             btn.className = 'bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-lg transition shadow-md flex-1 text-lg';
             btn.onclick = window.saveEditedLesson;
+            
             document.getElementById('cancelEditLessonBtn').classList.remove('hidden');
         };
 
@@ -982,14 +1109,24 @@
             const date = document.getElementById('newLessonDate').value;
             const summary = document.getElementById('newLessonSummary').value.trim();
             if (!date || !summary) return window.customAlert('יש להזין תאריך וסיכום שיעור', true);
+
             const student = students.find(s => String(s.id) === String(currentEditingStudentId));
             const realIndex = student.lessons.findIndex(l => String(l.id) === String(lessonId));
+            
             if(realIndex > -1) {
-                student.lessons[realIndex].date = date; student.lessons[realIndex].summary = summary;
+                student.lessons[realIndex].date = date;
+                student.lessons[realIndex].summary = summary;
+                
                 const lessonData = { lessonId: lessonId, date: date, summary: summary };
                 window.syncToGoogleSheets('updateLesson', lessonData, function(res) {
-                    if(res.success) { window.customAlert('השיעור עודכן בהצלחה!'); window.resetLessonForm(); window.renderLessonsList(student); window.renderStudents(); } 
-                    else { window.customAlert('שגיאה: ' + (res.error || 'שגיאת תקשורת'), true); }
+                    if(res.success) {
+                        window.customAlert('השיעור עודכן בהצלחה!');
+                        window.resetLessonForm();
+                        window.renderLessonsList(student);
+                        window.renderStudents();
+                    } else {
+                        window.customAlert('שגיאה: ' + (res.error || 'שגיאת תקשורת'), true);
+                    }
                 });
             }
         };
@@ -1000,134 +1137,33 @@
                 const sorted = [...student.lessons].sort((a,b) => new Date(b.date) - new Date(a.date));
                 const lessonToDelete = sorted[index];
                 const realIndex = student.lessons.findIndex(l => String(l.id) === String(lessonToDelete.id));
+                
                 if(realIndex > -1) {
                     student.lessons.splice(realIndex, 1);
                     if(lessonToDelete.id) {
-                         window.syncToGoogleSheets('deleteLesson', { lessonId: lessonToDelete.id }, function() { window.customAlert('השיעור נמחק בהצלחה'); window.renderLessonsList(student); window.renderStudents(); });
+                         window.syncToGoogleSheets('deleteLesson', { lessonId: lessonToDelete.id }, function() {
+                            window.customAlert('השיעור נמחק בהצלחה');
+                            window.renderLessonsList(student);
+                            window.renderStudents();
+                        });
                     }
                 }
             });
         };
 
-        window.showLibraryEditor = () => { window.openModal('libraryEditor'); window.switchLibraryTab('parshiot'); }
-        window.hideLibraryEditor = () => { window.closeModal('libraryEditor'); }
-
-        window.switchLibraryTab = (tabName) => {
-            currentLibraryTab = tabName;
-            ['parshiot', 'shabbat', 'special'].forEach(t => {
-                const btn = document.getElementById(`tab-${t}`);
-                if(t === tabName) { btn.classList.add('bg-blue-600', 'text-white'); btn.classList.remove('text-slate-400', 'bg-slate-800'); }
-                else { btn.classList.remove('bg-blue-600', 'text-white'); btn.classList.add('text-slate-400'); }
-            });
-            window.renderLibraryContent(tabName);
-        }
-
-        window.renderLibraryContent = function(tabName) {
-            const content = document.getElementById('library-content');
-            const library = recordingsLibrary[tabName] || {};
-            if(Object.keys(library).length === 0) { content.innerHTML = '<div class="text-center py-8 text-slate-500 text-lg">אין פריטים בקטגוריה זו. לחץ על "הוסף פריט חדש".</div>'; return; }
-            content.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                ${Object.entries(library).map(([name, data]) => `
-                    <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 relative group" data-name="${name}">
-                        <div class="flex justify-between items-start mb-3">
-                            <h5 class="text-xl font-bold text-white">${name}</h5>
-                            <div class="flex gap-2 transition opacity-100 md:opacity-0 md:group-hover:opacity-100">
-                                <button type="button" onclick="window.editLibraryItem('${tabName}', '${name}')" class="text-blue-400 hover:text-blue-300 p-2 bg-slate-900 rounded border border-slate-600"><i class="fas fa-edit"></i></button>
-                                <button type="button" onclick="window.deleteLibraryItem('${tabName}', '${name}')" class="text-red-400 hover:text-red-300 p-2 bg-slate-900 rounded border border-slate-600"><i class="fas fa-trash"></i></button>
-                            </div>
-                        </div>
-                        <div class="text-base text-slate-400 space-y-1">
-                            <div class="truncate"><i class="fas fa-image text-blue-400 w-6"></i> ${data.image ? 'יש תמונה' : 'אין תמונה'}</div>
-                            <div class="truncate"><i class="fas fa-music text-purple-400 w-6"></i> ${data.audio ? 'יש הקלטה' : 'אין הקלטה'}</div>
-                        </div>
-                    </div>
-                `).join('')}
-            </div>`;
-        }
-
-        window.editLibraryItem = (tabName, itemName) => {
-            const item = recordingsLibrary[tabName][itemName];
-            const div = document.querySelector(`[data-name="${itemName}"]`);
-            div.innerHTML = `
-                <div class="bg-slate-900/80 -m-4 p-4 rounded-xl border border-amber-500/50">
-                    <input type="text" id="edit-name-${itemName}" value="${itemName}" class="form-input w-full p-3 mb-2 rounded-lg text-base" placeholder="שם הפריט">
-                    <input type="url" id="edit-image-${itemName}" value="${item.image || ''}" class="form-input w-full p-3 mb-2 rounded-lg text-base" placeholder="לינק לתמונה">
-                    <input type="url" id="edit-audio-${itemName}" value="${item.audio || ''}" class="form-input w-full p-3 mb-4 rounded-lg text-base" placeholder="לינק להקלטה">
-                    <div class="flex gap-2">
-                        <button type="button" onclick="window.saveLibraryItem('${tabName}', '${itemName}')" class="bg-green-600 text-white px-4 py-3 rounded-lg flex-1 font-bold text-lg hover:bg-green-500">שמור</button>
-                        <button type="button" onclick="window.switchLibraryTab('${tabName}')" class="bg-slate-600 text-white px-4 py-3 rounded-lg flex-1 text-lg hover:bg-slate-500">ביטול</button>
-                    </div>
-                </div>
-            `;
-        }
-
-        window.saveLibraryItem = (tabName, oldName) => {
-            const newName = document.getElementById(`edit-name-${oldName}`).value.trim();
-            const newImage = document.getElementById(`edit-image-${oldName}`).value.trim();
-            const newAudio = document.getElementById(`edit-audio-${oldName}`).value.trim();
-            if(!newName) return window.customAlert('שם הפריט הוא חובה', true);
-            if(oldName !== newName && recordingsLibrary[tabName][newName]) return window.customAlert('שם זה כבר קיים', true);
-            if(oldName !== newName) delete recordingsLibrary[tabName][oldName];
-            recordingsLibrary[tabName][newName] = { image: newImage, audio: newAudio };
-            window.renderLibraryContent(tabName);
-        }
-
-        window.addNewLibraryItem = () => {
-            window.showInputDialog('הוסף פריט חדש', 'הכנס שם לפריט (למשל: פרשת נח):', '', (newName) => {
-                if(!newName) return;
-                if(!recordingsLibrary[currentLibraryTab]) recordingsLibrary[currentLibraryTab] = {};
-                if(recordingsLibrary[currentLibraryTab][newName]) return window.customAlert('פריט כזה כבר קיים', true);
-                recordingsLibrary[currentLibraryTab][newName] = { image: '', audio: '' };
-                window.renderLibraryContent(currentLibraryTab);
-                setTimeout(() => window.editLibraryItem(currentLibraryTab, newName), 100);
-            });
-        }
-
-        window.deleteLibraryItem = (tabName, itemName) => { window.showConfirmDialog(`למחוק את "${itemName}" מהספרייה?`, () => { delete recordingsLibrary[tabName][itemName]; window.renderLibraryContent(tabName); }); }
-
-        window.saveLibraryChanges = () => { window.syncToGoogleSheets('saveLibrary', recordingsLibrary, (res) => { if(res.success) { window.customAlert('הספרייה נשמרה בהצלחה!'); window.hideLibraryEditor(); } else window.customAlert('שגיאה בשמירה', true); }); }
-
-        // --- מילים ספציפיות בטופס ---
-        window.toggleSpecificWordsEditor = () => {
-            const isChecked = document.getElementById('enableSpecificWords').checked;
-            document.getElementById('specificWordsEditor').classList.toggle('hidden', !isChecked);
-            document.getElementById('toggleBg').classList.toggle('bg-teal-500', isChecked);
-            document.getElementById('toggleBg').classList.toggle('bg-slate-600', !isChecked);
-            document.getElementById('toggleDot').style.transform = isChecked ? 'translateX(-24px)' : 'translateX(0)';
-        };
-
-        window.addSpecificWord = () => {
-            const word = document.getElementById('newSpecificWordText').value.trim();
-            const audio = document.getElementById('newSpecificWordAudio').value.trim();
-            if(!word || !audio) return window.customAlert('יש להזין מילה ולינק להקלטה', true);
-            tempSpecificWords.push({ id: 'word-' + Date.now(), word: word, audio: audio });
-            document.getElementById('newSpecificWordText').value = ''; document.getElementById('newSpecificWordAudio').value = '';
-            window.renderSpecificWordsList();
-        };
-
-        window.removeSpecificWord = (id) => { tempSpecificWords = tempSpecificWords.filter(w => w.id !== id); window.renderSpecificWordsList(); };
-
-        window.renderSpecificWordsList = () => {
-            const list = document.getElementById('specificWordsList');
-            if(tempSpecificWords.length === 0) { list.innerHTML = '<div class="text-slate-400 text-base text-center py-4 bg-slate-900/50 rounded-lg">לא נוספו מילים לתרגול עדיין.</div>'; return; }
-            list.innerHTML = tempSpecificWords.map(w => `
-                <div class="flex justify-between items-center bg-slate-900 p-3 rounded-lg border border-teal-800/50">
-                    <div class="flex-1 text-teal-300 font-bold text-lg">${w.word}</div>
-                    <button type="button" onclick="window.removeSpecificWord('${w.id}')" class="text-red-400 hover:text-red-300 p-2 bg-slate-800 rounded transition"><i class="fas fa-trash"></i></button>
-                </div>
-            `).join('');
-        };
-
-        // לוגיקה לתצוגת השדות
+        // לוגיקה חדשה לתצוגת השדות
         window.toggleEventDetails = () => {
             const val = document.getElementById('eventType').value;
+            
             document.getElementById('sectionRishon').classList.add('hidden');
             document.getElementById('sectionMaftirHaftarah').classList.add('hidden');
             document.getElementById('sectionFullParsha').classList.add('hidden');
             document.getElementById('sectionOtherSingle').classList.add('hidden');
             document.getElementById('shabbatChatanDateField').classList.add('hidden');
             
-            if (val === 'rishon_only' || val === 'aliyah') { document.getElementById('sectionRishon').classList.remove('hidden'); } 
+            if (val === 'rishon_only' || val === 'aliyah') {
+                document.getElementById('sectionRishon').classList.remove('hidden');
+            } 
             else if (val === 'rishon_maftir_haftarah' || val === 'both') {
                 document.getElementById('sectionRishon').classList.remove('hidden');
                 document.getElementById('sectionMaftirHaftarah').classList.remove('hidden');
@@ -1139,7 +1175,9 @@
                 document.getElementById('sectionFullParsha').classList.remove('hidden');
                 document.getElementById('shabbatChatanDateField').classList.remove('hidden');
             }
-            else if (val === 'other_single') { document.getElementById('sectionOtherSingle').classList.remove('hidden'); }
+            else if (val === 'other_single') {
+                document.getElementById('sectionOtherSingle').classList.remove('hidden');
+            }
         };
 
         window.toggleRishonSplit = () => {
@@ -1153,8 +1191,8 @@
             document.getElementById('studentForm').removeAttribute('data-edit-id');
             document.getElementById('studentFormTitle').innerText = 'הוסף תלמיד חדש';
             document.getElementById('eventType').value = 'rishon_only'; 
-            currentEditingStudentId = null;
             
+            currentEditingStudentId = null;
             tempSpecificWords = [];
             window.renderSpecificWordsList();
             document.getElementById('enableSpecificWords').checked = false;
@@ -1212,29 +1250,28 @@
                 specificWords: tempSpecificWords
             };
 
-            window.saveToGoogleSheets(studentData, (res) => { 
-                if(res.success) { 
-                    window.customAlert('נשמר בהצלחה'); 
-                    window.hideAddStudentForm(); 
-                    window.loadFromGoogleSheets(window.renderStudents); 
-                } else { 
-                    window.customAlert('שגיאה בשמירה', true); 
-                } 
+            window.saveToGoogleSheets(studentData, (res) => {
+                if(res.success) {
+                    window.customAlert('עודכן בהצלחה');
+                    window.hideAddStudentForm();
+                    window.loadFromGoogleSheets(window.renderStudents);
+                } else {
+                    window.customAlert('שגיאה בעדכון', true);
+                }
             });
         }
 
         window.editStudent = (id) => {
             const s = students.find(x => String(x.id) === String(id));
-            if(!s) { console.error("Student ID not found in array"); return; }
+            if(!s) return;
             
-            // קריטי לשמירת ההקשר הנכון
             currentEditingStudentId = s.id;
             
             window.showAddStudentForm();
             document.getElementById('studentFormTitle').innerText = `ערוך: ${s.name}`;
             document.getElementById('studentForm').setAttribute('data-edit-id', s.id);
             
-            const setVal = (htmlId, val) => { const el = document.getElementById(htmlId); if(el) el.value = val || ''; };
+            const setVal = (id, val) => { if(document.getElementById(id)) document.getElementById(id).value = val || ''; };
 
             setVal('studentName', s.name);
             try { if(s.eventDate) setVal('eventDate', new Date(s.eventDate).toISOString().split('T')[0]); } catch(e){}
@@ -1292,85 +1329,275 @@
         }
 
         window.toggleAdminSidebar = () => {
-            document.getElementById('adminSidebar').classList.toggle('translate-x-full');
-            document.getElementById('sidebarOverlay').classList.toggle('hidden');
+            const sb = document.getElementById('adminSidebar');
+            const ov = document.getElementById('sidebarOverlay');
+            sb.classList.toggle('translate-x-full');
+            ov.classList.toggle('hidden');
         }
 
-        window.toggleCompletedStudents = () => { document.getElementById('completedStudentsSection').classList.toggle('hidden'); }
+        window.toggleCompletedStudents = () => {
+            document.getElementById('completedStudentsSection').classList.toggle('hidden');
+        }
 
-        window.refreshData = () => { window.loadFromGoogleSheets(() => { window.customAlert('נתונים רעננו בהצלחה'); window.renderStudents(); }); }
+        window.refreshData = () => {
+            window.loadFromGoogleSheets(() => { window.customAlert('נתונים רעננו בהצלחה'); window.renderStudents(); });
+        }
 
+        // === הוספה ליומן גוגל, תזכורת וואטסאפ ומחיקת שיעור עתידי ===
         window.addToGoogleCalendar = (studentName, dateStr, timeStr, parsha) => {
             if (!dateStr) return window.customAlert('אין תאריך לשיעור', true);
+            
             let startDateTime, endDateTime;
+            
             if (timeStr) {
                 const cleanTime = formatTime(timeStr);
                 const [year, month, day] = dateStr.split('-').map(Number);
                 const [hours, minutes] = cleanTime.split(':').map(Number);
+                
                 const startDate = new Date(year, month - 1, day, hours, minutes);
                 const endDate = new Date(startDate.getTime() + 60 * 60 * 1000);
-                const formatForGCal = (d) => { return `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}T${String(d.getHours()).padStart(2, '0')}${String(d.getMinutes()).padStart(2, '0')}00`; };
-                startDateTime = formatForGCal(startDate); endDateTime = formatForGCal(endDate);
+                
+                const formatForGCal = (d) => {
+                    const y = d.getFullYear();
+                    const m = String(d.getMonth() + 1).padStart(2, '0');
+                    const dd = String(d.getDate()).padStart(2, '0');
+                    const hh = String(d.getHours()).padStart(2, '0');
+                    const mm = String(d.getMinutes()).padStart(2, '0');
+                    return `${y}${m}${dd}T${hh}${mm}00`;
+                };
+                
+                startDateTime = formatForGCal(startDate);
+                endDateTime = formatForGCal(endDate);
             } else {
                 const [year, month, day] = dateStr.split('-').map(Number);
                 const startDate = new Date(year, month - 1, day);
                 const endDate = new Date(year, month - 1, day + 1);
-                const formatForGCalDate = (d) => { return `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`; };
-                startDateTime = formatForGCalDate(startDate); endDateTime = formatForGCalDate(endDate);
+                
+                const formatForGCalDate = (d) => {
+                    const y = d.getFullYear();
+                    const m = String(d.getMonth() + 1).padStart(2, '0');
+                    const dd = String(d.getDate()).padStart(2, '0');
+                    return `${y}${m}${dd}`;
+                };
+                
+                startDateTime = formatForGCalDate(startDate);
+                endDateTime = formatForGCalDate(endDate);
             }
+
             const title = encodeURIComponent(`שיעור בר מצווה - ${studentName}`);
             const details = encodeURIComponent(`שיעור בר מצווה לתלמיד ${studentName}.\nפרשה: ${parsha || 'לא צוינה'}`);
-            window.open(`https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${startDateTime}/${endDateTime}&details=${details}&ctz=Asia/Jerusalem`, '_blank');
+            
+            const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${startDateTime}/${endDateTime}&details=${details}&ctz=Asia/Jerusalem`;
+            window.open(url, '_blank');
         };
 
         window.sendWhatsAppReminder = (studentName, phone, dateStr, timeStr) => {
             if (!phone) return window.customAlert('לא מוזן מספר טלפון לתלמיד (או להורה) זה', true);
+            
             let formattedPhone = phone.replace(/\D/g, ''); 
-            if (formattedPhone.startsWith('0')) formattedPhone = '972' + formattedPhone.substring(1);
+            if (formattedPhone.startsWith('0')) {
+                formattedPhone = '972' + formattedPhone.substring(1);
+            }
+
             const time = formatTime(timeStr) ? `בשעה ${formatTime(timeStr)}` : '';
             const message = `היי ${studentName} אלוף! 👑\nרציתי להזכיר שיש לנו מחר שיעור בר מצווה ${time}.\nנתראה, אביב!`;
-            window.open(`https://wa.me/${formattedPhone}?text=${encodeURIComponent(message)}`, '_blank');
+            
+            const encodedMessage = encodeURIComponent(message);
+            const url = `https://wa.me/${formattedPhone}?text=${encodedMessage}`;
+            
+            window.open(url, '_blank');
         };
 
         window.deleteNextLesson = (studentId, event) => {
             if (event) event.stopPropagation(); 
+            
             window.showConfirmDialog('האם לבטל ולמחוק את מועד השיעור העתידי שנקבע?', () => {
                 const student = students.find(s => String(s.id) === String(studentId));
                 if (!student) return;
-                student.nextLessonDate = ""; student.nextLessonTime = "";
+                
+                student.nextLessonDate = "";
+                student.nextLessonTime = "";
+                
                 window.saveToGoogleSheets(student, (res) => {
                     if(res.success) {
                         window.customAlert('מועד השיעור בוטל!');
-                        window.renderStudents(); 
+                        window.loadFromGoogleSheets(window.renderStudents);
                         const globalCal = document.getElementById('globalCalendarModal');
-                        if(globalCal && globalCal.classList.contains('active')) window.openGlobalCalendar(); 
-                    } else { window.customAlert('שגיאה במחיקת התאריך', true); }
+                        if(globalCal && globalCal.classList.contains('active')) {
+                            window.openGlobalCalendar(); 
+                        }
+                    } else {
+                        window.customAlert('שגיאה במחיקת התאריך', true);
+                    }
                 });
             });
         };
+        
+        // ספריית הקלטות (עזרים פנימיים)
+        window.showLibraryEditor = () => { window.openModal('libraryEditor'); window.switchLibraryTab('parshiot'); }
+        window.hideLibraryEditor = () => { window.closeModal('libraryEditor'); }
 
-        window.addEventListener('load', () => { window.loadFromGoogleSheets(); });
+        window.switchLibraryTab = (tabName) => {
+            currentLibraryTab = tabName;
+            ['parshiot', 'shabbat', 'special'].forEach(t => {
+                const btn = document.getElementById(`tab-${t}`);
+                if(t === tabName) { btn.classList.add('bg-blue-600', 'text-white'); btn.classList.remove('text-slate-400', 'bg-slate-800'); }
+                else { btn.classList.remove('bg-blue-600', 'text-white'); btn.classList.add('text-slate-400'); }
+            });
+            window.renderLibraryContent(tabName);
+        }
+
+        window.renderLibraryContent = function(tabName) {
+            const content = document.getElementById('library-content');
+            const library = recordingsLibrary[tabName] || {};
+            
+            if(Object.keys(library).length === 0) {
+                content.innerHTML = '<div class="text-center py-8 text-slate-500 text-lg">אין פריטים בקטגוריה זו. לחץ על "הוסף פריט חדש".</div>';
+                return;
+            }
+
+            content.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                ${Object.entries(library).map(([name, data]) => `
+                    <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 relative group" data-name="${name}">
+                        <div class="flex justify-between items-start mb-3">
+                            <h5 class="text-xl font-bold text-white">${name}</h5>
+                            <div class="flex gap-2 transition opacity-100 md:opacity-0 md:group-hover:opacity-100">
+                                <button type="button" onclick="window.editLibraryItem('${tabName}', '${name}')" class="text-blue-400 hover:text-blue-300 p-2 bg-slate-900 rounded border border-slate-600"><i class="fas fa-edit"></i></button>
+                                <button type="button" onclick="window.deleteLibraryItem('${tabName}', '${name}')" class="text-red-400 hover:text-red-300 p-2 bg-slate-900 rounded border border-slate-600"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                        <div class="text-base text-slate-400 space-y-1">
+                            <div class="truncate"><i class="fas fa-image text-blue-400 w-6"></i> ${data.image ? 'יש תמונה' : 'אין תמונה'}</div>
+                            <div class="truncate"><i class="fas fa-music text-purple-400 w-6"></i> ${data.audio ? 'יש הקלטה' : 'אין הקלטה'}</div>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>`;
+        }
+
+        window.editLibraryItem = (tabName, itemName) => {
+            const item = recordingsLibrary[tabName][itemName];
+            const div = document.querySelector(`[data-name="${itemName}"]`);
+            
+            div.innerHTML = `
+                <div class="bg-slate-900/80 -m-4 p-4 rounded-xl border border-amber-500/50">
+                    <input type="text" id="edit-name-${itemName}" value="${itemName}" class="form-input w-full p-3 mb-2 rounded-lg text-base" placeholder="שם הפריט">
+                    <input type="url" id="edit-image-${itemName}" value="${item.image || ''}" class="form-input w-full p-3 mb-2 rounded-lg text-base" placeholder="לינק לתמונה">
+                    <input type="url" id="edit-audio-${itemName}" value="${item.audio || ''}" class="form-input w-full p-3 mb-4 rounded-lg text-base" placeholder="לינק להקלטה">
+                    <div class="flex gap-2">
+                        <button type="button" onclick="window.saveLibraryItem('${tabName}', '${itemName}')" class="bg-green-600 text-white px-4 py-3 rounded-lg flex-1 font-bold text-lg hover:bg-green-500">שמור</button>
+                        <button type="button" onclick="window.switchLibraryTab('${tabName}')" class="bg-slate-600 text-white px-4 py-3 rounded-lg flex-1 text-lg hover:bg-slate-500">ביטול</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        window.saveLibraryItem = (tabName, oldName) => {
+            const newName = document.getElementById(`edit-name-${oldName}`).value.trim();
+            const newImage = document.getElementById(`edit-image-${oldName}`).value.trim();
+            const newAudio = document.getElementById(`edit-audio-${oldName}`).value.trim();
+            
+            if(!newName) return window.customAlert('שם הפריט הוא חובה', true);
+            if(oldName !== newName && recordingsLibrary[tabName][newName]) return window.customAlert('שם זה כבר קיים', true);
+            
+            if(oldName !== newName) delete recordingsLibrary[tabName][oldName];
+            recordingsLibrary[tabName][newName] = { image: newImage, audio: newAudio };
+            
+            window.renderLibraryContent(tabName);
+        }
+
+        window.addNewLibraryItem = () => {
+            window.showInputDialog('הוסף פריט חדש', 'הכנס שם לפריט (למשל: פרשת נח):', '', (newName) => {
+                if(!newName) return;
+                if(!recordingsLibrary[currentLibraryTab]) recordingsLibrary[currentLibraryTab] = {};
+                if(recordingsLibrary[currentLibraryTab][newName]) return window.customAlert('פריט כזה כבר קיים', true);
+                
+                recordingsLibrary[currentLibraryTab][newName] = { image: '', audio: '' };
+                window.renderLibraryContent(currentLibraryTab);
+                setTimeout(() => window.editLibraryItem(currentLibraryTab, newName), 100);
+            });
+        }
+
+        window.deleteLibraryItem = (tabName, itemName) => {
+            window.showConfirmDialog(`למחוק את "${itemName}" מהספרייה?`, () => {
+                delete recordingsLibrary[tabName][itemName];
+                window.renderLibraryContent(tabName);
+            });
+        }
+
+        window.saveLibraryChanges = () => {
+            window.syncToGoogleSheets('saveLibrary', recordingsLibrary, (res) => {
+                if(res.success) {
+                    window.customAlert('הספרייה נשמרה בהצלחה!');
+                    window.hideLibraryEditor();
+                } else window.customAlert('שגיאה בשמירה', true);
+            });
+        }
+
+        // --- מילים ספציפיות בטופס ---
+        window.toggleSpecificWordsEditor = () => {
+            const isChecked = document.getElementById('enableSpecificWords').checked;
+            document.getElementById('specificWordsEditor').classList.toggle('hidden', !isChecked);
+            document.getElementById('toggleBg').classList.toggle('bg-teal-500', isChecked);
+            document.getElementById('toggleBg').classList.toggle('bg-slate-600', !isChecked);
+            document.getElementById('toggleDot').style.transform = isChecked ? 'translateX(-24px)' : 'translateX(0)';
+        };
+
+        window.addSpecificWord = () => {
+            const word = document.getElementById('newSpecificWordText').value.trim();
+            const audio = document.getElementById('newSpecificWordAudio').value.trim();
+            if(!word || !audio) return window.customAlert('יש להזין מילה ולינק להקלטה', true);
+            
+            tempSpecificWords.push({ id: 'word-' + Date.now(), word: word, audio: audio });
+            
+            document.getElementById('newSpecificWordText').value = '';
+            document.getElementById('newSpecificWordAudio').value = '';
+            window.renderSpecificWordsList();
+        };
+
+        window.removeSpecificWord = (id) => {
+            tempSpecificWords = tempSpecificWords.filter(w => w.id !== id);
+            window.renderSpecificWordsList();
+        };
+
+        window.renderSpecificWordsList = () => {
+            const list = document.getElementById('specificWordsList');
+            if(tempSpecificWords.length === 0) {
+                list.innerHTML = '<div class="text-slate-400 text-base text-center py-4 bg-slate-900/50 rounded-lg">לא נוספו מילים לתרגול עדיין.</div>';
+                return;
+            }
+            list.innerHTML = tempSpecificWords.map(w => `
+                <div class="flex justify-between items-center bg-slate-900 p-3 rounded-lg border border-teal-800/50">
+                    <div class="flex-1 text-teal-300 font-bold text-lg">${w.word}</div>
+                    <button type="button" onclick="window.removeSpecificWord('${w.id}')" class="text-red-400 hover:text-red-300 p-2 bg-slate-800 rounded transition"><i class="fas fa-trash"></i></button>
+                </div>
+            `).join('');
+        };
+
+
+        window.createLibrarySelectorHTML = function(type, targetImageId, targetAudioId, targetTitleId, placeholder) {
+            const lib = recordingsLibrary[type] || {};
+            let options = Object.keys(lib).map(k => `<option value="${k}">${k}</option>`).join('');
+            return `
+                <select onchange="window.populateFromLibrary('${type}', this.value, '${targetImageId}', '${targetAudioId}', '${targetTitleId}')" class="form-input w-full p-3 rounded-lg mb-3 text-base bg-blue-900/30">
+                    <option value="">${placeholder}</option>
+                    ${options}
+                </select>
+            `;
+        }
+
+        window.populateFromLibrary = (type, selection, targetImageId, targetAudioId, targetTitleId) => {
+            const recording = recordingsLibrary[type]?.[selection];
+            if(recording) {
+                if(targetImageId && document.getElementById(targetImageId)) document.getElementById(targetImageId).value = recording.image || '';
+                if(targetAudioId && document.getElementById(targetAudioId)) document.getElementById(targetAudioId).value = recording.audio || '';
+                if(targetTitleId && document.getElementById(targetTitleId)) document.getElementById(targetTitleId).value = `${selection}`;
+            }
+        }
+
+        window.addEventListener('load', () => {
+            window.loadFromGoogleSheets(() => {});
+        });
     </script>
-    <!-- מודאל תמונה בגדול -->
-    <div id="imageModal" onclick="closeImageModal(event)">
-        <button class="close-img-btn" onclick="closeImageModal(event)" title="סגור"><i class="fas fa-times"></i></button>
-        <img id="fullScreenImage" src="" alt="תמונה מוגדלת" onclick="event.stopPropagation()">
-        // פתיחה וסגירה של תמונה במסך מלא
-        window.openImageModal = (src) => {
-            if (!src) return;
-            document.getElementById('fullScreenImage').src = src;
-            document.getElementById('imageModal').classList.add('active');
-            document.body.style.overflow = 'hidden';
-        };
-
-        window.closeImageModal = (e) => {
-            // מוודא שלא סוגר אם לוחצים על התמונה עצמה (רק על הרקע או האיקס)
-            if (e && e.target.id === 'fullScreenImage') return;
-            document.getElementById('imageModal').classList.remove('active');
-            document.body.style.overflow = 'auto';
-            // מרוקן את התמונה אחרי חצי שנייה כדי שלא תהיה קפיצה בפתיחה הבאה
-            setTimeout(() => { document.getElementById('fullScreenImage').src = ''; }, 300);
-        };
-    </div>
 </body>
 </html>
