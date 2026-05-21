@@ -13,6 +13,10 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    
+    <!-- ספריית PanZoom להזזה והגדלת תמונות באצבעות/עכבר -->
+    <script src="https://unpkg.com/panzoom@9.4.0/dist/panzoom.min.js"></script>
+
     <style>
         /* --- בסיס עיצובי --- */
         html { font-size: 16px; } 
@@ -62,10 +66,12 @@
         .word-btn { transition: transform 0.1s, box-shadow 0.2s; }
         .word-btn:active { transform: scale(0.95); }
 
-        /* מודאל תמונה על מסך מלא */
+        /* מודאל תמונה על מסך מלא וזום */
         #imageModal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 9999999; display: none; justify-content: center; align-items: center; padding: 15px; flex-direction: column; backdrop-filter: blur(5px); }
         #imageModal.active { display: flex; }
-        #imageModal img { max-width: 100%; max-height: 90vh; border-radius: 10px; border: 2px solid #fbbf24; object-fit: contain; box-shadow: 0 10px 40px rgba(0,0,0,0.8); }
+        /* PanZoom דורש שהתמונה לא תהיה מוגבלת בצורה קשיחה כדי שאפשר יהיה להזיז אותה */
+        #imageModal img { max-width: 90vw; max-height: 80vh; border-radius: 10px; border: 2px solid #fbbf24; box-shadow: 0 10px 40px rgba(0,0,0,0.8); cursor: grab; touch-action: none; user-select: none; }
+        #imageModal img:active { cursor: grabbing; }
         .close-img-btn { position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.1); color: white; width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; cursor: pointer; transition: 0.2s; border: 1px solid rgba(255,255,255,0.3); z-index: 10; }
         .close-img-btn:hover { background: #ef4444; border-color: #ef4444; transform: scale(1.1); }
 
@@ -170,7 +176,7 @@
         </div>
     </div>
 
-    <!-- פאנל ניהול צדדי -->
+    <!-- פאנל מורה צדדי -->
     <div id="adminSidebar" class="fixed top-0 right-0 h-full w-[85%] md:w-80 bg-slate-900 border-l border-slate-700 text-white shadow-[0_0_30px_rgba(0,0,0,0.8)] z-[100] transform translate-x-full transition-transform duration-300 overflow-y-auto">
         <div class="p-6">
             <div class="flex items-center justify-between mb-8 border-b border-slate-700 pb-4">
@@ -202,9 +208,6 @@
                 <button onclick="refreshData(); toggleAdminSidebar();" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white p-4 rounded-xl text-right font-bold transition flex items-center text-lg">
                     <i class="fas fa-sync-alt w-8 text-blue-400 text-2xl"></i> רענן נתונים
                 </button>
-                <a href="index.html" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white p-4 rounded-xl text-right font-bold transition flex items-center block mt-6 text-lg">
-                    <i class="fas fa-home w-8 text-purple-400 text-2xl"></i> חזור לאתר הראשי
-                </a>
             </div>
         </div>
     </div>
@@ -457,14 +460,14 @@
         </div>
     </div>
 
-    <!-- מודאל תמונה בגדול -->
-    <div id="imageModal" onclick="closeImageModal(event)">
-        <button class="close-img-btn" onclick="closeImageModal(event)" title="סגור"><i class="fas fa-times"></i></button>
-        <img id="fullScreenImage" src="" alt="תמונה מוגדלת" onclick="event.stopPropagation()">
+    <!-- מודאל תמונה בגדול (PanZoom) -->
+    <div id="imageModal">
+        <button class="close-img-btn" onclick="closeImageModal()" title="סגור"><i class="fas fa-times"></i></button>
+        <img id="fullScreenImage" src="" alt="תמונה מוגדלת">
     </div>
 
     <script>
-        // === הלינק שלך לכאן ===
+        // === שים פה את הלינק שלך מגוגל שיטס ===
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxxWyhjHXAUmXmc3yYtRh3FHwsrbzD0BkwoWkaZBIZJS7er3no50wDNvnB28qMNwvz5lw/exec";
         
         let students = [];
@@ -474,6 +477,7 @@
         let currentEditingStudentId = null;
         let currentLibraryTab = 'parshiot';
         let tempSpecificWords = [];
+        let pzInstance = null; // משתנה לזום תמונות
 
         window.customAlert = function(msg, isError = false) {
             const alm = document.getElementById('globalAlert');
@@ -647,7 +651,7 @@
 
         window.logout = () => { location.reload(); };
 
-        // שליטה בנגן וזום
+        // פונקציות נגן, זום ותמונות
         window.skipAudio = (audioId, seconds) => {
             const audio = document.getElementById(audioId);
             if (audio) { audio.currentTime = Math.max(0, Math.min(audio.duration || 0, audio.currentTime + seconds)); }
@@ -664,22 +668,32 @@
             img.style.width = `${currentWidth}%`;
         };
 
-        // פתיחה וסגירה של תמונה במסך מלא
         window.openImageModal = (src) => {
             if (!src) return;
-            document.getElementById('fullScreenImage').src = src;
+            const imgEl = document.getElementById('fullScreenImage');
+            imgEl.src = src;
             document.getElementById('imageModal').classList.add('active');
             document.body.style.overflow = 'hidden';
+
+            if (pzInstance) pzInstance.dispose();
+            pzInstance = panzoom(imgEl, {
+                maxZoom: 5,
+                minZoom: 0.5,
+                zoomDoubleClickSpeed: 1,
+                onTouch: function(e) { return true; } 
+            });
         };
 
-        window.closeImageModal = (e) => {
-            if (e && e.target.id === 'fullScreenImage') return;
+        window.closeImageModal = () => {
             document.getElementById('imageModal').classList.remove('active');
             document.body.style.overflow = 'auto';
+            if (pzInstance) {
+                pzInstance.dispose();
+                pzInstance = null;
+            }
             setTimeout(() => { document.getElementById('fullScreenImage').src = ''; }, 300);
         };
-        
-        // נגן גלובלי למילים בודדות
+
         let currentWordAudio = null;
         window.playWordAudio = (url) => {
             if (currentWordAudio) {
@@ -806,10 +820,9 @@
                     : `<div class="bg-blue-900/40 text-blue-200 text-center py-3 rounded-xl font-bold text-lg border border-blue-800/50 mt-5 shadow-inner"><i class="fas fa-trophy text-amber-400 ml-1"></i> מספר שיעורים עד כה: ${lessonCount}</div>`;
 
                 let materialsHtml = '';
-                const et = s.eventType || 'aliyah'; 
+                const et = s.eventType || 'rishon_only'; 
                 const isLegacyShabbatOnly = (et === 'shabbat-chatan');
 
-                // 1. עליית ראשון (מחולק או מלא)
                 if (et !== 'other_single' && !isLegacyShabbatOnly) {
                     const hasFullRishon = s.morningImage || s.morningAudio;
                     const hasSplitRishon = s.kohenImage || s.kohenAudio || s.leviImage || s.leviAudio || s.yisraelImage || s.yisraelAudio;
@@ -827,7 +840,6 @@
                     }
                 }
 
-                // 2. כל הפרשה (שני עד שביעי)
                 if (et === 'full_parsha') {
                     materialsHtml += `<div class="mt-5"><h4 class="text-purple-400 font-bold border-b border-slate-700 pb-2 mb-3 text-xl"><i class="fas fa-scroll ml-1"></i> שאר עליות הפרשה</h4>`;
                     if(s.sheniImage || s.sheniAudio) materialsHtml += buildInlineMaterial(s.sheniImage, s.sheniAudio, "שני", `${s.id}-sheni`);
@@ -839,14 +851,12 @@
                     materialsHtml += `</div>`;
                 }
 
-                // 3. קטע בודד אחר
                 if (et === 'other_single') {
                     materialsHtml += `<div class="mt-5"><h4 class="text-teal-400 font-bold border-b border-slate-700 pb-2 mb-3 text-xl"><i class="fas fa-bookmark ml-1"></i> ${s.otherSingleName || 'קטע נבחר'}</h4>`;
                     materialsHtml += buildInlineMaterial(s.otherSingleImage, s.otherSingleAudio, s.otherSingleName || "קטע בודד", `${s.id}-other`);
                     materialsHtml += `</div>`;
                 }
 
-                // 4. מפטיר והפטרה
                 if (['rishon_maftir_haftarah', 'full_parsha', 'both', 'shabbat-chatan'].includes(et)) {
                     const mfImg = s.maftirImage || s.rishonImage; 
                     const mfAud = s.maftirAudio || s.rishonAudio;
@@ -858,7 +868,6 @@
                     }
                 }
                 
-                // תצוגת מילים ממוקדות לתלמיד
                 let specificWordsHtml = '';
                 if (s.enableSpecificWords && s.specificWords && s.specificWords.length > 0) {
                     const wordsButtons = s.specificWords.map(w => {
@@ -954,7 +963,6 @@
             if(isAdmin) pastStudents.forEach(s => renderCard(s, true));
         };
 
-        // יומן גלובלי למנהל
         window.openGlobalCalendar = () => {
             const list = document.getElementById('globalCalendarList');
             let upcoming = students.filter(s => s.nextLessonDate);
@@ -992,7 +1000,6 @@
             window.openModal('globalCalendarModal');
         };
 
-        // מעקב שיעורים פרטני
         window.openLessonModal = (id) => {
             const student = students.find(s => String(s.id) === String(id));
             if(!student) return;
@@ -1151,7 +1158,7 @@
             });
         };
 
-        // לוגיקה חדשה לתצוגת השדות
+        // פונקציות הוספה ועריכה של תלמיד
         window.toggleEventDetails = () => {
             const val = document.getElementById('eventType').value;
             
@@ -1252,11 +1259,11 @@
 
             window.saveToGoogleSheets(studentData, (res) => {
                 if(res.success) {
-                    window.customAlert('עודכן בהצלחה');
+                    window.customAlert('נשמר בהצלחה');
                     window.hideAddStudentForm();
                     window.loadFromGoogleSheets(window.renderStudents);
                 } else {
-                    window.customAlert('שגיאה בעדכון', true);
+                    window.customAlert('שגיאה בשמירה', true);
                 }
             });
         }
@@ -1343,97 +1350,7 @@
             window.loadFromGoogleSheets(() => { window.customAlert('נתונים רעננו בהצלחה'); window.renderStudents(); });
         }
 
-        // === הוספה ליומן גוגל, תזכורת וואטסאפ ומחיקת שיעור עתידי ===
-        window.addToGoogleCalendar = (studentName, dateStr, timeStr, parsha) => {
-            if (!dateStr) return window.customAlert('אין תאריך לשיעור', true);
-            
-            let startDateTime, endDateTime;
-            
-            if (timeStr) {
-                const cleanTime = formatTime(timeStr);
-                const [year, month, day] = dateStr.split('-').map(Number);
-                const [hours, minutes] = cleanTime.split(':').map(Number);
-                
-                const startDate = new Date(year, month - 1, day, hours, minutes);
-                const endDate = new Date(startDate.getTime() + 60 * 60 * 1000);
-                
-                const formatForGCal = (d) => {
-                    const y = d.getFullYear();
-                    const m = String(d.getMonth() + 1).padStart(2, '0');
-                    const dd = String(d.getDate()).padStart(2, '0');
-                    const hh = String(d.getHours()).padStart(2, '0');
-                    const mm = String(d.getMinutes()).padStart(2, '0');
-                    return `${y}${m}${dd}T${hh}${mm}00`;
-                };
-                
-                startDateTime = formatForGCal(startDate);
-                endDateTime = formatForGCal(endDate);
-            } else {
-                const [year, month, day] = dateStr.split('-').map(Number);
-                const startDate = new Date(year, month - 1, day);
-                const endDate = new Date(year, month - 1, day + 1);
-                
-                const formatForGCalDate = (d) => {
-                    const y = d.getFullYear();
-                    const m = String(d.getMonth() + 1).padStart(2, '0');
-                    const dd = String(d.getDate()).padStart(2, '0');
-                    return `${y}${m}${dd}`;
-                };
-                
-                startDateTime = formatForGCalDate(startDate);
-                endDateTime = formatForGCalDate(endDate);
-            }
-
-            const title = encodeURIComponent(`שיעור בר מצווה - ${studentName}`);
-            const details = encodeURIComponent(`שיעור בר מצווה לתלמיד ${studentName}.\nפרשה: ${parsha || 'לא צוינה'}`);
-            
-            const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${startDateTime}/${endDateTime}&details=${details}&ctz=Asia/Jerusalem`;
-            window.open(url, '_blank');
-        };
-
-        window.sendWhatsAppReminder = (studentName, phone, dateStr, timeStr) => {
-            if (!phone) return window.customAlert('לא מוזן מספר טלפון לתלמיד (או להורה) זה', true);
-            
-            let formattedPhone = phone.replace(/\D/g, ''); 
-            if (formattedPhone.startsWith('0')) {
-                formattedPhone = '972' + formattedPhone.substring(1);
-            }
-
-            const time = formatTime(timeStr) ? `בשעה ${formatTime(timeStr)}` : '';
-            const message = `היי ${studentName} אלוף! 👑\nרציתי להזכיר שיש לנו מחר שיעור בר מצווה ${time}.\nנתראה, אביב!`;
-            
-            const encodedMessage = encodeURIComponent(message);
-            const url = `https://wa.me/${formattedPhone}?text=${encodedMessage}`;
-            
-            window.open(url, '_blank');
-        };
-
-        window.deleteNextLesson = (studentId, event) => {
-            if (event) event.stopPropagation(); 
-            
-            window.showConfirmDialog('האם לבטל ולמחוק את מועד השיעור העתידי שנקבע?', () => {
-                const student = students.find(s => String(s.id) === String(studentId));
-                if (!student) return;
-                
-                student.nextLessonDate = "";
-                student.nextLessonTime = "";
-                
-                window.saveToGoogleSheets(student, (res) => {
-                    if(res.success) {
-                        window.customAlert('מועד השיעור בוטל!');
-                        window.loadFromGoogleSheets(window.renderStudents);
-                        const globalCal = document.getElementById('globalCalendarModal');
-                        if(globalCal && globalCal.classList.contains('active')) {
-                            window.openGlobalCalendar(); 
-                        }
-                    } else {
-                        window.customAlert('שגיאה במחיקת התאריך', true);
-                    }
-                });
-            });
-        };
-        
-        // ספריית הקלטות (עזרים פנימיים)
+        // ספריית הקלטות
         window.showLibraryEditor = () => { window.openModal('libraryEditor'); window.switchLibraryTab('parshiot'); }
         window.hideLibraryEditor = () => { window.closeModal('libraryEditor'); }
 
@@ -1534,6 +1451,61 @@
             });
         }
 
+        // --- הוספה ליומן גוגל ותזכורות ---
+        window.addToGoogleCalendar = (studentName, dateStr, timeStr, parsha) => {
+            if (!dateStr) return window.customAlert('אין תאריך לשיעור', true);
+            let startDateTime, endDateTime;
+            if (timeStr) {
+                const cleanTime = formatTime(timeStr);
+                const [year, month, day] = dateStr.split('-').map(Number);
+                const [hours, minutes] = cleanTime.split(':').map(Number);
+                const startDate = new Date(year, month - 1, day, hours, minutes);
+                const endDate = new Date(startDate.getTime() + 60 * 60 * 1000);
+                const formatForGCal = (d) => { return `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}T${String(d.getHours()).padStart(2, '0')}${String(d.getMinutes()).padStart(2, '0')}00`; };
+                startDateTime = formatForGCal(startDate); endDateTime = formatForGCal(endDate);
+            } else {
+                const [year, month, day] = dateStr.split('-').map(Number);
+                const startDate = new Date(year, month - 1, day);
+                const endDate = new Date(year, month - 1, day + 1);
+                const formatForGCalDate = (d) => { return `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`; };
+                startDateTime = formatForGCalDate(startDate); endDateTime = formatForGCalDate(endDate);
+            }
+            const title = encodeURIComponent(`שיעור בר מצווה - ${studentName}`);
+            const details = encodeURIComponent(`שיעור בר מצווה לתלמיד ${studentName}.\nפרשה: ${parsha || 'לא צוינה'}`);
+            window.open(`https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${startDateTime}/${endDateTime}&details=${details}&ctz=Asia/Jerusalem`, '_blank');
+        };
+
+        window.sendWhatsAppReminder = (studentName, phone, dateStr, timeStr) => {
+            if (!phone) return window.customAlert('לא מוזן מספר טלפון לתלמיד (או להורה) זה', true);
+            let formattedPhone = phone.replace(/\D/g, ''); 
+            if (formattedPhone.startsWith('0')) { formattedPhone = '972' + formattedPhone.substring(1); }
+            const time = formatTime(timeStr) ? `בשעה ${formatTime(timeStr)}` : '';
+            const message = `היי ${studentName} אלוף! 👑\nרציתי להזכיר שיש לנו מחר שיעור בר מצווה ${time}.\nנתראה, אביב!`;
+            const encodedMessage = encodeURIComponent(message);
+            const url = `https://wa.me/${formattedPhone}?text=${encodedMessage}`;
+            window.open(url, '_blank');
+        };
+
+        window.deleteNextLesson = (studentId, event) => {
+            if (event) event.stopPropagation(); 
+            window.showConfirmDialog('האם לבטל ולמחוק את מועד השיעור העתידי שנקבע?', () => {
+                const student = students.find(s => String(s.id) === String(studentId));
+                if (!student) return;
+                student.nextLessonDate = "";
+                student.nextLessonTime = "";
+                window.saveToGoogleSheets(student, (res) => {
+                    if(res.success) {
+                        window.customAlert('מועד השיעור בוטל!');
+                        window.loadFromGoogleSheets(window.renderStudents);
+                        const globalCal = document.getElementById('globalCalendarModal');
+                        if(globalCal && globalCal.classList.contains('active')) { window.openGlobalCalendar(); }
+                    } else {
+                        window.customAlert('שגיאה במחיקת התאריך', true);
+                    }
+                });
+            });
+        };
+
         // --- מילים ספציפיות בטופס ---
         window.toggleSpecificWordsEditor = () => {
             const isChecked = document.getElementById('enableSpecificWords').checked;
@@ -1547,9 +1519,7 @@
             const word = document.getElementById('newSpecificWordText').value.trim();
             const audio = document.getElementById('newSpecificWordAudio').value.trim();
             if(!word || !audio) return window.customAlert('יש להזין מילה ולינק להקלטה', true);
-            
             tempSpecificWords.push({ id: 'word-' + Date.now(), word: word, audio: audio });
-            
             document.getElementById('newSpecificWordText').value = '';
             document.getElementById('newSpecificWordAudio').value = '';
             window.renderSpecificWordsList();
@@ -1574,7 +1544,6 @@
             `).join('');
         };
 
-
         window.createLibrarySelectorHTML = function(type, targetImageId, targetAudioId, targetTitleId, placeholder) {
             const lib = recordingsLibrary[type] || {};
             let options = Object.keys(lib).map(k => `<option value="${k}">${k}</option>`).join('');
@@ -1596,7 +1565,7 @@
         }
 
         window.addEventListener('load', () => {
-            window.loadFromGoogleSheets(() => {});
+            window.loadFromGoogleSheets();
         });
     </script>
 </body>
