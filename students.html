@@ -69,7 +69,7 @@
         /* מודאל תמונה על מסך מלא וזום */
         #imageModal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 9999999; display: none; justify-content: center; align-items: center; padding: 15px; flex-direction: column; backdrop-filter: blur(5px); }
         #imageModal.active { display: flex; }
-        /* PanZoom דורש שהתמונה לא תהיה מוגבלת בצורה קשיחה כדי שאפשר יהיה להזיז אותה */
+        /* מסירים מגבלות קשיחות מדי כדי שהספרייה תוכל לפעול כראוי */
         #imageModal img { max-width: 90vw; max-height: 80vh; border-radius: 10px; border: 2px solid #fbbf24; box-shadow: 0 10px 40px rgba(0,0,0,0.8); cursor: grab; touch-action: none; user-select: none; }
         #imageModal img:active { cursor: grabbing; }
         .close-img-btn { position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.1); color: white; width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; cursor: pointer; transition: 0.2s; border: 1px solid rgba(255,255,255,0.3); z-index: 10; }
@@ -176,7 +176,7 @@
         </div>
     </div>
 
-    <!-- פאנל מורה צדדי -->
+    <!-- פאנל ניהול צדדי -->
     <div id="adminSidebar" class="fixed top-0 right-0 h-full w-[85%] md:w-80 bg-slate-900 border-l border-slate-700 text-white shadow-[0_0_30px_rgba(0,0,0,0.8)] z-[100] transform translate-x-full transition-transform duration-300 overflow-y-auto">
         <div class="p-6">
             <div class="flex items-center justify-between mb-8 border-b border-slate-700 pb-4">
@@ -460,9 +460,9 @@
         </div>
     </div>
 
-    <!-- מודאל תמונה בגדול (PanZoom) -->
-    <div id="imageModal">
-        <button class="close-img-btn" onclick="closeImageModal()" title="סגור"><i class="fas fa-times"></i></button>
+    <!-- מודאל תמונה בגדול -->
+    <div id="imageModal" onclick="closeImageModal()">
+        <i class="fas fa-times close-img-btn"></i>
         <img id="fullScreenImage" src="" alt="תמונה מוגדלת">
     </div>
 
@@ -477,7 +477,7 @@
         let currentEditingStudentId = null;
         let currentLibraryTab = 'parshiot';
         let tempSpecificWords = [];
-        let pzInstance = null; // משתנה לזום תמונות
+        let pzInstance = null; // משתנה גלובלי לספריית הזום
 
         window.customAlert = function(msg, isError = false) {
             const alm = document.getElementById('globalAlert');
@@ -678,7 +678,9 @@
             if (pzInstance) pzInstance.dispose();
             pzInstance = panzoom(imgEl, {
                 maxZoom: 5,
-                minZoom: 0.5,
+                minZoom: 1, // מונע הקטנה מהגודל המקורי
+                bounds: true, // מונע מהתמונה לברוח מהמסך
+                boundsPadding: 0.1,
                 zoomDoubleClickSpeed: 1,
                 onTouch: function(e) { return true; } 
             });
@@ -1158,7 +1160,6 @@
             });
         };
 
-        // פונקציות הוספה ועריכה של תלמיד
         window.toggleEventDetails = () => {
             const val = document.getElementById('eventType').value;
             
@@ -1350,7 +1351,6 @@
             window.loadFromGoogleSheets(() => { window.customAlert('נתונים רעננו בהצלחה'); window.renderStudents(); });
         }
 
-        // ספריית הקלטות
         window.showLibraryEditor = () => { window.openModal('libraryEditor'); window.switchLibraryTab('parshiot'); }
         window.hideLibraryEditor = () => { window.closeModal('libraryEditor'); }
 
@@ -1451,7 +1451,6 @@
             });
         }
 
-        // --- הוספה ליומן גוגל ותזכורות ---
         window.addToGoogleCalendar = (studentName, dateStr, timeStr, parsha) => {
             if (!dateStr) return window.customAlert('אין תאריך לשיעור', true);
             let startDateTime, endDateTime;
@@ -1506,53 +1505,10 @@
             });
         };
 
-        // --- מילים ספציפיות בטופס ---
-        window.toggleSpecificWordsEditor = () => {
-            const isChecked = document.getElementById('enableSpecificWords').checked;
-            document.getElementById('specificWordsEditor').classList.toggle('hidden', !isChecked);
-            document.getElementById('toggleBg').classList.toggle('bg-teal-500', isChecked);
-            document.getElementById('toggleBg').classList.toggle('bg-slate-600', !isChecked);
-            document.getElementById('toggleDot').style.transform = isChecked ? 'translateX(-24px)' : 'translateX(0)';
-        };
-
-        window.addSpecificWord = () => {
-            const word = document.getElementById('newSpecificWordText').value.trim();
-            const audio = document.getElementById('newSpecificWordAudio').value.trim();
-            if(!word || !audio) return window.customAlert('יש להזין מילה ולינק להקלטה', true);
-            tempSpecificWords.push({ id: 'word-' + Date.now(), word: word, audio: audio });
-            document.getElementById('newSpecificWordText').value = '';
-            document.getElementById('newSpecificWordAudio').value = '';
-            window.renderSpecificWordsList();
-        };
-
-        window.removeSpecificWord = (id) => {
-            tempSpecificWords = tempSpecificWords.filter(w => w.id !== id);
-            window.renderSpecificWordsList();
-        };
-
-        window.renderSpecificWordsList = () => {
-            const list = document.getElementById('specificWordsList');
-            if(tempSpecificWords.length === 0) {
-                list.innerHTML = '<div class="text-slate-400 text-base text-center py-4 bg-slate-900/50 rounded-lg">לא נוספו מילים לתרגול עדיין.</div>';
-                return;
-            }
-            list.innerHTML = tempSpecificWords.map(w => `
-                <div class="flex justify-between items-center bg-slate-900 p-3 rounded-lg border border-teal-800/50">
-                    <div class="flex-1 text-teal-300 font-bold text-lg">${w.word}</div>
-                    <button type="button" onclick="window.removeSpecificWord('${w.id}')" class="text-red-400 hover:text-red-300 p-2 bg-slate-800 rounded transition"><i class="fas fa-trash"></i></button>
-                </div>
-            `).join('');
-        };
-
         window.createLibrarySelectorHTML = function(type, targetImageId, targetAudioId, targetTitleId, placeholder) {
             const lib = recordingsLibrary[type] || {};
             let options = Object.keys(lib).map(k => `<option value="${k}">${k}</option>`).join('');
-            return `
-                <select onchange="window.populateFromLibrary('${type}', this.value, '${targetImageId}', '${targetAudioId}', '${targetTitleId}')" class="form-input w-full p-3 rounded-lg mb-3 text-base bg-blue-900/30">
-                    <option value="">${placeholder}</option>
-                    ${options}
-                </select>
-            `;
+            return `<select onchange="window.populateFromLibrary('${type}', this.value, '${targetImageId}', '${targetAudioId}', '${targetTitleId}')" class="form-input w-full p-3 rounded-lg mb-3 text-base bg-blue-900/30"><option value="">${placeholder}</option>${options}</select>`;
         }
 
         window.populateFromLibrary = (type, selection, targetImageId, targetAudioId, targetTitleId) => {
