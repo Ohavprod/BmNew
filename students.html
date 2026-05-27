@@ -68,10 +68,10 @@
         /* מודאל תמונה על מסך מלא וזום */
         #imageModal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 9999999; display: none; justify-content: center; align-items: center; padding: 15px; flex-direction: column; backdrop-filter: blur(5px); }
         #imageModal.active { display: flex; }
-        /* מסירים מגבלות קשיחות מדי כדי שהספרייה תוכל לפעול כראוי */
+        
         #imageModal img { max-width: 90vw; max-height: 80vh; border-radius: 10px; border: 2px solid #fbbf24; box-shadow: 0 10px 40px rgba(0,0,0,0.8); cursor: grab; touch-action: none; user-select: none; }
         #imageModal img:active { cursor: grabbing; }
-        .close-img-btn { position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.1); color: white; width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; cursor: pointer; transition: 0.2s; border: 1px solid rgba(255,255,255,0.3); z-index: 10; }
+        .close-img-btn { position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.1); color: white; width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; cursor: pointer; transition: 0.2s; border: 1px solid rgba(255,255,255,0.3); z-index: 10; outline: none; }
         .close-img-btn:hover { background: #ef4444; border-color: #ef4444; transform: scale(1.1); }
 
         /* === התאמות למובייל === */
@@ -446,9 +446,9 @@
         </div>
     </div>
 
-    <div id="imageModal" onclick="closeImageModal()">
-        <i class="fas fa-times close-img-btn"></i>
-        <img id="fullScreenImage" src="" alt="תמונה מוגדלת">
+    <div id="imageModal" onclick="if(event.target === this) closeImageModal()">
+        <button type="button" class="close-img-btn" onclick="closeImageModal()"><i class="fas fa-times"></i></button>
+        <img id="fullScreenImage" src="" alt="תמונה מוגדלת" onclick="event.stopPropagation()">
     </div>
 
     <script>
@@ -653,6 +653,7 @@
             img.style.width = `${currentWidth}%`;
         };
 
+        // התיקון המרכזי למערכת הזום
         window.openImageModal = (src) => {
             if (!src) return;
             const imgEl = document.getElementById('fullScreenImage');
@@ -661,13 +662,14 @@
             document.body.style.overflow = 'hidden';
 
             if (pzInstance) pzInstance.dispose();
+            
             pzInstance = panzoom(imgEl, {
                 maxZoom: 5,
-                minZoom: 1, // מונע הקטנה מהגודל המקורי
-                bounds: true, // מונע מהתמונה לברוח מהמסך
-                boundsPadding: 0.1,
-                zoomDoubleClickSpeed: 1,
-                onTouch: function(e) { return true; } 
+                minZoom: 1, 
+                bounds: true, 
+                boundsPadding: 0, // נועל את התמונה לגבולות כדי שלא תברח מהמסך
+                zoomDoubleClickSpeed: 1
+                // הוסר הקוד שביטל את הטאצ' הטבעי של הסמארטפונים
             });
         };
 
@@ -1179,7 +1181,6 @@
             document.getElementById('rishonSplitInputs').classList.toggle('hidden', !isSplit);
         };
 
-        // === ניהול מילים ספציפיות (הפונקציות שהיו חסרות) ===
         window.toggleSpecificWordsEditor = () => {
             const isChecked = document.getElementById('enableSpecificWords').checked;
             const editor = document.getElementById('specificWordsEditor');
@@ -1235,7 +1236,6 @@
             tempSpecificWords.splice(index, 1);
             window.renderSpecificWordsList();
         };
-        // ========================================================
 
         window.showAddStudentForm = () => {
             document.getElementById('studentForm').reset();
