@@ -12,15 +12,14 @@
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;700;900&display=swap" rel="stylesheet">
     
-    <!-- ספריית PanZoom להזזה והגדלת תמונות באצבעות/עכבר -->
     <script src="https://unpkg.com/panzoom@9.4.0/dist/panzoom.min.js"></script>
 
     <style>
         /* --- בסיס עיצובי --- */
         html { font-size: 16px; } 
-        body { font-family: 'Heebo', sans-serif; background-color: #051c42; color: #ffffff; min-height: 100vh; overflow-x: hidden; margin: 0; padding: 0; }
+        body { font-family: 'Rubik', sans-serif; background-color: #051c42; color: #ffffff; min-height: 100vh; overflow-x: hidden; margin: 0; padding: 0; }
         #fixed-background { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; background-image: linear-gradient(180deg, #051c42 0%, #021029 100%); pointer-events: none; }
         .gold-text { background: linear-gradient(45deg, #fbbf24, #d97706); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 900; }
         
@@ -176,7 +175,6 @@
         </div>
     </div>
 
-    <!-- פאנל ניהול צדדי -->
     <div id="adminSidebar" class="fixed top-0 right-0 h-full w-[85%] md:w-80 bg-slate-900 border-l border-slate-700 text-white shadow-[0_0_30px_rgba(0,0,0,0.8)] z-[100] transform translate-x-full transition-transform duration-300 overflow-y-auto">
         <div class="p-6">
             <div class="flex items-center justify-between mb-8 border-b border-slate-700 pb-4">
@@ -213,7 +211,6 @@
     </div>
     <div id="sidebarOverlay" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-[90]" onclick="toggleAdminSidebar()"></div>
 
-    <!-- מודאל יומן גלובלי -->
     <div id="globalCalendarModal" class="modal-overlay">
         <div class="modal-content !max-w-3xl bg-slate-900 border border-indigo-500/50">
             <div class="flex justify-between items-center mb-6 border-b border-slate-700 pb-4 sticky top-0 bg-slate-900 z-10">
@@ -224,7 +221,6 @@
         </div>
     </div>
 
-    <!-- מודאל מעקב שיעורים -->
     <div id="lessonModal" class="modal-overlay">
         <div class="modal-content !max-w-2xl bg-slate-900 border border-amber-500/50">
             <div class="flex justify-between items-center mb-6 border-b border-slate-700 pb-4 sticky top-0 bg-slate-900 z-10">
@@ -263,7 +259,6 @@
         </div>
     </div>
 
-    <!-- מודאל הוספת/עריכת תלמיד -->
     <div id="addStudentForm" class="modal-overlay">
         <div class="modal-content !max-w-4xl">
             <div class="flex justify-between items-center mb-6 border-b border-slate-700 pb-4">
@@ -297,7 +292,6 @@
                     <input type="date" id="shabbatChatanDate" class="form-input w-full p-3 rounded-xl text-lg">
                 </div>
 
-                <!-- מקטע עליית ראשון -->
                 <div id="sectionRishon" class="bg-slate-800/50 p-4 md:p-5 rounded-xl border border-slate-700 mt-4 hidden">
                     <div class="flex justify-between items-center mb-4">
                         <h4 class="text-amber-400 font-bold text-lg"><i class="fas fa-sun"></i> עליית ראשון</h4>
@@ -307,7 +301,6 @@
                         </select>
                     </div>
 
-                    <!-- ראשון מלא -->
                     <div id="rishonFullInputs">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div><input type="url" id="morningImage" placeholder="לינק לתמונה (עליית ראשון)" class="form-input w-full p-3 rounded-lg"></div>
@@ -315,7 +308,6 @@
                         </div>
                     </div>
 
-                    <!-- ראשון מחולק -->
                     <div id="rishonSplitInputs" class="hidden space-y-4">
                         <div class="border border-slate-700 p-3 rounded-lg bg-slate-900/50">
                             <h5 class="text-white font-bold mb-2">כהן</h5>
@@ -341,7 +333,6 @@
                     </div>
                 </div>
 
-                <!-- מקטע כל הפרשה -->
                 <div id="sectionFullParsha" class="hidden bg-slate-800/50 p-4 md:p-5 rounded-xl border border-purple-900/50 mt-4">
                     <h4 class="text-purple-400 font-bold mb-4 text-lg"><i class="fas fa-scroll"></i> שאר עליות הפרשה</h4>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -354,7 +345,6 @@
                     </div>
                 </div>
 
-                <!-- מקטע קטע בודד אחר -->
                 <div id="sectionOtherSingle" class="hidden bg-slate-800/50 p-4 md:p-5 rounded-xl border border-teal-900/50 mt-4">
                     <h4 class="text-teal-400 font-bold mb-4 text-lg"><i class="fas fa-bookmark"></i> קטע בודד לבחירה</h4>
                     <select id="otherSingleName" class="form-input w-full p-3 rounded-lg mb-4 text-base">
@@ -366,7 +356,6 @@
                     </div>
                 </div>
 
-                <!-- מקטע מפטיר והפטרה -->
                 <div id="sectionMaftirHaftarah" class="hidden bg-slate-800/50 p-4 md:p-5 rounded-xl border border-blue-900/50 mt-4">
                     <h4 class="text-blue-400 font-bold mb-4 text-lg"><i class="fas fa-star-of-david"></i> מפטיר והפטרה</h4>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -383,7 +372,6 @@
                     </div>
                 </div>
 
-                <!-- מילים קשות -->
                 <div class="mt-6 bg-slate-800/50 p-4 md:p-5 rounded-xl border border-teal-700/50">
                     <div class="flex items-center justify-between mb-4">
                         <h4 class="text-teal-400 font-bold text-lg"><i class="fas fa-microphone-alt"></i> מילים קשות לתרגול ממוקד</h4>
@@ -411,7 +399,6 @@
         </div>
     </div>
 
-    <!-- ספריית הקלטות -->
     <div id="libraryEditor" class="modal-overlay">
         <div class="modal-content !max-w-6xl">
             <div class="flex justify-between items-center mb-6 border-b border-slate-700 pb-4">
@@ -434,7 +421,6 @@
         </div>
     </div>
 
-    <!-- מודלים כלליים (אישור וקלט) -->
     <div id="confirmDialog" class="modal-overlay">
         <div class="modal-content !max-w-sm text-center border-red-500/50">
             <i class="fas fa-exclamation-triangle text-5xl text-amber-400 mb-4"></i>
@@ -460,7 +446,6 @@
         </div>
     </div>
 
-    <!-- מודאל תמונה בגדול -->
     <div id="imageModal" onclick="closeImageModal()">
         <i class="fas fa-times close-img-btn"></i>
         <img id="fullScreenImage" src="" alt="תמונה מוגדלת">
@@ -1193,6 +1178,64 @@
             document.getElementById('rishonFullInputs').classList.toggle('hidden', isSplit);
             document.getElementById('rishonSplitInputs').classList.toggle('hidden', !isSplit);
         };
+
+        // === ניהול מילים ספציפיות (הפונקציות שהיו חסרות) ===
+        window.toggleSpecificWordsEditor = () => {
+            const isChecked = document.getElementById('enableSpecificWords').checked;
+            const editor = document.getElementById('specificWordsEditor');
+            const toggleBg = document.getElementById('toggleBg');
+            const toggleDot = document.getElementById('toggleDot');
+
+            if (isChecked) {
+                editor.classList.remove('hidden');
+                toggleBg.classList.replace('bg-slate-600', 'bg-teal-500');
+                toggleDot.style.transform = 'translateX(-24px)';
+            } else {
+                editor.classList.add('hidden');
+                toggleBg.classList.replace('bg-teal-500', 'bg-slate-600');
+                toggleDot.style.transform = 'translateX(0)';
+            }
+        };
+
+        window.renderSpecificWordsList = () => {
+            const list = document.getElementById('specificWordsList');
+            if (!list) return;
+            if (tempSpecificWords.length === 0) {
+                list.innerHTML = '<div class="text-slate-500 text-base mt-2">טרם הוספו מילים ספציפיות לתרגול.</div>';
+                return;
+            }
+            list.innerHTML = tempSpecificWords.map((w, index) => `
+                <div class="flex justify-between items-center bg-slate-900/60 p-2 rounded-lg border border-slate-700 mt-2">
+                    <span class="text-teal-400 font-bold">${w.word}</span>
+                    <button type="button" onclick="window.removeSpecificWord(${index})" class="text-red-400 hover:text-red-300 p-2"><i class="fas fa-trash"></i></button>
+                </div>
+            `).join('');
+        };
+
+        window.addSpecificWord = () => {
+            const wordInput = document.getElementById('newSpecificWordText');
+            const audioInput = document.getElementById('newSpecificWordAudio');
+            
+            const word = wordInput.value.trim();
+            const audio = audioInput.value.trim();
+            
+            if (!word) {
+                window.customAlert('נא להזין את המילה הקשה', true);
+                return;
+            }
+            
+            tempSpecificWords.push({ word, audio });
+            wordInput.value = '';
+            audioInput.value = '';
+            
+            window.renderSpecificWordsList();
+        };
+
+        window.removeSpecificWord = (index) => {
+            tempSpecificWords.splice(index, 1);
+            window.renderSpecificWordsList();
+        };
+        // ========================================================
 
         window.showAddStudentForm = () => {
             document.getElementById('studentForm').reset();
