@@ -71,7 +71,7 @@
         
         #imageModal img { max-width: 90vw; max-height: 80vh; border-radius: 10px; border: 2px solid #fbbf24; box-shadow: 0 10px 40px rgba(0,0,0,0.8); cursor: grab; touch-action: none; user-select: none; }
         #imageModal img:active { cursor: grabbing; }
-        .close-img-btn { position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.1); color: white; width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; cursor: pointer; transition: 0.2s; border: 1px solid rgba(255,255,255,0.3); z-index: 10; outline: none; }
+        .close-img-btn { position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.1); color: white; width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; cursor: pointer; transition: 0.2s; border: 1px solid rgba(255,255,255,0.3); z-index: 9999999 !important; outline: none; }
         .close-img-btn:hover { background: #ef4444; border-color: #ef4444; transform: scale(1.1); }
 
         /* === התאמות למובייל === */
@@ -302,6 +302,7 @@
                     </div>
 
                     <div id="rishonFullInputs">
+                        <div id="lib-select-morning" class="mb-4 max-w-sm"></div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div><input type="url" id="morningImage" placeholder="לינק לתמונה (עליית ראשון)" class="form-input w-full p-3 rounded-lg"></div>
                             <div><input type="url" id="morningAudio" placeholder="לינק להקלטה" class="form-input w-full p-3 rounded-lg"></div>
@@ -311,6 +312,7 @@
                     <div id="rishonSplitInputs" class="hidden space-y-4">
                         <div class="border border-slate-700 p-3 rounded-lg bg-slate-900/50">
                             <h5 class="text-white font-bold mb-2">כהן</h5>
+                            <div id="lib-select-kohen" class="mb-2"></div>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
                                 <input type="url" id="kohenImage" placeholder="לינק לתמונה (כהן)" class="form-input w-full p-2 rounded-lg">
                                 <input type="url" id="kohenAudio" placeholder="לינק להקלטה (כהן)" class="form-input w-full p-2 rounded-lg">
@@ -318,6 +320,7 @@
                         </div>
                         <div class="border border-slate-700 p-3 rounded-lg bg-slate-900/50">
                             <h5 class="text-white font-bold mb-2">לוי</h5>
+                            <div id="lib-select-levi" class="mb-2"></div>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
                                 <input type="url" id="leviImage" placeholder="לינק לתמונה (לוי)" class="form-input w-full p-2 rounded-lg">
                                 <input type="url" id="leviAudio" placeholder="לינק להקלטה (לוי)" class="form-input w-full p-2 rounded-lg">
@@ -325,6 +328,7 @@
                         </div>
                         <div class="border border-slate-700 p-3 rounded-lg bg-slate-900/50">
                             <h5 class="text-white font-bold mb-2">ישראל</h5>
+                            <div id="lib-select-yisrael" class="mb-2"></div>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
                                 <input type="url" id="yisraelImage" placeholder="לינק לתמונה (ישראל)" class="form-input w-full p-2 rounded-lg">
                                 <input type="url" id="yisraelAudio" placeholder="לינק להקלטה (ישראל)" class="form-input w-full p-2 rounded-lg">
@@ -336,12 +340,12 @@
                 <div id="sectionFullParsha" class="hidden bg-slate-800/50 p-4 md:p-5 rounded-xl border border-purple-900/50 mt-4">
                     <h4 class="text-purple-400 font-bold mb-4 text-lg"><i class="fas fa-scroll"></i> שאר עליות הפרשה</h4>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="border border-slate-700 p-3 rounded-lg"><h5 class="text-white font-bold mb-2">שני</h5><input type="url" id="sheniImage" placeholder="תמונה" class="form-input w-full p-2 rounded-lg mb-2"><input type="url" id="sheniAudio" placeholder="הקלטה" class="form-input w-full p-2 rounded-lg"></div>
-                        <div class="border border-slate-700 p-3 rounded-lg"><h5 class="text-white font-bold mb-2">שלישי</h5><input type="url" id="shlishiImage" placeholder="תמונה" class="form-input w-full p-2 rounded-lg mb-2"><input type="url" id="shlishiAudio" placeholder="הקלטה" class="form-input w-full p-2 rounded-lg"></div>
-                        <div class="border border-slate-700 p-3 rounded-lg"><h5 class="text-white font-bold mb-2">רביעי</h5><input type="url" id="reviiImage" placeholder="תמונה" class="form-input w-full p-2 rounded-lg mb-2"><input type="url" id="reviiAudio" placeholder="הקלטה" class="form-input w-full p-2 rounded-lg"></div>
-                        <div class="border border-slate-700 p-3 rounded-lg"><h5 class="text-white font-bold mb-2">חמישי</h5><input type="url" id="chamishiImage" placeholder="תמונה" class="form-input w-full p-2 rounded-lg mb-2"><input type="url" id="chamishiAudio" placeholder="הקלטה" class="form-input w-full p-2 rounded-lg"></div>
-                        <div class="border border-slate-700 p-3 rounded-lg"><h5 class="text-white font-bold mb-2">שישי</h5><input type="url" id="shishiImage" placeholder="תמונה" class="form-input w-full p-2 rounded-lg mb-2"><input type="url" id="shishiAudio" placeholder="הקלטה" class="form-input w-full p-2 rounded-lg"></div>
-                        <div class="border border-slate-700 p-3 rounded-lg"><h5 class="text-white font-bold mb-2">שביעי</h5><input type="url" id="shviiImage" placeholder="תמונה" class="form-input w-full p-2 rounded-lg mb-2"><input type="url" id="shviiAudio" placeholder="הקלטה" class="form-input w-full p-2 rounded-lg"></div>
+                        <div class="border border-slate-700 p-3 rounded-lg"><h5 class="text-white font-bold mb-2">שני</h5><div id="lib-select-sheni" class="mb-2"></div><input type="url" id="sheniImage" placeholder="תמונה" class="form-input w-full p-2 rounded-lg mb-2"><input type="url" id="sheniAudio" placeholder="הקלטה" class="form-input w-full p-2 rounded-lg"></div>
+                        <div class="border border-slate-700 p-3 rounded-lg"><h5 class="text-white font-bold mb-2">שלישי</h5><div id="lib-select-shlishi" class="mb-2"></div><input type="url" id="shlishiImage" placeholder="תמונה" class="form-input w-full p-2 rounded-lg mb-2"><input type="url" id="shlishiAudio" placeholder="הקלטה" class="form-input w-full p-2 rounded-lg"></div>
+                        <div class="border border-slate-700 p-3 rounded-lg"><h5 class="text-white font-bold mb-2">רביעי</h5><div id="lib-select-revii" class="mb-2"></div><input type="url" id="reviiImage" placeholder="תמונה" class="form-input w-full p-2 rounded-lg mb-2"><input type="url" id="reviiAudio" placeholder="הקלטה" class="form-input w-full p-2 rounded-lg"></div>
+                        <div class="border border-slate-700 p-3 rounded-lg"><h5 class="text-white font-bold mb-2">חמישי</h5><div id="lib-select-chamishi" class="mb-2"></div><input type="url" id="chamishiImage" placeholder="תמונה" class="form-input w-full p-2 rounded-lg mb-2"><input type="url" id="chamishiAudio" placeholder="הקלטה" class="form-input w-full p-2 rounded-lg"></div>
+                        <div class="border border-slate-700 p-3 rounded-lg"><h5 class="text-white font-bold mb-2">שישי</h5><div id="lib-select-shishi" class="mb-2"></div><input type="url" id="shishiImage" placeholder="תמונה" class="form-input w-full p-2 rounded-lg mb-2"><input type="url" id="shishiAudio" placeholder="הקלטה" class="form-input w-full p-2 rounded-lg"></div>
+                        <div class="border border-slate-700 p-3 rounded-lg"><h5 class="text-white font-bold mb-2">שביעי</h5><div id="lib-select-shvii" class="mb-2"></div><input type="url" id="shviiImage" placeholder="תמונה" class="form-input w-full p-2 rounded-lg mb-2"><input type="url" id="shviiAudio" placeholder="הקלטה" class="form-input w-full p-2 rounded-lg"></div>
                     </div>
                 </div>
 
@@ -350,6 +354,7 @@
                     <select id="otherSingleName" class="form-input w-full p-3 rounded-lg mb-4 text-base">
                         <option value="שני">שני</option><option value="שלישי">שלישי</option><option value="רביעי">רביעי</option><option value="חמישי">חמישי</option><option value="שישי">שישי</option><option value="שביעי">שביעי</option>
                     </select>
+                    <div id="lib-select-other" class="mb-3 max-w-sm"></div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div><input type="url" id="otherSingleImage" placeholder="לינק לתמונה" class="form-input w-full p-3 rounded-lg mb-3"></div>
                         <div><input type="url" id="otherSingleAudio" placeholder="לינק להקלטה" class="form-input w-full p-3 rounded-lg mb-3"></div>
@@ -361,11 +366,13 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="border border-slate-700 p-3 rounded-lg">
                             <h5 class="text-white font-bold mb-2">מפטיר</h5>
+                            <div id="lib-select-maftir" class="mb-2"></div>
                             <input type="url" id="maftirImage" placeholder="לינק לתמונה" class="form-input w-full p-2 rounded-lg mb-2">
                             <input type="url" id="maftirAudio" placeholder="לינק להקלטה" class="form-input w-full p-2 rounded-lg">
                         </div>
                         <div class="border border-slate-700 p-3 rounded-lg">
                             <h5 class="text-white font-bold mb-2">הפטרה</h5>
+                            <div id="lib-select-haftarah" class="mb-2"></div>
                             <input type="url" id="shabbatImage" placeholder="לינק לתמונה" class="form-input w-full p-2 rounded-lg mb-2">
                             <input type="url" id="shabbatAudio" placeholder="לינק להקלטה" class="form-input w-full p-2 rounded-lg">
                         </div>
@@ -447,8 +454,8 @@
     </div>
 
     <div id="imageModal" onclick="if(event.target === this) closeImageModal()">
-        <button type="button" class="close-img-btn" onclick="closeImageModal()"><i class="fas fa-times"></i></button>
         <img id="fullScreenImage" src="" alt="תמונה מוגדלת" onclick="event.stopPropagation()">
+        <button type="button" class="close-img-btn" onclick="closeImageModal()" ontouchend="closeImageModal(); event.preventDefault();"><i class="fas fa-times"></i></button>
     </div>
 
     <script>
@@ -657,20 +664,33 @@
         window.openImageModal = (src) => {
             if (!src) return;
             const imgEl = document.getElementById('fullScreenImage');
-            imgEl.src = src;
+            
             document.getElementById('imageModal').classList.add('active');
             document.body.style.overflow = 'hidden';
 
-            if (pzInstance) pzInstance.dispose();
+            if (pzInstance) {
+                pzInstance.dispose();
+                pzInstance = null;
+            }
             
-            pzInstance = panzoom(imgEl, {
-                maxZoom: 5,
-                minZoom: 1, 
-                bounds: true, 
-                boundsPadding: 0, // נועל את התמונה לגבולות כדי שלא תברח מהמסך
-                zoomDoubleClickSpeed: 1
-                // הוסר הקוד שביטל את הטאצ' הטבעי של הסמארטפונים
-            });
+            imgEl.src = ''; 
+            imgEl.style.transform = ''; 
+            
+            imgEl.onload = () => {
+                pzInstance = panzoom(imgEl, {
+                    maxZoom: 5,
+                    minZoom: 1, 
+                    bounds: true, 
+                    boundsPadding: 0,
+                    zoomDoubleClickSpeed: 1,
+                    onTouch: function(e) {
+                        if (e.target.closest('.close-img-btn')) return false; 
+                        return true;
+                    }
+                });
+            };
+            
+            imgEl.src = src;
         };
 
         window.closeImageModal = () => {
@@ -1237,6 +1257,27 @@
             window.renderSpecificWordsList();
         };
 
+        window.renderLibrarySelectors = () => {
+            const s = (id, html) => { if(document.getElementById(id)) document.getElementById(id).innerHTML = html; };
+            
+            s('lib-select-morning', window.createLibrarySelectorHTML('parshiot', 'morningImage', 'morningAudio', null, '📚 בחירה מהספרייה (ראשון)'));
+            s('lib-select-kohen', window.createLibrarySelectorHTML('parshiot', 'kohenImage', 'kohenAudio', null, '📚 בחירה (כהן)'));
+            s('lib-select-levi', window.createLibrarySelectorHTML('parshiot', 'leviImage', 'leviAudio', null, '📚 בחירה (לוי)'));
+            s('lib-select-yisrael', window.createLibrarySelectorHTML('parshiot', 'yisraelImage', 'yisraelAudio', null, '📚 בחירה (ישראל)'));
+            
+            s('lib-select-sheni', window.createLibrarySelectorHTML('parshiot', 'sheniImage', 'sheniAudio', null, '📚 בחירה (שני)'));
+            s('lib-select-shlishi', window.createLibrarySelectorHTML('parshiot', 'shlishiImage', 'shlishiAudio', null, '📚 בחירה (שלישי)'));
+            s('lib-select-revii', window.createLibrarySelectorHTML('parshiot', 'reviiImage', 'reviiAudio', null, '📚 בחירה (רביעי)'));
+            s('lib-select-chamishi', window.createLibrarySelectorHTML('parshiot', 'chamishiImage', 'chamishiAudio', null, '📚 בחירה (חמישי)'));
+            s('lib-select-shishi', window.createLibrarySelectorHTML('parshiot', 'shishiImage', 'shishiAudio', null, '📚 בחירה (שישי)'));
+            s('lib-select-shvii', window.createLibrarySelectorHTML('parshiot', 'shviiImage', 'shviiAudio', null, '📚 בחירה (שביעי)'));
+            
+            s('lib-select-other', window.createLibrarySelectorHTML('special', 'otherSingleImage', 'otherSingleAudio', 'otherSingleName', '📚 בחירה (קטע בודד)'));
+            
+            s('lib-select-maftir', window.createLibrarySelectorHTML('parshiot', 'maftirImage', 'maftirAudio', null, '📚 בחירה מהספרייה (מפטיר)'));
+            s('lib-select-haftarah', window.createLibrarySelectorHTML('shabbat', 'shabbatImage', 'shabbatAudio', null, '📚 בחירה מהספרייה (הפטרה)'));
+        };
+
         window.showAddStudentForm = () => {
             document.getElementById('studentForm').reset();
             document.getElementById('studentForm').removeAttribute('data-edit-id');
@@ -1247,8 +1288,10 @@
             tempSpecificWords = [];
             window.renderSpecificWordsList();
             document.getElementById('enableSpecificWords').checked = false;
+            
+            window.renderLibrarySelectors(); // מרנדר את רשימות הבחירה מהספרייה
+            
             window.toggleSpecificWordsEditor();
-
             window.toggleEventDetails();
             window.toggleRishonSplit();
             window.openModal('addStudentForm');
@@ -1551,7 +1594,7 @@
         window.createLibrarySelectorHTML = function(type, targetImageId, targetAudioId, targetTitleId, placeholder) {
             const lib = recordingsLibrary[type] || {};
             let options = Object.keys(lib).map(k => `<option value="${k}">${k}</option>`).join('');
-            return `<select onchange="window.populateFromLibrary('${type}', this.value, '${targetImageId}', '${targetAudioId}', '${targetTitleId}')" class="form-input w-full p-3 rounded-lg mb-3 text-base bg-blue-900/30"><option value="">${placeholder}</option>${options}</select>`;
+            return `<select onchange="window.populateFromLibrary('${type}', this.value, '${targetImageId}', '${targetAudioId}', '${targetTitleId}')" class="form-input w-full p-2 rounded-lg text-sm bg-blue-900/30 border border-blue-500/30"><option value="">${placeholder}</option>${options}</select>`;
         }
 
         window.populateFromLibrary = (type, selection, targetImageId, targetAudioId, targetTitleId) => {
