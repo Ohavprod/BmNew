@@ -151,10 +151,27 @@
             </div>
         </div>
 
-        <div id="addStudentBtnWrapper" class="text-center mb-8 hidden">
-            <button onclick="showAddStudentForm()" class="bg-green-600 hover:bg-green-500 text-white px-8 py-3 rounded-full font-bold text-lg md:text-xl shadow-[0_0_15px_rgba(34,197,94,0.3)] transition-all transform hover:scale-105">
-                <i class="fas fa-plus-circle ml-2"></i> הוסף תלמיד חדש
-            </button>
+        <div id="adminControls" class="hidden mb-8">
+            <div class="flex flex-col md:flex-row gap-4 items-center justify-between bg-slate-900/60 border border-slate-700 p-4 rounded-2xl">
+                <div class="text-center md:text-right">
+                    <button onclick="showAddStudentForm()" class="bg-green-600 hover:bg-green-500 text-white px-8 py-3 rounded-full font-bold text-lg md:text-xl shadow-[0_0_15px_rgba(34,197,94,0.3)] transition-all transform hover:scale-105">
+                        <i class="fas fa-plus-circle ml-2"></i> הוסף תלמיד חדש
+                    </button>
+                </div>
+
+                <div class="relative w-full md:w-96">
+                    <i class="fas fa-search absolute top-1/2 -translate-y-1/2 right-4 text-slate-400"></i>
+                    <input type="text" id="studentSearch" oninput="window.handleStudentSearch()" placeholder="חיפוש לפי שם או פרשה..." class="form-input w-full py-3 pr-12 pl-4 rounded-xl text-lg">
+                    <button id="clearSearchBtn" onclick="window.clearStudentSearch()" class="hidden absolute top-1/2 -translate-y-1/2 left-3 text-slate-400 hover:text-white text-xl"><i class="fas fa-times-circle"></i></button>
+                </div>
+
+                <div class="hidden md:flex items-center gap-2 bg-slate-800 p-2 rounded-xl border border-slate-700" id="layoutToggleWrapper">
+                    <span class="text-slate-400 text-sm font-bold px-2">תצוגה:</span>
+                    <button onclick="window.setGridColumns(1)" data-cols="1" class="layout-btn w-10 h-10 rounded-lg font-bold transition flex items-center justify-center" title="עמודה אחת"><i class="fas fa-square"></i></button>
+                    <button onclick="window.setGridColumns(2)" data-cols="2" class="layout-btn w-10 h-10 rounded-lg font-bold transition flex items-center justify-center" title="שתי עמודות"><i class="fas fa-th-large"></i></button>
+                    <button onclick="window.setGridColumns(3)" data-cols="3" class="layout-btn w-10 h-10 rounded-lg font-bold transition flex items-center justify-center" title="שלוש עמודות"><i class="fas fa-th"></i></button>
+                </div>
+            </div>
         </div>
 
         <div id="studentsGrid" class="grid grid-cols-1 gap-8 max-w-4xl mx-auto"></div>
@@ -456,6 +473,7 @@
     <div id="imageModal" onclick="if(event.target === this) closeImageModal()">
         <img id="fullScreenImage" src="" alt="תמונה מוגדלת" onclick="event.stopPropagation()">
         <button type="button" class="close-img-btn" onclick="closeImageModal()" ontouchend="closeImageModal(); event.preventDefault();"><i class="fas fa-times"></i></button>
+        <div id="imageModalAudioBar" class="hidden"></div>
     </div>
 
     <script>
@@ -470,6 +488,8 @@
         let currentLibraryTab = 'parshiot';
         let tempSpecificWords = [];
         let pzInstance = null;
+        let searchQuery = '';
+        let gridColumns = 1;
 
         window.customAlert = function(msg, isError = false) {
             const alm = document.getElementById('globalAlert');
@@ -633,7 +653,8 @@
             
             if (isAdmin) {
                 document.getElementById('adminToolsBtn').classList.remove('hidden');
-                document.getElementById('addStudentBtnWrapper').classList.remove('hidden');
+                document.getElementById('adminControls').classList.remove('hidden');
+                window.initGridColumns();
             }
             
             window.renderStudents();
@@ -657,10 +678,22 @@
             img.style.width = `${currentWidth}%`;
         };
 
-        window.openImageModal = (src) => {
+        function buildDirectAudioUrl(audioSrc) {
+            let directUrl = audioSrc;
+            if (audioSrc && audioSrc.includes('drive.google.com')) {
+                let fileId = '';
+                if (audioSrc.includes('/file/d/')) fileId = audioSrc.split('/file/d/')[1].split('/')[0];
+                else if (audioSrc.includes('id=')) fileId = audioSrc.split('id=')[1].split('&')[0];
+                if (fileId) directUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
+            }
+            return directUrl;
+        }
+
+        window.openImageModal = (src, audioSrc) => {
             if (!src) return;
             const imgEl = document.getElementById('fullScreenImage');
-            
+            const audioBar = document.getElementById('imageModalAudioBar');
+
             document.getElementById('imageModal').classList.add('active');
             document.body.style.overflow = 'hidden';
 
@@ -668,7 +701,29 @@
                 pzInstance.dispose();
                 pzInstance = null;
             }
-            
+
+            // בניית פס שמע קבוע בתחתית, אם קיימת הקלטה
+            if (audioSrc && audioSrc !== 'null' && audioSrc !== 'undefined' && audioSrc.trim() !== '') {
+                const directUrl = buildDirectAudioUrl(audioSrc);
+                audioBar.innerHTML = `
+                    <div class="modal-audio-inner">
+                        <audio id="modalFullAudio" controls preload="none" class="w-full h-12 rounded-lg outline-none">
+                            <source src="${directUrl}">
+                        </audio>
+                        <div class="flex justify-center gap-2 mt-2 flex-wrap">
+                            <button type="button" onclick="window.skipAudio('modalFullAudio', -10)" class="audio-ctrl-btn">-10 <i class="fas fa-backward"></i></button>
+                            <button type="button" onclick="window.skipAudio('modalFullAudio', -5)" class="audio-ctrl-btn">-5 <i class="fas fa-step-backward"></i></button>
+                            <button type="button" onclick="window.skipAudio('modalFullAudio', 5)" class="audio-ctrl-btn"><i class="fas fa-step-forward"></i> +5</button>
+                            <button type="button" onclick="window.skipAudio('modalFullAudio', 10)" class="audio-ctrl-btn"><i class="fas fa-forward"></i> +10</button>
+                        </div>
+                    </div>
+                `;
+                audioBar.classList.remove('hidden');
+            } else {
+                audioBar.innerHTML = '';
+                audioBar.classList.add('hidden');
+            }
+
             imgEl.src = ''; 
             imgEl.style.transform = ''; 
             
@@ -681,6 +736,7 @@
                     zoomDoubleClickSpeed: 1,
                     onTouch: function(e) {
                         if (e.target.closest('.close-img-btn')) return false; 
+                        if (e.target.closest('#imageModalAudioBar')) return false;
                         return true;
                     }
                 });
@@ -692,11 +748,16 @@
         window.closeImageModal = () => {
             document.getElementById('imageModal').classList.remove('active');
             document.body.style.overflow = 'auto';
+            const modalAudio = document.getElementById('modalFullAudio');
+            if (modalAudio) { modalAudio.pause(); }
             if (pzInstance) {
                 pzInstance.dispose();
                 pzInstance = null;
             }
-            setTimeout(() => { document.getElementById('fullScreenImage').src = ''; }, 300);
+            setTimeout(() => { 
+                document.getElementById('fullScreenImage').src = ''; 
+                document.getElementById('imageModalAudioBar').innerHTML = '';
+            }, 300);
         };
 
         let currentWordAudio = null;
@@ -745,6 +806,7 @@
 
         function buildInlineMaterial(imgSrc, audioSrc, audioTitle, elementIdPrefix) {
             let html = '';
+            const safeAudio = (audioSrc || '').replace(/'/g, "\\'");
             if(imgSrc) {
                 html += `
                     <div class="relative group mb-5">
@@ -753,21 +815,14 @@
                             <button type="button" onclick="window.zoomImg('img-${elementIdPrefix}', -1)" class="zoom-btn" title="הקטן"><i class="fas fa-search-minus"></i></button>
                         </div>
                         <div class="rounded-xl border border-slate-700 bg-slate-950 overflow-auto max-h-[70vh] custom-scrollbar shadow-inner text-center">
-                            <img id="img-${elementIdPrefix}" src="${imgSrc}" class="inline-block" style="width: 100%; max-width: none !important; height: auto; transition: width 0.2s ease; image-rendering: high-quality; cursor: zoom-in;" data-width="100" onclick="window.openImageModal('${imgSrc}')" onerror="this.style.display='none';" title="לחץ להגדלה">
+                            <img id="img-${elementIdPrefix}" src="${imgSrc}" class="inline-block" style="width: 100%; max-width: none !important; height: auto; transition: width 0.2s ease; image-rendering: high-quality; cursor: zoom-in;" data-width="100" onclick="window.openImageModal('${imgSrc}', '${safeAudio}')" onerror="this.style.display='none';" title="לחץ להגדלה ולהאזנה">
                         </div>
                     </div>
                 `;
             }
             if(audioSrc) {
-                let directUrl = audioSrc;
-                let isDrive = false;
-                if (audioSrc.includes('drive.google.com')) {
-                    isDrive = true;
-                    let fileId = '';
-                    if (audioSrc.includes('/file/d/')) fileId = audioSrc.split('/file/d/')[1].split('/')[0];
-                    else if (audioSrc.includes('id=')) fileId = audioSrc.split('id=')[1].split('&')[0];
-                    if (fileId) directUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
-                }
+                let directUrl = buildDirectAudioUrl(audioSrc);
+                let isDrive = audioSrc.includes('drive.google.com');
                 html += `
                     <div class="text-center bg-slate-800 p-4 rounded-xl border border-slate-600">
                         <h5 class="text-white font-bold mb-3 text-base"><i class="fas fa-headphones text-amber-400 ml-1"></i> ${audioTitle}</h5>
@@ -787,16 +842,79 @@
             return html ? `<div class="inline-material-box">${html}</div>` : '';
         }
 
+        // === ניהול תצוגת עמודות במחשב ===
+        window.initGridColumns = () => {
+            const saved = parseInt(localStorage.getItem('gridColumns')) || 1;
+            window.setGridColumns(saved, true);
+        };
+
+        window.setGridColumns = (cols, skipRender) => {
+            gridColumns = cols;
+            localStorage.setItem('gridColumns', cols);
+            document.querySelectorAll('.layout-btn').forEach(btn => {
+                if (parseInt(btn.getAttribute('data-cols')) === cols) {
+                    btn.classList.add('bg-blue-600', 'text-white');
+                    btn.classList.remove('text-slate-400');
+                } else {
+                    btn.classList.remove('bg-blue-600', 'text-white');
+                    btn.classList.add('text-slate-400');
+                }
+            });
+            window.applyGridLayout();
+            if (!skipRender) window.renderStudents();
+        };
+
+        window.applyGridLayout = () => {
+            const grid = document.getElementById('studentsGrid');
+            const compGrid = document.getElementById('completedStudentsGrid');
+            // במובייל תמיד עמודה אחת; הקלאסים md: חלים רק במחשב
+            let base = 'grid gap-8 mx-auto grid-cols-1';
+            let widthClass, mdClass;
+            if (gridColumns === 1) { mdClass = 'md:grid-cols-1'; widthClass = 'max-w-4xl'; }
+            else if (gridColumns === 2) { mdClass = 'md:grid-cols-2'; widthClass = 'max-w-6xl'; }
+            else { mdClass = 'md:grid-cols-3'; widthClass = 'max-w-7xl'; }
+            if (grid) grid.className = `${base} ${mdClass} ${widthClass}`;
+            if (compGrid) compGrid.className = `${base} ${mdClass} ${widthClass} opacity-75`;
+        };
+
+        // === חיפוש תלמידים ===
+        window.handleStudentSearch = () => {
+            searchQuery = document.getElementById('studentSearch').value.trim().toLowerCase();
+            document.getElementById('clearSearchBtn').classList.toggle('hidden', searchQuery === '');
+            window.renderStudents();
+        };
+
+        window.clearStudentSearch = () => {
+            document.getElementById('studentSearch').value = '';
+            searchQuery = '';
+            document.getElementById('clearSearchBtn').classList.add('hidden');
+            window.renderStudents();
+        };
+
+        function matchesSearch(s) {
+            if (!searchQuery) return true;
+            const name = String(s.name || '').toLowerCase();
+            const parsha = String(s.parsha || '').toLowerCase();
+            return name.includes(searchQuery) || parsha.includes(searchQuery);
+        }
+
         window.renderStudents = function() {
             const grid = document.getElementById('studentsGrid');
             const compGrid = document.getElementById('completedStudentsGrid');
             grid.innerHTML = ''; compGrid.innerHTML = '';
+
+            if (isAdmin) window.applyGridLayout();
             
             let displayStudents = isAdmin ? students : students.filter(s => String(s.id) === String(currentUser.id));
             
             if(isAdmin) {
                 document.getElementById('sidebarActiveCount').innerText = displayStudents.filter(s => calculateDaysRemaining(s.eventDate) >= 0).length;
                 document.getElementById('sidebarCompletedCount').innerText = displayStudents.filter(s => calculateDaysRemaining(s.eventDate) < 0).length;
+            }
+
+            // סינון לפי חיפוש (רק למנהל)
+            if (isAdmin && searchQuery) {
+                displayStudents = displayStudents.filter(matchesSearch);
             }
 
             if(displayStudents.length === 0) {
