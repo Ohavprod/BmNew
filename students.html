@@ -469,7 +469,7 @@
         let currentEditingStudentId = null;
         let currentLibraryTab = 'parshiot';
         let tempSpecificWords = [];
-        let pzInstance = null; // משתנה גלובלי לספריית הזום
+        let pzInstance = null;
 
         window.customAlert = function(msg, isError = false) {
             const alm = document.getElementById('globalAlert');
@@ -527,7 +527,6 @@
             inputEl.onkeydown = (e) => { if(e.key === 'Enter') handleSub(); };
         };
 
-        // סנכרון POST
         window.syncToGoogleSheets = async function(action, data, callback) {
             if (!GOOGLE_SCRIPT_URL) return callback && callback({ success: false });
             document.getElementById('globalLoader').style.display = 'flex';
@@ -580,7 +579,6 @@
             window.syncToGoogleSheets('save', studentData, callback);
         };
 
-        // התחברות
         window.handleNameInput = () => {
             const name = document.getElementById('loginName').value.trim();
             const phoneSection = document.getElementById('phoneSection');
@@ -643,7 +641,6 @@
 
         window.logout = () => { location.reload(); };
 
-        // פונקציות נגן, זום ותמונות
         window.skipAudio = (audioId, seconds) => {
             const audio = document.getElementById(audioId);
             if (audio) { audio.currentTime = Math.max(0, Math.min(audio.duration || 0, audio.currentTime + seconds)); }
@@ -660,7 +657,6 @@
             img.style.width = `${currentWidth}%`;
         };
 
-        // התיקון המרכזי למערכת הזום
         window.openImageModal = (src) => {
             if (!src) return;
             const imgEl = document.getElementById('fullScreenImage');
@@ -1024,6 +1020,7 @@
             window.openModal('lessonModal');
         };
 
+        // ✅ תיקון: שולחים עותק נקי בלי lessons כדי שלא ידרסו נתונים בגיליון
         window.updateNextLessonDate = () => {
             const dateVal = document.getElementById('modalNextLessonDate').value;
             const timeVal = document.getElementById('modalNextLessonTime').value;
@@ -1032,7 +1029,9 @@
             student.nextLessonDate = dateVal;
             student.nextLessonTime = timeVal;
             
-            window.saveToGoogleSheets(student, (res) => {
+            const studentToSave = { ...student, lessons: [] };
+            
+            window.saveToGoogleSheets(studentToSave, (res) => {
                 if(res.success) {
                     window.customAlert('מועד השיעור הבא עודכן!');
                     window.renderStudents();
@@ -1289,7 +1288,7 @@
             window.renderSpecificWordsList();
             document.getElementById('enableSpecificWords').checked = false;
             
-            window.renderLibrarySelectors(); // מרנדר את רשימות הבחירה מהספרייה
+            window.renderLibrarySelectors();
             
             window.toggleSpecificWordsEditor();
             window.toggleEventDetails();
@@ -1578,7 +1577,9 @@
                 if (!student) return;
                 student.nextLessonDate = "";
                 student.nextLessonTime = "";
-                window.saveToGoogleSheets(student, (res) => {
+                // ✅ תיקון: שולחים עותק נקי בלי lessons
+                const studentToSave = { ...student, lessons: [] };
+                window.saveToGoogleSheets(studentToSave, (res) => {
                     if(res.success) {
                         window.customAlert('מועד השיעור בוטל!');
                         window.loadFromGoogleSheets(window.renderStudents);
