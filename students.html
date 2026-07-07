@@ -486,6 +486,19 @@
         let isAdmin = false;
         let currentEditingStudentId = null;
         let currentLibraryTab = 'parshiot';
+        // חלקי העלייה שנשמרים בתוך כל פריט "פרשה" בספרייה, מעבר לראשון המלא ברמה העליונה
+        const PARSHIOT_SUBPARTS = [
+            { key: 'kohen', label: 'כהן (עליית ראשון מפוצלת)' },
+            { key: 'levi', label: 'לוי (עליית ראשון מפוצלת)' },
+            { key: 'yisrael', label: 'ישראל (עליית ראשון מפוצלת)' },
+            { key: 'sheni', label: 'שני' },
+            { key: 'shlishi', label: 'שלישי' },
+            { key: 'revii', label: 'רביעי' },
+            { key: 'chamishi', label: 'חמישי' },
+            { key: 'shishi', label: 'שישי' },
+            { key: 'shvii', label: 'שביעי' },
+            { key: 'maftir', label: 'מפטיר' }
+        ];
         let tempSpecificWords = [];
         let pzInstance = null;
         let searchQuery = '';
@@ -1378,20 +1391,20 @@
             const s = (id, html) => { if(document.getElementById(id)) document.getElementById(id).innerHTML = html; };
             
             s('lib-select-morning', window.createLibrarySelectorHTML('parshiot', 'morningImage', 'morningAudio', null, '📚 בחירה מהספרייה (ראשון)'));
-            s('lib-select-kohen', window.createLibrarySelectorHTML('parshiot', 'kohenImage', 'kohenAudio', null, '📚 בחירה (כהן)'));
-            s('lib-select-levi', window.createLibrarySelectorHTML('parshiot', 'leviImage', 'leviAudio', null, '📚 בחירה (לוי)'));
-            s('lib-select-yisrael', window.createLibrarySelectorHTML('parshiot', 'yisraelImage', 'yisraelAudio', null, '📚 בחירה (ישראל)'));
+            s('lib-select-kohen', window.createLibrarySelectorHTML('parshiot', 'kohenImage', 'kohenAudio', null, '📚 בחירה (כהן)', 'kohen'));
+            s('lib-select-levi', window.createLibrarySelectorHTML('parshiot', 'leviImage', 'leviAudio', null, '📚 בחירה (לוי)', 'levi'));
+            s('lib-select-yisrael', window.createLibrarySelectorHTML('parshiot', 'yisraelImage', 'yisraelAudio', null, '📚 בחירה (ישראל)', 'yisrael'));
             
-            s('lib-select-sheni', window.createLibrarySelectorHTML('parshiot', 'sheniImage', 'sheniAudio', null, '📚 בחירה (שני)'));
-            s('lib-select-shlishi', window.createLibrarySelectorHTML('parshiot', 'shlishiImage', 'shlishiAudio', null, '📚 בחירה (שלישי)'));
-            s('lib-select-revii', window.createLibrarySelectorHTML('parshiot', 'reviiImage', 'reviiAudio', null, '📚 בחירה (רביעי)'));
-            s('lib-select-chamishi', window.createLibrarySelectorHTML('parshiot', 'chamishiImage', 'chamishiAudio', null, '📚 בחירה (חמישי)'));
-            s('lib-select-shishi', window.createLibrarySelectorHTML('parshiot', 'shishiImage', 'shishiAudio', null, '📚 בחירה (שישי)'));
-            s('lib-select-shvii', window.createLibrarySelectorHTML('parshiot', 'shviiImage', 'shviiAudio', null, '📚 בחירה (שביעי)'));
+            s('lib-select-sheni', window.createLibrarySelectorHTML('parshiot', 'sheniImage', 'sheniAudio', null, '📚 בחירה (שני)', 'sheni'));
+            s('lib-select-shlishi', window.createLibrarySelectorHTML('parshiot', 'shlishiImage', 'shlishiAudio', null, '📚 בחירה (שלישי)', 'shlishi'));
+            s('lib-select-revii', window.createLibrarySelectorHTML('parshiot', 'reviiImage', 'reviiAudio', null, '📚 בחירה (רביעי)', 'revii'));
+            s('lib-select-chamishi', window.createLibrarySelectorHTML('parshiot', 'chamishiImage', 'chamishiAudio', null, '📚 בחירה (חמישי)', 'chamishi'));
+            s('lib-select-shishi', window.createLibrarySelectorHTML('parshiot', 'shishiImage', 'shishiAudio', null, '📚 בחירה (שישי)', 'shishi'));
+            s('lib-select-shvii', window.createLibrarySelectorHTML('parshiot', 'shviiImage', 'shviiAudio', null, '📚 בחירה (שביעי)', 'shvii'));
             
             s('lib-select-other', window.createLibrarySelectorHTML('special', 'otherSingleImage', 'otherSingleAudio', 'otherSingleName', '📚 בחירה (קטע בודד)'));
             
-            s('lib-select-maftir', window.createLibrarySelectorHTML('parshiot', 'maftirImage', 'maftirAudio', null, '📚 בחירה מהספרייה (מפטיר)'));
+            s('lib-select-maftir', window.createLibrarySelectorHTML('parshiot', 'maftirImage', 'maftirAudio', null, '📚 בחירה מהספרייה (מפטיר)', 'maftir'));
             s('lib-select-haftarah', window.createLibrarySelectorHTML('shabbat', 'shabbatImage', 'shabbatAudio', null, '📚 בחירה מהספרייה (הפטרה)'));
         };
 
@@ -1577,7 +1590,13 @@
             }
 
             content.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                ${Object.entries(library).map(([name, data]) => `
+                ${Object.entries(library).map(([name, data]) => {
+                    let extraStatus = '';
+                    if (tabName === 'parshiot') {
+                        const filledParts = PARSHIOT_SUBPARTS.filter(p => data[p.key] && (data[p.key].image || data[p.key].audio));
+                        extraStatus = `<div class="truncate"><i class="fas fa-list text-amber-400 w-6"></i> ${filledParts.length}/${PARSHIOT_SUBPARTS.length} חלקים נוספים (כהן/לוי/ישראל/מפטיר וכו')</div>`;
+                    }
+                    return `
                     <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 relative group" data-name="${name}">
                         <div class="flex justify-between items-start mb-3">
                             <h5 class="text-xl font-bold text-white">${name}</h5>
@@ -1587,24 +1606,44 @@
                             </div>
                         </div>
                         <div class="text-base text-slate-400 space-y-1">
-                            <div class="truncate"><i class="fas fa-image text-blue-400 w-6"></i> ${data.image ? 'יש תמונה' : 'אין תמונה'}</div>
-                            <div class="truncate"><i class="fas fa-music text-purple-400 w-6"></i> ${data.audio ? 'יש הקלטה' : 'אין הקלטה'}</div>
+                            <div class="truncate"><i class="fas fa-image text-blue-400 w-6"></i> ${data.image ? 'יש תמונה' : 'אין תמונה'} ${tabName === 'parshiot' ? '(ראשון מלא)' : ''}</div>
+                            <div class="truncate"><i class="fas fa-music text-purple-400 w-6"></i> ${data.audio ? 'יש הקלטה' : 'אין הקלטה'} ${tabName === 'parshiot' ? '(ראשון מלא)' : ''}</div>
+                            ${extraStatus}
                         </div>
                     </div>
-                `).join('')}
+                `}).join('')}
             </div>`;
         }
 
         window.editLibraryItem = (tabName, itemName) => {
             const item = recordingsLibrary[tabName][itemName];
             const div = document.querySelector(`[data-name="${itemName}"]`);
-            
+
+            let subPartsHtml = '';
+            if (tabName === 'parshiot') {
+                subPartsHtml = `
+                    <details class="mt-4 bg-slate-800/60 rounded-lg border border-slate-700">
+                        <summary class="cursor-pointer p-3 font-bold text-amber-300 text-base">חלקים נוספים (כהן / לוי / ישראל / שאר העליות / מפטיר)</summary>
+                        <div class="p-3 pt-0 space-y-3">
+                            ${PARSHIOT_SUBPARTS.map(p => `
+                                <div class="border border-slate-700 p-2 rounded-lg">
+                                    <h6 class="text-slate-300 font-bold mb-2 text-sm">${p.label}</h6>
+                                    <input type="url" id="edit-${p.key}-image-${itemName}" value="${(item[p.key] && item[p.key].image) || ''}" class="form-input w-full p-2 mb-2 rounded-lg text-sm" placeholder="לינק לתמונה (${p.label})">
+                                    <input type="url" id="edit-${p.key}-audio-${itemName}" value="${(item[p.key] && item[p.key].audio) || ''}" class="form-input w-full p-2 rounded-lg text-sm" placeholder="לינק להקלטה (${p.label})">
+                                </div>
+                            `).join('')}
+                        </div>
+                    </details>
+                `;
+            }
+
             div.innerHTML = `
                 <div class="bg-slate-900/80 -m-4 p-4 rounded-xl border border-amber-500/50">
                     <input type="text" id="edit-name-${itemName}" value="${itemName}" class="form-input w-full p-3 mb-2 rounded-lg text-base" placeholder="שם הפריט">
-                    <input type="url" id="edit-image-${itemName}" value="${item.image || ''}" class="form-input w-full p-3 mb-2 rounded-lg text-base" placeholder="לינק לתמונה">
-                    <input type="url" id="edit-audio-${itemName}" value="${item.audio || ''}" class="form-input w-full p-3 mb-4 rounded-lg text-base" placeholder="לינק להקלטה">
-                    <div class="flex gap-2">
+                    <input type="url" id="edit-image-${itemName}" value="${item.image || ''}" class="form-input w-full p-3 mb-2 rounded-lg text-base" placeholder="${tabName === 'parshiot' ? 'לינק לתמונה (ראשון מלא)' : 'לינק לתמונה'}">
+                    <input type="url" id="edit-audio-${itemName}" value="${item.audio || ''}" class="form-input w-full p-3 rounded-lg text-base" placeholder="${tabName === 'parshiot' ? 'לינק להקלטה (ראשון מלא)' : 'לינק להקלטה'}">
+                    ${subPartsHtml}
+                    <div class="flex gap-2 mt-4">
                         <button type="button" onclick="window.saveLibraryItem('${tabName}', '${itemName}')" class="bg-green-600 text-white px-4 py-3 rounded-lg flex-1 font-bold text-lg hover:bg-green-500">שמור</button>
                         <button type="button" onclick="window.switchLibraryTab('${tabName}')" class="bg-slate-600 text-white px-4 py-3 rounded-lg flex-1 text-lg hover:bg-slate-500">ביטול</button>
                     </div>
@@ -1620,8 +1659,17 @@
             if(!newName) return window.customAlert('שם הפריט הוא חובה', true);
             if(oldName !== newName && recordingsLibrary[tabName][newName]) return window.customAlert('שם זה כבר קיים', true);
             
+            const newItem = { image: newImage, audio: newAudio };
+            if (tabName === 'parshiot') {
+                PARSHIOT_SUBPARTS.forEach(p => {
+                    const imgEl = document.getElementById(`edit-${p.key}-image-${oldName}`);
+                    const audEl = document.getElementById(`edit-${p.key}-audio-${oldName}`);
+                    newItem[p.key] = { image: imgEl ? imgEl.value.trim() : '', audio: audEl ? audEl.value.trim() : '' };
+                });
+            }
+
             if(oldName !== newName) delete recordingsLibrary[tabName][oldName];
-            recordingsLibrary[tabName][newName] = { image: newImage, audio: newAudio };
+            recordingsLibrary[tabName][newName] = newItem;
             
             window.renderLibraryContent(tabName);
         }
@@ -1632,7 +1680,11 @@
                 if(!recordingsLibrary[currentLibraryTab]) recordingsLibrary[currentLibraryTab] = {};
                 if(recordingsLibrary[currentLibraryTab][newName]) return window.customAlert('פריט כזה כבר קיים', true);
                 
-                recordingsLibrary[currentLibraryTab][newName] = { image: '', audio: '' };
+                const newItem = { image: '', audio: '' };
+                if (currentLibraryTab === 'parshiot') {
+                    PARSHIOT_SUBPARTS.forEach(p => { newItem[p.key] = { image: '', audio: '' }; });
+                }
+                recordingsLibrary[currentLibraryTab][newName] = newItem;
                 window.renderLibraryContent(currentLibraryTab);
                 setTimeout(() => window.editLibraryItem(currentLibraryTab, newName), 100);
             });
@@ -1710,19 +1762,22 @@
             });
         };
 
-        window.createLibrarySelectorHTML = function(type, targetImageId, targetAudioId, targetTitleId, placeholder) {
+        // 'part' מציין איזה חלק מתוך פריט הפרשה יש למשוך (למשל 'kohen', 'levi', 'maftir').
+        // כשלא מוגדר part, נמשך המבנה השטוח הישן ברמה העליונה (image/audio) - לתאימות לאחור.
+        window.createLibrarySelectorHTML = function(type, targetImageId, targetAudioId, targetTitleId, placeholder, part = null) {
             const lib = recordingsLibrary[type] || {};
             let options = Object.keys(lib).map(k => `<option value="${k}">${k}</option>`).join('');
-            return `<select onchange="window.populateFromLibrary('${type}', this.value, '${targetImageId}', '${targetAudioId}', '${targetTitleId}')" class="form-input w-full p-2 rounded-lg text-sm bg-blue-900/30 border border-blue-500/30"><option value="">${placeholder}</option>${options}</select>`;
+            const partAttr = part ? `, '${part}'` : '';
+            return `<select onchange="window.populateFromLibrary('${type}', this.value, '${targetImageId}', '${targetAudioId}', '${targetTitleId}'${partAttr})" class="form-input w-full p-2 rounded-lg text-sm bg-blue-900/30 border border-blue-500/30"><option value="">${placeholder}</option>${options}</select>`;
         }
 
-        window.populateFromLibrary = (type, selection, targetImageId, targetAudioId, targetTitleId) => {
-            const recording = recordingsLibrary[type]?.[selection];
-            if(recording) {
-                if(targetImageId && document.getElementById(targetImageId)) document.getElementById(targetImageId).value = recording.image || '';
-                if(targetAudioId && document.getElementById(targetAudioId)) document.getElementById(targetAudioId).value = recording.audio || '';
-                if(targetTitleId && document.getElementById(targetTitleId)) document.getElementById(targetTitleId).value = `${selection}`;
-            }
+        window.populateFromLibrary = (type, selection, targetImageId, targetAudioId, targetTitleId, part = null) => {
+            const item = recordingsLibrary[type]?.[selection];
+            if(!item) return;
+            const recording = part ? (item[part] || {}) : item;
+            if(targetImageId && document.getElementById(targetImageId)) document.getElementById(targetImageId).value = recording.image || '';
+            if(targetAudioId && document.getElementById(targetAudioId)) document.getElementById(targetAudioId).value = recording.audio || '';
+            if(targetTitleId && document.getElementById(targetTitleId)) document.getElementById(targetTitleId).value = `${selection}`;
         }
 
         window.addEventListener('load', () => {
