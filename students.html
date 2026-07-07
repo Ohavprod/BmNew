@@ -504,6 +504,80 @@
         let searchQuery = '';
         let gridColumns = 1;
 
+        // === העלאת קבצים ישירה לקלאודינרי ===
+        // חשוב: ה-upload preset חייב להיות מוגדר כ"Unsigned" בהגדרות קלאודינרי (Settings → Upload → Upload presets),
+        // אחרת ההעלאה מהדפדפן תיכשל עם שגיאת הרשאות.
+        const CLOUDINARY_CLOUD_NAME = 'kyuk8h1t';
+        const CLOUDINARY_UPLOAD_PRESET = 'BarMitzvah';
+
+        window.uploadFileToCloudinary = function(file) {
+            return new Promise((resolve, reject) => {
+                const formData = new FormData();
+                formData.append('file', file);
+                formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/auto/upload`);
+                xhr.onload = () => {
+                    try {
+                        const res = JSON.parse(xhr.responseText);
+                        if (xhr.status >= 200 && xhr.status < 300 && res.secure_url) resolve(res.secure_url);
+                        else reject((res.error && res.error.message) || 'שגיאה בהעלאה לקלאודינרי');
+                    } catch (e) { reject('שגיאה בפענוח תגובת השרת'); }
+                };
+                xhr.onerror = () => reject('שגיאת רשת בהעלאה');
+                xhr.send(formData);
+            });
+        };
+
+        // סורק שדות url שמיועדים לתמונה/הקלטה (לפי ה-id, למשל morningImage / kohenAudio)
+        // ומצרף להם כפתור "העלה קובץ" שמעלה ישירות לקלאודינרי וממלא את הלינק אוטומטית.
+        // אפשר להריץ שוב על אזור מסוים (root) אחרי שנוצר HTML דינמי חדש (למשל בעריכת פריט בספרייה).
+        window.enableCloudinaryUploads = function(root = document) {
+            const inputs = root.querySelectorAll('input[type="url"]');
+            inputs.forEach(input => {
+                if (input.dataset.uploadEnhanced) return;
+                const id = input.id || '';
+                const isImage = /image/i.test(id);
+                const isAudio = /audio/i.test(id);
+                if (!isImage && !isAudio) return;
+                input.dataset.uploadEnhanced = '1';
+
+                const fileId = 'file-' + Math.random().toString(36).slice(2, 9);
+                const wrapper = document.createElement('div');
+                wrapper.className = 'flex items-center gap-2 mt-1 mb-2';
+                wrapper.innerHTML = `
+                    <label class="cursor-pointer text-xs bg-slate-700 hover:bg-slate-600 text-slate-200 px-3 py-1.5 rounded-lg flex items-center gap-1 border border-slate-600 whitespace-nowrap">
+                        <i class="fas fa-upload"></i> העלה ${isImage ? 'תמונה' : 'הקלטה'} מהמכשיר
+                        <input type="file" id="${fileId}" accept="${isImage ? 'image/*' : 'audio/*'}" class="hidden">
+                    </label>
+                    <span class="text-xs" id="${fileId}-status"></span>
+                `;
+                input.insertAdjacentElement('afterend', wrapper);
+
+                const fileInput = wrapper.querySelector(`#${fileId}`);
+                const statusEl = wrapper.querySelector(`#${fileId}-status`);
+                fileInput.addEventListener('change', async () => {
+                    const file = fileInput.files[0];
+                    if (!file) return;
+                    statusEl.textContent = '⏳ מעלה...';
+                    statusEl.className = 'text-xs text-amber-400';
+                    try {
+                        const url = await window.uploadFileToCloudinary(file);
+                        input.value = url;
+                        input.dispatchEvent(new Event('change'));
+                        statusEl.textContent = '✅ הועלה בהצלחה';
+                        statusEl.className = 'text-xs text-green-400';
+                        setTimeout(() => { statusEl.textContent = ''; }, 4000);
+                    } catch (err) {
+                        statusEl.textContent = '❌ שגיאה בהעלאה';
+                        statusEl.className = 'text-xs text-red-400';
+                        window.customAlert(typeof err === 'string' ? err : 'שגיאה בהעלאת הקובץ', true);
+                    }
+                    fileInput.value = '';
+                });
+            });
+        };
+
         window.customAlert = function(msg, isError = false) {
             const alm = document.getElementById('globalAlert');
             const txt = document.getElementById('globalAlertText');
@@ -783,9 +857,25 @@
             currentWordAudio.play().catch(e => window.customAlert('שגיאה בהשמעת המילה. ודא שהקישור תקין וציבורי.', true));
         };
 
+        // מנסה לפרש תאריך בכמה פורמטים נפוצים (ISO, DD/MM/YYYY, DD-MM-YYYY וכו') כדי שתאריך "מוזר" שחוזר מהגיליון לא יגרום לתלמיד להיעלם מהתצוגה
+        function parseFlexibleDate(dateStr) {
+            if (!dateStr) return null;
+            if (dateStr instanceof Date) return isNaN(dateStr.getTime()) ? null : dateStr;
+            const s = String(dateStr).trim();
+            let d = new Date(s);
+            if (!isNaN(d.getTime())) return d;
+            const m = s.match(/^(\d{1,2})[\/\.\-](\d{1,2})[\/\.\-](\d{4})$/);
+            if (m) {
+                d = new Date(parseInt(m[3], 10), parseInt(m[2], 10) - 1, parseInt(m[1], 10));
+                if (!isNaN(d.getTime())) return d;
+            }
+            return null;
+        }
+
         function calculateDaysRemaining(dateStr) {
             if (!dateStr) return 0;
-            const eventDate = new Date(dateStr);
+            const eventDate = parseFlexibleDate(dateStr);
+            if (!eventDate) return 0; // תאריך לא תקין - עדיף להציג את התלמיד כפעיל מאשר שייעלם לגמרי
             const today = new Date();
             eventDate.setHours(0,0,0,0); today.setHours(0,0,0,0);
             return Math.round((eventDate - today) / (1000 * 60 * 60 * 24));
@@ -1096,7 +1186,7 @@
             };
 
             activeStudents.forEach(s => renderCard(s, false));
-            if(isAdmin) pastStudents.forEach(s => renderCard(s, true));
+            pastStudents.forEach(s => renderCard(s, true));
         };
 
         window.openGlobalCalendar = () => {
@@ -1649,6 +1739,7 @@
                     </div>
                 </div>
             `;
+            window.enableCloudinaryUploads(div);
         }
 
         window.saveLibraryItem = (tabName, oldName) => {
@@ -1782,6 +1873,7 @@
 
         window.addEventListener('load', () => {
             window.loadFromGoogleSheets();
+            window.enableCloudinaryUploads();
         });
     </script>
 </body>
