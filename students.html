@@ -289,7 +289,7 @@
                     <div><label class="block text-base text-slate-400 mb-1">שם התלמיד</label><input type="text" id="studentName" required class="form-input w-full p-3 rounded-xl text-lg"></div>
                     <div><label class="block text-base text-slate-400 mb-1">תאריך האירוע</label><input type="date" id="eventDate" required class="form-input w-full p-3 rounded-xl text-lg"></div>
                     <div><label class="block text-base text-slate-400 mb-1">תאריך לידה עברי</label><input type="text" id="hebrewBirthDate" class="form-input w-full p-3 rounded-xl text-lg"></div>
-                    <div><label class="block text-base text-slate-400 mb-1">שם הפרשה</label><input type="text" id="parsha" class="form-input w-full p-3 rounded-xl text-lg"></div>
+                    <div><label class="block text-base text-slate-400 mb-1">שם הפרשה</label><input type="text" id="parsha" onblur="window.autofillAliyahFieldsFromLibrary()" class="form-input w-full p-3 rounded-xl text-lg"></div>
                     <div><label class="block text-base text-slate-400 mb-1">טלפון התלמיד</label><input type="tel" id="studentPhone" class="form-input w-full p-3 rounded-xl text-lg"></div>
                     <div><label class="block text-base text-slate-400 mb-1">שם ההורה</label><input type="text" id="parentName" class="form-input w-full p-3 rounded-xl text-lg"></div>
                     <div><label class="block text-base text-slate-400 mb-1">טלפון ההורה</label><input type="tel" id="parentPhone" class="form-input w-full p-3 rounded-xl text-lg"></div>
@@ -1519,6 +1519,99 @@
 
         window.hideAddStudentForm = () => window.closeModal('addStudentForm');
 
+        // מעדכן את ספריית ההקלטות המשותפת לפי הקבצים/לינקים שהוזנו לתלמיד ספציפי,
+        // כדי שהקלטה שהודבקה/הועלתה עבור תלמיד אחד תהיה זמינה לבחירה גם עבור תלמידים הבאים באותה פרשה.
+        // לא דורס ערך קיים בספרייה אם השדה אצל התלמיד ריק - רק ממלא/מעדכן שדות שבפועל הוזן להם ערך.
+        // ממלא אוטומטית את כל שדות התמונה/הקלטה (ראשון, כהן/לוי/ישראל, שני-שביעי, מפטיר, הפטרה)
+        // מתוך ספריית ההקלטות לפי שם הפרשה שהוקלד - רק בשדות שעדיין ריקים, כדי לא לדרוס
+        // ערכים שכבר מולאו (למשל כשעורכים תלמיד קיים עם הקלטות משלו).
+        window.autofillAliyahFieldsFromLibrary = function() {
+            const parshaInput = document.getElementById('parsha');
+            if (!parshaInput) return;
+            const parsha = parshaInput.value.trim();
+            if (!parsha) return;
+
+            const fillIfEmpty = (id, val) => {
+                const el = document.getElementById(id);
+                if (el && !el.value && val) el.value = val;
+            };
+
+            const item = recordingsLibrary.parshiot && recordingsLibrary.parshiot[parsha];
+            if (item) {
+                fillIfEmpty('morningImage', item.image);
+                fillIfEmpty('morningAudio', item.audio);
+
+                const fieldMap = {
+                    kohen: ['kohenImage', 'kohenAudio'],
+                    levi: ['leviImage', 'leviAudio'],
+                    yisrael: ['yisraelImage', 'yisraelAudio'],
+                    sheni: ['sheniImage', 'sheniAudio'],
+                    shlishi: ['shlishiImage', 'shlishiAudio'],
+                    revii: ['reviiImage', 'reviiAudio'],
+                    chamishi: ['chamishiImage', 'chamishiAudio'],
+                    shishi: ['shishiImage', 'shishiAudio'],
+                    shvii: ['shviiImage', 'shviiAudio'],
+                    maftir: ['maftirImage', 'maftirAudio']
+                };
+                Object.keys(fieldMap).forEach(part => {
+                    const sub = item[part];
+                    if (sub) {
+                        fillIfEmpty(fieldMap[part][0], sub.image);
+                        fillIfEmpty(fieldMap[part][1], sub.audio);
+                    }
+                });
+            }
+
+            const haftarahItem = recordingsLibrary.shabbat && recordingsLibrary.shabbat[parsha];
+            if (haftarahItem) {
+                fillIfEmpty('shabbatImage', haftarahItem.image);
+                fillIfEmpty('shabbatAudio', haftarahItem.audio);
+            }
+        };
+
+        window.syncStudentMaterialsToLibrary = function(s) {
+            const parsha = (s.parsha || '').trim();
+            let updated = false;
+
+            const setIfPresent = (target, imgVal, audVal) => {
+                if (imgVal) { target.image = imgVal; updated = true; }
+                if (audVal) { target.audio = audVal; updated = true; }
+            };
+
+            if (parsha) {
+                if (!recordingsLibrary.parshiot) recordingsLibrary.parshiot = {};
+                if (!recordingsLibrary.parshiot[parsha]) recordingsLibrary.parshiot[parsha] = { image: '', audio: '' };
+                const item = recordingsLibrary.parshiot[parsha];
+                PARSHIOT_SUBPARTS.forEach(p => { if (!item[p]) item[p] = { image: '', audio: '' }; });
+
+                setIfPresent(item, s.morningImage, s.morningAudio);
+                setIfPresent(item.kohen, s.kohenImage, s.kohenAudio);
+                setIfPresent(item.levi, s.leviImage, s.leviAudio);
+                setIfPresent(item.yisrael, s.yisraelImage, s.yisraelAudio);
+                setIfPresent(item.sheni, s.sheniImage, s.sheniAudio);
+                setIfPresent(item.shlishi, s.shlishiImage, s.shlishiAudio);
+                setIfPresent(item.revii, s.reviiImage, s.reviiAudio);
+                setIfPresent(item.chamishi, s.chamishiImage, s.chamishiAudio);
+                setIfPresent(item.shishi, s.shishiImage, s.shishiAudio);
+                setIfPresent(item.shvii, s.shviiImage, s.shviiAudio);
+                setIfPresent(item.maftir, s.maftirImage, s.maftirAudio);
+
+                if (s.shabbatImage || s.shabbatAudio) {
+                    if (!recordingsLibrary.shabbat) recordingsLibrary.shabbat = {};
+                    if (!recordingsLibrary.shabbat[parsha]) recordingsLibrary.shabbat[parsha] = { image: '', audio: '' };
+                    setIfPresent(recordingsLibrary.shabbat[parsha], s.shabbatImage, s.shabbatAudio);
+                }
+            }
+
+            if (s.otherSingleName && (s.otherSingleImage || s.otherSingleAudio)) {
+                if (!recordingsLibrary.special) recordingsLibrary.special = {};
+                if (!recordingsLibrary.special[s.otherSingleName]) recordingsLibrary.special[s.otherSingleName] = { image: '', audio: '' };
+                setIfPresent(recordingsLibrary.special[s.otherSingleName], s.otherSingleImage, s.otherSingleAudio);
+            }
+
+            return updated;
+        };
+
         window.addStudent = (e) => {
             e.preventDefault();
             const editId = document.getElementById('studentForm').getAttribute('data-edit-id');
@@ -1564,11 +1657,20 @@
                 specificWords: tempSpecificWords
             };
 
+            const libraryUpdated = window.syncStudentMaterialsToLibrary(studentData);
+
             window.saveToGoogleSheets(studentData, (res) => {
                 if(res.success) {
-                    window.customAlert('נשמר בהצלחה');
-                    window.hideAddStudentForm();
-                    window.loadFromGoogleSheets(window.renderStudents);
+                    const finalize = () => {
+                        window.customAlert(libraryUpdated ? 'נשמר בהצלחה (גם עודכן בספריית ההקלטות)' : 'נשמר בהצלחה');
+                        window.hideAddStudentForm();
+                        window.loadFromGoogleSheets(window.renderStudents);
+                    };
+                    if (libraryUpdated) {
+                        window.syncToGoogleSheets('saveLibrary', recordingsLibrary, finalize);
+                    } else {
+                        finalize();
+                    }
                 } else {
                     window.customAlert('שגיאה בשמירה', true);
                 }
