@@ -1438,6 +1438,8 @@
             }
         };
 
+        let editingSpecificWordIndex = null;
+
         window.renderSpecificWordsList = () => {
             const list = document.getElementById('specificWordsList');
             if (!list) return;
@@ -1445,12 +1447,53 @@
                 list.innerHTML = '<div class="text-slate-500 text-base mt-2">טרם הוספו מילים ספציפיות לתרגול.</div>';
                 return;
             }
-            list.innerHTML = tempSpecificWords.map((w, index) => `
+            list.innerHTML = tempSpecificWords.map((w, index) => {
+                if (index === editingSpecificWordIndex) {
+                    return `
+                        <div class="bg-slate-900/80 p-3 rounded-lg border border-teal-500/50 mt-2 space-y-2">
+                            <input type="text" id="edit-word-text-${index}" value="${(w.word || '').replace(/"/g, '&quot;')}" placeholder="המילה" class="form-input w-full p-2 rounded-lg text-base">
+                            <input type="url" id="edit-word-audio-${index}" value="${w.audio || ''}" placeholder="לינק להקלטה של המילה" class="form-input w-full p-2 rounded-lg text-base">
+                            <div class="flex gap-2">
+                                <button type="button" onclick="window.saveSpecificWordEdit(${index})" class="bg-green-600 text-white px-4 py-2 rounded-lg flex-1 font-bold hover:bg-green-500">שמור</button>
+                                <button type="button" onclick="window.cancelSpecificWordEdit()" class="bg-slate-600 text-white px-4 py-2 rounded-lg flex-1 hover:bg-slate-500">ביטול</button>
+                            </div>
+                        </div>
+                    `;
+                }
+                return `
                 <div class="flex justify-between items-center bg-slate-900/60 p-2 rounded-lg border border-slate-700 mt-2">
                     <span class="text-teal-400 font-bold">${w.word}</span>
-                    <button type="button" onclick="window.removeSpecificWord(${index})" class="text-red-400 hover:text-red-300 p-2"><i class="fas fa-trash"></i></button>
+                    <div class="flex gap-1">
+                        <button type="button" onclick="window.editSpecificWord(${index})" class="text-blue-400 hover:text-blue-300 p-2"><i class="fas fa-edit"></i></button>
+                        <button type="button" onclick="window.removeSpecificWord(${index})" class="text-red-400 hover:text-red-300 p-2"><i class="fas fa-trash"></i></button>
+                    </div>
                 </div>
-            `).join('');
+            `;
+            }).join('');
+            window.enableCloudinaryUploads(list);
+        };
+
+        window.editSpecificWord = (index) => {
+            editingSpecificWordIndex = index;
+            window.renderSpecificWordsList();
+        };
+
+        window.cancelSpecificWordEdit = () => {
+            editingSpecificWordIndex = null;
+            window.renderSpecificWordsList();
+        };
+
+        window.saveSpecificWordEdit = (index) => {
+            const wordEl = document.getElementById(`edit-word-text-${index}`);
+            const audioEl = document.getElementById(`edit-word-audio-${index}`);
+            const word = wordEl.value.trim();
+            if (!word) {
+                window.customAlert('נא להזין את המילה הקשה', true);
+                return;
+            }
+            tempSpecificWords[index] = { word, audio: audioEl.value.trim() };
+            editingSpecificWordIndex = null;
+            window.renderSpecificWordsList();
         };
 
         window.addSpecificWord = () => {
@@ -1506,6 +1549,7 @@
             
             currentEditingStudentId = null;
             tempSpecificWords = [];
+            editingSpecificWordIndex = null;
             window.renderSpecificWordsList();
             document.getElementById('enableSpecificWords').checked = false;
             
@@ -1730,6 +1774,7 @@
             setVal('shabbatAudio', s.shabbatAudio);
             
             tempSpecificWords = s.specificWords ? [...s.specificWords] : [];
+            editingSpecificWordIndex = null;
             window.renderSpecificWordsList();
             document.getElementById('enableSpecificWords').checked = !!s.enableSpecificWords;
             window.toggleSpecificWordsEditor();
