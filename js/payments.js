@@ -1,16 +1,23 @@
 // js/payments.js
 
 // --- Payments Logic ---
+
+// Computes payment status for an event.
+// isFullySettled is only ever true for finished events where the client paid in full
+// AND every staff member who attended and has an amount due has been marked as paid.
+// That flag is what determines archiving - it is a stricter check than the "payment-ok"
+// styling used for events that are simply on-track (e.g. deposit paid) before they happen.
 function getPaymentStatus(evt) {
     let payments = evt.payments || {};
     let client = payments.client || { downPayment: false, fullPayment: false };
     let staff = payments.staff || {};
 
     const isFinished = evt.status === 'הסתיים';
-    let isFullyPaid = false;
+    let isOnTrack = false;
+    let isFullySettled = false;
 
     if (!isFinished) {
-        isFullyPaid = client.downPayment;
+        isOnTrack = client.downPayment;
     } else {
         const clientOK = client.fullPayment;
         const staffOK = Object.values(staff).every(s => {
@@ -18,15 +25,16 @@ function getPaymentStatus(evt) {
             if (s.amount && s.amount > 0) return s.paid;
             return true;
         });
-        isFullyPaid = clientOK && staffOK;
+        isFullySettled = clientOK && staffOK;
+        isOnTrack = isFullySettled;
     }
 
-    return { client, staff, isFinished, isFullyPaid };
+    return { isFinished, isOnTrack, isFullySettled, client, staff };
 }
 
-function buildPaymentCardHtml(evt, status) {
-    const { client, isFinished, isFullyPaid } = status;
-    const borderClass = isFullyPaid ? 'payment-ok' : 'payment-bad';
+function buildPaymentCardHtml(evt) {
+    const { isFinished, isOnTrack, client } = getPaymentStatus(evt);
+    const borderClass = isOnTrack ? 'payment-ok' : 'payment-bad';
     const depositIcon = client.downPayment ? '<i class="fas fa-check text-green-500"></i>' : '<i class="fas fa-times text-red-500"></i>';
 
     return `
@@ -49,32 +57,45 @@ window.renderPaymentsBoard = function() {
     if(!board) return;
     board.innerHTML = '';
 
-    const activeEvents = events.filter(evt => !getPaymentStatus(evt).isFullyPaid);
-    activeEvents.sort((a, b) => new Date(b.date) - new Date(a.date));
+    // Only current (not-yet-fully-settled) events are shown here, in chronological order.
+    // Fully settled events move to the archive (see openPaymentsArchiveModal below).
+    const activeEvents = events.filter(evt => !getPaymentStatus(evt).isFullySettled);
+    const sortedActive = [...activeEvents].sort((a, b) => new Date(a.date) - new Date(b.date));
 
-    if (activeEvents.length === 0) {
-        board.innerHTML = '<div class="col-span-full text-center text-slate-400 text-xl py-10">אין אירועים פעילים לתצוגה. ניתן לצפות באירועים ששולמו במלואם בארכיון.</div>';
-        return;
-    }
-
-    activeEvents.forEach(evt => {
-        board.innerHTML += buildPaymentCardHtml(evt, getPaymentStatus(evt));
+    sortedActive.forEach(evt => {
+        board.innerHTML += buildPaymentCardHtml(evt);
     });
+
+    if (sortedActive.length === 0) {
+        board.innerHTML = `<div class="col-span-full text-center text-slate-400 text-xl py-10">אין כרגע אירועים פתוחים לתשלום. כל האירועים שולמו במלואם וניתן לצפות בהם בארכיון התשלומים.</div>`;
+    }
 }
 
-window.openPaymentsArchive = () => {
+window.openPaymentsArchiveModal = function() {
     const list = document.getElementById('paymentsArchiveList');
+    if(!list) return;
     list.innerHTML = '';
 
-    const archivedEvents = events.filter(evt => getPaymentStatus(evt).isFullyPaid);
-    archivedEvents.sort((a, b) => new Date(b.date) - new Date(a.date));
+    const settledEvents = events.filter(evt => getPaymentStatus(evt).isFullySettled);
+    const sortedSettled = [...settledEvents].sort((a, b) => new Date(b.date) - new Date(a.date));
 
-    if (archivedEvents.length === 0) {
-        list.innerHTML = '<div class="col-span-full text-center text-slate-400 text-xl py-6">הארכיון ריק.</div>';
-    } else {
-        archivedEvents.forEach(evt => {
-            list.innerHTML += buildPaymentCardHtml(evt, getPaymentStatus(evt));
-        });
+    sortedSettled.forEach(evt => {
+        list.innerHTML += `
+            <div class="bg-slate-800 p-4 rounded-xl border border-green-700/50 flex flex-col md:flex-row justify-between md:items-center gap-3 shadow-md">
+                <div>
+                    <div class="text-white font-bold text-lg">${evt.eventName || 'אירוע'}</div>
+                    <div class="text-slate-400 text-sm"><i class="far fa-calendar-alt ml-1"></i> ${evt.date}</div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span class="text-green-400 font-bold text-sm bg-green-900/30 px-3 py-1 rounded-full"><i class="fas fa-check-circle ml-1"></i> כל התשלומים הושלמו</span>
+                    <button onclick="closeModal('paymentsArchiveModal'); openPaymentModal('${evt.id}')" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-bold shadow"><i class="fas fa-eye ml-1"></i> צפה בפרטים</button>
+                </div>
+            </div>
+        `;
+    });
+
+    if (sortedSettled.length === 0) {
+        list.innerHTML = `<div class="text-center text-slate-400 text-xl py-6">ארכיון התשלומים ריק כרגע.</div>`;
     }
 
     window.openModal('paymentsArchiveModal');
