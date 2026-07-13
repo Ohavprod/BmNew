@@ -1,49 +1,104 @@
 // js/payments.js
 
 // --- Payments Logic ---
+
+// Computes payment status for an event.
+// isFullySettled is only ever true for finished events where the client paid in full
+// AND every staff member who attended and has an amount due has been marked as paid.
+// That flag is what determines archiving - it is a stricter check than the "payment-ok"
+// styling used for events that are simply on-track (e.g. deposit paid) before they happen.
+function getPaymentStatus(evt) {
+    let payments = evt.payments || {};
+    let client = payments.client || { downPayment: false, fullPayment: false };
+    let staff = payments.staff || {};
+
+    const isFinished = evt.status === 'הסתיים';
+    let isOnTrack = false;
+    let isFullySettled = false;
+
+    if (!isFinished) {
+        isOnTrack = client.downPayment;
+    } else {
+        const clientOK = client.fullPayment;
+        const staffOK = Object.values(staff).every(s => {
+            if (s.attended === false) return true;
+            if (s.amount && s.amount > 0) return s.paid;
+            return true;
+        });
+        isFullySettled = clientOK && staffOK;
+        isOnTrack = isFullySettled;
+    }
+
+    return { isFinished, isOnTrack, isFullySettled, client, staff };
+}
+
+function buildPaymentCardHtml(evt) {
+    const { isFinished, isOnTrack, client } = getPaymentStatus(evt);
+    const borderClass = isOnTrack ? 'payment-ok' : 'payment-bad';
+    const depositIcon = client.downPayment ? '<i class="fas fa-check text-green-500"></i>' : '<i class="fas fa-times text-red-500"></i>';
+
+    return `
+        <div class="payment-card ${borderClass}">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold text-white">${evt.eventName || 'אירוע'}</h3>
+                <span class="text-sm text-gray-400">${evt.date}</span>
+            </div>
+            <div class="mb-4 text-right text-gray-300">
+                 <div>מקדמה: ${depositIcon}</div>
+                 ${isFinished ? `<div>גמר חשבון: ${client.fullPayment ? '<i class="fas fa-check text-green-500"></i>' : '<i class="fas fa-times text-red-500"></i>'}</div>` : ''}
+            </div>
+            <button onclick="openPaymentModal('${evt.id}')" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 rounded">ניהול תשלומים</button>
+        </div>
+    `;
+}
+
 window.renderPaymentsBoard = function() {
     const board = document.getElementById('paymentsBoard');
     if(!board) return;
     board.innerHTML = '';
-    
-    events.forEach(evt => {
-        let payments = evt.payments || {};
-        let client = payments.client || { downPayment: false, fullPayment: false };
-        let staff = payments.staff || {};
 
-        const isFinished = evt.status === 'הסתיים';
-        let isFullyPaid = false;
-        
-        if (!isFinished) {
-            isFullyPaid = client.downPayment; 
-        } else {
-            const clientOK = client.fullPayment;
-            const staffOK = Object.values(staff).every(s => {
-                if (s.attended === false) return true; 
-                if (s.amount && s.amount > 0) return s.paid;
-                return true; 
-            });
-            isFullyPaid = clientOK && staffOK;
-        }
+    // Only current (not-yet-fully-settled) events are shown here, in chronological order.
+    // Fully settled events move to the archive (see openPaymentsArchiveModal below).
+    const activeEvents = events.filter(evt => !getPaymentStatus(evt).isFullySettled);
+    const sortedActive = [...activeEvents].sort((a, b) => new Date(a.date) - new Date(b.date));
 
-        const borderClass = isFullyPaid ? 'payment-ok' : 'payment-bad';
-        const depositIcon = client.downPayment ? '<i class="fas fa-check text-green-500"></i>' : '<i class="fas fa-times text-red-500"></i>';
+    sortedActive.forEach(evt => {
+        board.innerHTML += buildPaymentCardHtml(evt);
+    });
 
-        let cardHtml = `
-            <div class="payment-card ${borderClass}">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-xl font-bold text-white">${evt.eventName || 'אירוע'}</h3>
-                    <span class="text-sm text-gray-400">${evt.date}</span>
+    if (sortedActive.length === 0) {
+        board.innerHTML = `<div class="col-span-full text-center text-slate-400 text-xl py-10">אין כרגע אירועים פתוחים לתשלום. כל האירועים שולמו במלואם וניתן לצפות בהם בארכיון התשלומים.</div>`;
+    }
+}
+
+window.openPaymentsArchiveModal = function() {
+    const list = document.getElementById('paymentsArchiveList');
+    if(!list) return;
+    list.innerHTML = '';
+
+    const settledEvents = events.filter(evt => getPaymentStatus(evt).isFullySettled);
+    const sortedSettled = [...settledEvents].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    sortedSettled.forEach(evt => {
+        list.innerHTML += `
+            <div class="bg-slate-800 p-4 rounded-xl border border-green-700/50 flex flex-col md:flex-row justify-between md:items-center gap-3 shadow-md">
+                <div>
+                    <div class="text-white font-bold text-lg">${evt.eventName || 'אירוע'}</div>
+                    <div class="text-slate-400 text-sm"><i class="far fa-calendar-alt ml-1"></i> ${evt.date}</div>
                 </div>
-                <div class="mb-4 text-right text-gray-300">
-                     <div>מקדמה: ${depositIcon}</div>
-                     ${isFinished ? `<div>גמר חשבון: ${client.fullPayment ? '<i class="fas fa-check text-green-500"></i>' : '<i class="fas fa-times text-red-500"></i>'}</div>` : ''}
+                <div class="flex items-center gap-3">
+                    <span class="text-green-400 font-bold text-sm bg-green-900/30 px-3 py-1 rounded-full"><i class="fas fa-check-circle ml-1"></i> כל התשלומים הושלמו</span>
+                    <button onclick="closeModal('paymentsArchiveModal'); openPaymentModal('${evt.id}')" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-bold shadow"><i class="fas fa-eye ml-1"></i> צפה בפרטים</button>
                 </div>
-                <button onclick="openPaymentModal('${evt.id}')" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 rounded">ניהול תשלומים</button>
             </div>
         `;
-        board.innerHTML += cardHtml;
     });
+
+    if (sortedSettled.length === 0) {
+        list.innerHTML = `<div class="text-center text-slate-400 text-xl py-6">ארכיון התשלומים ריק כרגע.</div>`;
+    }
+
+    window.openModal('paymentsArchiveModal');
 }
 
 window.togglePayMethodNotes = (selectId, notesId) => {
