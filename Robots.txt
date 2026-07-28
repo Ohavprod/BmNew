@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /booking.html
+Disallow: /students.html
+
+Sitemap: https://barmitzvah2.netlify.app/sitemap.xml
