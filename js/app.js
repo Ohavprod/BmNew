@@ -411,7 +411,8 @@ document.addEventListener('DOMContentLoaded', function() {
             notes: form.elements['notes'].value,
             hasKeyboard: form.elements['hasKeyboard'].checked,
             hasDrummers: form.elements['hasDrummers'].checked,
-            isStudent: form.elements['isStudent'].checked 
+            isStudent: form.elements['isStudent'].checked,
+            showPaymentMethods: form.elements['showPaymentMethods'].checked
         };
 
         if (id && id !== "") {
