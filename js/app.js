@@ -276,6 +276,23 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // --- Events & Forms ---
+    window.toggleEventTypeFields = () => {
+        const form = document.getElementById('eventForm');
+        const type = form.elements['eventType'].value;
+        const isBarMitzvah = (type === 'בר מצווה');
+
+        document.getElementById('customEventTypeContainer').classList.toggle('hidden', isBarMitzvah);
+
+        document.getElementById('childNameLabel').innerText = isBarMitzvah
+            ? 'שם חתן הבר מצווה'
+            : 'שם מרכזי באירוע (אופציונלי, אם רלוונטי)';
+
+        document.getElementById('hebrewDateLabel').innerText = isBarMitzvah ? 'תאריך לידה עברי' : 'תאריך עברי';
+
+        const isStudentContainer = document.getElementById('isStudentContainer');
+        if (isStudentContainer) isStudentContainer.style.display = isBarMitzvah ? 'flex' : 'none';
+    }
+
     window.toggleCustomPackageField = () => {
         const form = document.getElementById('eventForm');
         const container = document.getElementById('customPackageDescContainer');
@@ -299,6 +316,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const newEvent = {
             action: 'createEvent', id: 'evt-' + Date.now(), date: date, eventName: name,
+            eventType: 'בר מצווה',
             location: document.getElementById('qeLocation').value,
             startTime: document.getElementById('qeStart').value,
             packageType: document.getElementById('qeType').value,
@@ -321,6 +339,7 @@ document.addEventListener('DOMContentLoaded', function() {
         form.reset();
         form.elements['id'].value = ""; 
         window.toggleCustomPackageField();
+        window.toggleEventTypeFields();
 
         if (id && typeof id !== 'object') {
             const evt = events.find(e => e.id == id);
@@ -351,6 +370,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 }
                 if(!evt.packageType) window.toggleCustomPackageField();
+                window.toggleEventTypeFields();
             }
         }
         
@@ -373,6 +393,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const eventData = {
             eventName: form.elements['eventName'].value, 
+            eventType: form.elements['eventType'].value,
+            customEventTypeName: form.elements['customEventTypeName'].value,
             date: form.elements['date'].value,
             hebrewDate: form.elements['hebrewDate'].value,
             clientName: form.elements['clientName'].value,
@@ -539,13 +561,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     ? `<button onclick="window.open('booking.html?id=${evt.id}', '_blank')" class="action-btn" style="background: linear-gradient(135deg, #10b981, #059669); color: white; grid-column: span 2;">
                         <i class="fas fa-eye"></i> צפה בטופס לקוח
                        </button>`
-                    : `<button onclick="sendBookingForm('${evt.id}', '${evt.phone}')" class="action-btn" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white; grid-column: span 2;">
+                    : `<button onclick="sendBookingForm('${evt.id}', '${evt.phone}', '${(evt.eventType === 'אחר' ? (evt.customEventTypeName || 'האירוע') : 'בר מצווה').replace(/'/g, "\\'")}')" class="action-btn" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white; grid-column: span 2;">
                         <i class="fas fa-file-signature"></i> שלח טופס לאישור
                        </button>`;
 
                 cardHtml += `
                         <div class="info-bubble"><i class="fas fa-user"></i> ${evt.clientName}</div>
-                        <div class="info-bubble"><i class="fas fa-child"></i> חתן: ${evt.childName}</div>
+                        ${evt.childName ? `<div class="info-bubble"><i class="fas fa-child"></i> ${(!evt.eventType || evt.eventType === 'בר מצווה') ? 'חתן' : (evt.customEventTypeName || 'איש קשר')}: ${evt.childName}</div>` : ''}
                         <div class="info-bubble"><i class="fas fa-phone"></i> <a href="tel:${evt.phone}">${evt.phone}</a></div>
                         <div class="info-bubble" style="border-color: rgba(251, 191, 36, 0.4);"><i class="fas fa-tag"></i> ${evt.packageType} | ${evt.price} ₪</div>
                         ${evt.notes ? `<div class="mt-4 p-4 rounded-xl text-lg italic notes-area" style="white-space: pre-wrap;">"${evt.notes}"</div>` : ''}
@@ -1312,13 +1334,14 @@ document.addEventListener('DOMContentLoaded', function() {
         window.open(`https://wa.me/972${p.replace(/-/g,'').substring(1)}?text=${encodeURIComponent(msg)}`, '_blank');
     }
 
-    window.sendBookingForm = (eventId, phone) => {
+    window.sendBookingForm = (eventId, phone, eventTypeLabel) => {
         if (!phone) { customAlert("לא הוזן מספר טלפון לאירוע זה."); return; }
         let baseUrl = window.location.origin + window.location.pathname.replace(/index\.html$/, '');
         if (!baseUrl.endsWith('/')) baseUrl += '/';
         const formLink = `${baseUrl}booking.html?id=${eventId}`;
-        
-        const msg = `היי! שמחים ומתרגשים לקראת בר המצווה 💫\n\nכדי שנוכל לסגור את כל הקצוות בצורה מסודרת, הכנו עבורך טופס אישור פרטים קצר. אנא היכנס/י ללינק, ודא/י שהפרטים נכונים, השלם/י את החסר ואשר/י בתחתית העמוד:\n\n${formLink}\n\nנתראה בשמחות,\nצוות אביב ויצמן`;
+        const eventPhrase = (eventTypeLabel && eventTypeLabel !== 'בר מצווה') ? `לקראת ${eventTypeLabel}` : 'לקראת הבר מצווה';
+
+        const msg = `היי! שמחים ומתרגשים ${eventPhrase} 💫\n\nכדי שנוכל לסגור את כל הקצוות בצורה מסודרת, הכנו עבורך טופס אישור פרטים קצר. אנא היכנס/י ללינק, ודא/י שהפרטים נכונים, השלם/י את החסר ואשר/י בתחתית העמוד:\n\n${formLink}\n\nנתראה בשמחות,\nצוות אביב ויצמן`;
         window.open(`https://wa.me/972${phone.replace(/-/g,'').substring(1)}?text=${encodeURIComponent(msg)}`, '_blank');
     }
     
