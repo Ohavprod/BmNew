@@ -58,7 +58,7 @@
             
             <div class="section-title">1. סיכום פרטי האירוע</div>
             
-            <div class="info-row"><span>סוג החבילה:</span> <strong id="lblPackage" class="text-amber-400 text-lg"></strong></div>
+            <div class="info-row" id="packageRow"><span>סוג החבילה:</span> <strong id="lblPackage" class="text-amber-400 text-lg"></strong></div>
             <div id="pkgDesc" class="text-sm text-blue-200 mt-2 mb-3 px-3 whitespace-pre-line leading-relaxed border-r-2 border-blue-500 mr-2 font-bold"></div>
             
             <div class="info-row mb-6 bg-slate-800 border border-slate-600"><span>מחיר סופי (כולל מע"מ):</span> <strong id="lblPrice" class="text-white text-xl"></strong></div>
@@ -70,8 +70,8 @@
 
             <div class="section-title">2. פרטים אישיים ומיקום</div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                <div><label class="block text-slate-300 mb-1">שם פרטי (הורה): *</label><input type="text" id="inpFirstName" class="form-input" required></div>
-                <div><label class="block text-slate-300 mb-1">שם משפחה (הורה): *</label><input type="text" id="inpLastName" class="form-input" required></div>
+                <div><label class="block text-slate-300 mb-1" id="firstNameLabel">שם פרטי (הורה): *</label><input type="text" id="inpFirstName" class="form-input" required></div>
+                <div><label class="block text-slate-300 mb-1" id="lastNameLabel">שם משפחה (הורה): *</label><input type="text" id="inpLastName" class="form-input" required></div>
                 <div><label class="block text-slate-300 mb-1">טלפון נייד: *</label><input type="tel" id="inpPhone" class="form-input" dir="ltr" required></div>
                 <div id="childNameFieldContainer"><label class="block text-slate-300 mb-1" id="childNameFieldLabel">שם חתן בר המצווה: *</label><input type="text" id="inpChildName" class="form-input" required></div>
                 <div><label class="block text-slate-300 mb-1">תאריך האירוע: *</label><input type="text" id="inpEventDate" class="form-input" disabled></div>
@@ -79,18 +79,18 @@
             </div>
             
             <div class="mb-4">
-                <label class="block text-slate-300 mb-1">מיקום האירוע (בית כנסת/אולם): *</label>
+                <label class="block text-slate-300 mb-1" id="locationFieldLabel">מיקום האירוע (בית כנסת/אולם): *</label>
                 <input type="text" id="inpLocation" class="form-input">
             </div>
 
             <div class="section-title">3. לו"ז האירוע</div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <div>
-                    <label class="block text-slate-300 mb-1">שעת הזמנת אורחים (מומלץ 08:00/08:30): *</label>
+                    <label class="block text-slate-300 mb-1" id="guestTimeLabel">שעת הזמנת אורחים (מומלץ 08:00/08:30): *</label>
                     <input type="time" id="inpGuestTime" class="form-input" required>
                 </div>
                 <div>
-                    <label class="block text-slate-300 mb-1">שעת תחילת אירוע (מומלץ 09:00): *</label>
+                    <label class="block text-slate-300 mb-1" id="startTimeLabel">שעת תחילת אירוע (מומלץ 09:00): *</label>
                     <input type="time" id="inpStartTime" class="form-input" required>
                 </div>
             </div>
@@ -160,12 +160,23 @@
                             ? 'טופס זה נועד לסכם בצורה ברורה ונעימה את פרטי ההזמנה לאירוע בר המצווה.'
                             : `טופס זה נועד לסכם בצורה ברורה ונעימה את פרטי ההזמנה ל${displayEventType}.`;
 
-                        document.getElementById('childNameFieldLabel').innerText = isBarMitzvah
-                            ? 'שם חתן בר המצווה: *'
-                            : 'שם מרכזי באירוע (אם רלוונטי):';
-                        if (!isBarMitzvah) document.getElementById('inpChildName').required = false;
+                        if (isBarMitzvah) {
+                            document.getElementById('childNameFieldLabel').innerText = 'שם חתן בר המצווה: *';
+                        } else {
+                            document.getElementById('childNameFieldContainer').style.display = 'none';
+                            document.getElementById('inpChildName').required = false;
+                        }
 
                         document.getElementById('hebrewDateFieldLabel').innerText = (isBarMitzvah ? 'תאריך לידה עברי' : 'תאריך עברי') + ': *';
+                        document.getElementById('firstNameLabel').innerText = isBarMitzvah ? 'שם פרטי (הורה): *' : 'שם פרטי: *';
+                        document.getElementById('lastNameLabel').innerText = isBarMitzvah ? 'שם משפחה (הורה): *' : 'שם משפחה: *';
+                        document.getElementById('locationFieldLabel').innerText = isBarMitzvah ? 'מיקום האירוע (בית כנסת/אולם): *' : 'מיקום האירוע: *';
+                        document.getElementById('guestTimeLabel').innerText = isBarMitzvah ? 'שעת הזמנת אורחים (מומלץ 08:00/08:30): *' : 'שעת הזמנת אורחים: *';
+                        document.getElementById('startTimeLabel').innerText = isBarMitzvah ? 'שעת תחילת אירוע (מומלץ 09:00): *' : 'שעת תחילת אירוע: *';
+
+                        if (!isBarMitzvah) {
+                            document.getElementById('packageRow').style.display = 'none';
+                        }
 
                         // מילוי פרטים אישיים
                         const nameParts = (currentEvent.clientName || '').trim().split(' ');
@@ -225,7 +236,7 @@
                         document.getElementById('lblPackage').innerText = pkgName;
                         
                         const pkgDescEl = document.getElementById('pkgDesc');
-                        if(desc) { 
+                        if(desc && isBarMitzvah) { 
                             pkgDescEl.innerText = desc;
                             pkgDescEl.style.display = 'block'; 
                         } else { 
@@ -236,10 +247,13 @@
 
                         // תנאי תשלום
                         let termsHtml = '';
-                        if (extPay !== '0') {
+                        if (extPay !== '0' && isBarMitzvah) {
                             termsHtml += `<div><strong>תשלום לספקים חיצוניים (מתופפים, קלידן וכו'):</strong> <span class="bg-slate-800 px-2 py-1 rounded text-white">${extPay} ₪</span> ישולמו במזומן ביום האירוע עצמו.</div>`;
                         }
-                        termsHtml += `<div><strong class="text-amber-400">יתרה לתשלום:</strong> את היתרה הנותרת ניתן לשלם באמצעות מזומן, ביט, פייבוקס, העברה בנקאית או צ'ק.</div>`;
+                        const showPaymentMethods = currentEvent.showPaymentMethods !== false;
+                        if (showPaymentMethods) {
+                            termsHtml += `<div>ניתן לשלם באמצעות מזומן, ביט, פייבוקס, העברה בנקאית או צ'ק.</div>`;
+                        }
                         document.getElementById('paymentTermsText').innerHTML = termsHtml;
 
                         // נעילה חכמה ויוקרתית אם הטופס כבר אושר
