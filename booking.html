@@ -50,7 +50,7 @@
         <div class="text-center mb-6 border-b border-slate-700 pb-6">
             <img src="https://i.postimg.cc/CMcRF8Nm/Logo.gif" class="h-20 mx-auto mb-4" alt="לוגו אביב ויצמן">
             <h1 class="text-3xl font-black mb-2">טופס אישור הזמנת אירוע</h1>
-            <p class="text-blue-200 text-lg">טופס זה נועד לסכם בצורה ברורה ונעימה את פרטי ההזמנה לאירוע בר המצווה.</p>
+            <p class="text-blue-200 text-lg" id="formSubtitle">טופס זה נועד לסכם בצורה ברורה ונעימה את פרטי ההזמנה לאירוע בר המצווה.</p>
             <p class="text-slate-400 text-sm mt-2">המטרה היא לוודא שכל הפרטים סגורים ומוסכמים מראש - תאריך, מקום, תשלום ותנאים - כדי שנוכל לחגוג יחד בלב שקט ובשמחה גדולה.</p>
         </div>
 
@@ -73,9 +73,9 @@
                 <div><label class="block text-slate-300 mb-1">שם פרטי (הורה): *</label><input type="text" id="inpFirstName" class="form-input" required></div>
                 <div><label class="block text-slate-300 mb-1">שם משפחה (הורה): *</label><input type="text" id="inpLastName" class="form-input" required></div>
                 <div><label class="block text-slate-300 mb-1">טלפון נייד: *</label><input type="tel" id="inpPhone" class="form-input" dir="ltr" required></div>
-                <div><label class="block text-slate-300 mb-1">שם חתן בר המצווה: *</label><input type="text" id="inpChildName" class="form-input" required></div>
+                <div id="childNameFieldContainer"><label class="block text-slate-300 mb-1" id="childNameFieldLabel">שם חתן בר המצווה: *</label><input type="text" id="inpChildName" class="form-input" required></div>
                 <div><label class="block text-slate-300 mb-1">תאריך האירוע: *</label><input type="text" id="inpEventDate" class="form-input" disabled></div>
-                <div><label class="block text-slate-300 mb-1">תאריך לידה עברי: *</label><input type="text" id="inpHebrewDate" class="form-input" placeholder="לדוגמה: ו' באדר" required></div>
+                <div><label class="block text-slate-300 mb-1" id="hebrewDateFieldLabel">תאריך לידה עברי: *</label><input type="text" id="inpHebrewDate" class="form-input" placeholder="לדוגמה: ו' באדר" required></div>
             </div>
             
             <div class="mb-4">
@@ -150,7 +150,23 @@
                 if (data.events) {
                     currentEvent = data.events.find(e => String(e.id) === String(eventId));
                     if (currentEvent) {
-                        
+
+                        // --- התאמת הטופס לסוג האירוע ---
+                        const eventType = currentEvent.eventType || 'בר מצווה';
+                        const isBarMitzvah = eventType === 'בר מצווה';
+                        const displayEventType = isBarMitzvah ? 'בר מצווה' : (currentEvent.customEventTypeName || 'האירוע');
+
+                        document.getElementById('formSubtitle').innerText = isBarMitzvah
+                            ? 'טופס זה נועד לסכם בצורה ברורה ונעימה את פרטי ההזמנה לאירוע בר המצווה.'
+                            : `טופס זה נועד לסכם בצורה ברורה ונעימה את פרטי ההזמנה ל${displayEventType}.`;
+
+                        document.getElementById('childNameFieldLabel').innerText = isBarMitzvah
+                            ? 'שם חתן בר המצווה: *'
+                            : 'שם מרכזי באירוע (אם רלוונטי):';
+                        if (!isBarMitzvah) document.getElementById('inpChildName').required = false;
+
+                        document.getElementById('hebrewDateFieldLabel').innerText = (isBarMitzvah ? 'תאריך לידה עברי' : 'תאריך עברי') + ': *';
+
                         // מילוי פרטים אישיים
                         const nameParts = (currentEvent.clientName || '').trim().split(' ');
                         document.getElementById('inpFirstName').value = nameParts[0] || '';
