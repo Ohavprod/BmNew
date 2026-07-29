@@ -8,6 +8,7 @@ let galleryImages = [];
 let siteConfig = {}; 
 let users = []; 
 let pricingData = {}; 
+let packageContentData = {};
 let usefulLinksData = [];
 let checklistData = [];
 let reviewsData = [];
@@ -166,6 +167,7 @@ document.addEventListener('DOMContentLoaded', function() {
             menuHtml += `<div class="menu-item" onclick="openStudentsManager()"><i class="fas fa-user-graduate text-indigo-400 text-2xl"></i> ניהול תלמידים</div>`;
             menuHtml += `<div class="menu-item" onclick="openUsefulLinks()"><i class="fas fa-link text-cyan-400 text-2xl"></i> לינקים שימושיים</div>`;
             menuHtml += `<div class="menu-item" onclick="openReviewsManager()"><i class="fas fa-star text-yellow-400 text-2xl"></i> ניהול המלצות</div>`;
+            menuHtml += `<div class="menu-item" onclick="openPackageContentEditor()"><i class="fas fa-box-open text-teal-400 text-2xl"></i> ניהול תוכן חבילות</div>`;
         }
         
         if (isAdmin) {
@@ -221,6 +223,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if(siteConfig['social-sp']) document.getElementById('link-sp').href = siteConfig['social-sp'];
                 
                 if(siteConfig.pricingDB) { try { pricingData = JSON.parse(siteConfig.pricingDB); } catch(e) {} }
+                if(siteConfig.packageContentDB) { try { packageContentData = JSON.parse(siteConfig.packageContentDB); } catch(e) {} }
                 if(siteConfig.usefulLinksDB) { try { usefulLinksData = JSON.parse(siteConfig.usefulLinksDB); } catch(e) {} }
                 if(siteConfig.checklistDB) { try { checklistData = JSON.parse(siteConfig.checklistDB); } catch(e) {} }
                 if(siteConfig.reviewsDB) { try { reviewsData = JSON.parse(siteConfig.reviewsDB); } catch(e) {} }
@@ -914,6 +917,76 @@ document.addEventListener('DOMContentLoaded', function() {
             window.closeModal('priceListEditorModal');
             customAlert('המחירון עודכן ושמור בהצלחה!');
         });
+    }
+
+    // --- תוכן חבילות (מה כלול + תשלום לספקים חיצוניים שמוצג ללקוח) ---
+    const DEFAULT_PACKAGE_CONTENT = {
+        'בסיס': { desc: 'ליווי תפילה ופיוטים\nחזנות מקצועית\nהגברה מקצועית\nקלידן', extPay: '1,200' },
+        'חגיגית': { desc: 'ליווי תפילה ופיוטים\nחזנות ו/או הגברה\nקלידן\nזוג מתופפים\nחופה ושופרות', extPay: '2,500' },
+        'הכל כלול': { desc: 'ליווי תפילה ופיוטים\nחזנות ו/או הגברה\nקלידן\nזוג מתופפים\nחופה ושופרות', extPay: '2,500' },
+        'לימוד לבר מצווה': { desc: 'לימוד יסודי של קריאת התורה בטעמי המקרא\nליווי אישי צמוד', extPay: '0' }
+    };
+
+    window.openPackageContentEditor = () => {
+        const body = document.getElementById('packageContentBody');
+        if (!body) return;
+        body.innerHTML = '';
+
+        Object.keys(DEFAULT_PACKAGE_CONTENT).forEach(pkgKey => {
+            const current = packageContentData[pkgKey] || DEFAULT_PACKAGE_CONTENT[pkgKey];
+            const safeId = pkgKey.replace(/[^\u0590-\u05FFa-zA-Z0-9]/g, '');
+            body.innerHTML += `
+                <div class="bg-slate-800 p-6 rounded-xl border border-slate-600 shadow-lg mb-6">
+                    <h3 class="text-xl font-bold text-amber-400 border-b border-slate-700 pb-2 mb-4">חבילת ${pkgKey}</h3>
+                    <label class="block text-slate-300 mb-1">מה כלול בחבילה (שורה לכל פריט, יופיע ללקוח בטופס)</label>
+                    <textarea id="pkgDesc_${safeId}" class="w-full h-28 bg-slate-900 border border-slate-600 rounded p-3 text-white notes-area mb-4" style="white-space: pre-wrap;">${current.desc || ''}</textarea>
+                    <label class="block text-slate-300 mb-1">תשלום לספקים חיצוניים שיוצג ללקוח (₪, ריק/0 = לא יוצג)</label>
+                    <input type="text" id="pkgExtPay_${safeId}" value="${current.extPay || '0'}" class="w-full bg-slate-900 border border-slate-600 rounded p-3 text-white font-bold">
+                </div>
+            `;
+        });
+
+        body.innerHTML += `<div class="text-center border-t border-slate-700 pt-6">
+            <button onclick="savePackageContent()" class="bg-green-600 hover:bg-green-500 text-white font-bold py-3 px-12 rounded-full shadow-[0_0_15px_rgba(34,197,94,0.4)] transition text-lg">שמור תוכן חבילות</button>
+        </div>`;
+
+        window.closeSideMenu();
+        window.openModal('packageContentModal');
+    }
+
+    window.savePackageContent = () => {
+        Object.keys(DEFAULT_PACKAGE_CONTENT).forEach(pkgKey => {
+            const safeId = pkgKey.replace(/[^\u0590-\u05FFa-zA-Z0-9]/g, '');
+            const descEl = document.getElementById(`pkgDesc_${safeId}`);
+            const extPayEl = document.getElementById(`pkgExtPay_${safeId}`);
+            if (descEl && extPayEl) {
+                packageContentData[pkgKey] = { desc: descEl.value, extPay: extPayEl.value.trim() };
+            }
+        });
+
+        safeFetchPOST({ action: 'updateConfig', key: 'packageContentDB', value: JSON.stringify(packageContentData) }, () => {
+            window.closeModal('packageContentModal');
+            customAlert('תוכן החבילות עודכן ונשמר בהצלחה!');
+        });
+    }
+
+    // --- פתיחת טופס לקוח נעול בחזרה למצב פתוח (סופראדמין בלבד) ---
+    window.reopenClientForm = async () => {
+        const form = document.getElementById('eventForm');
+        const notesEl = form.elements['notes'];
+        const id = form.elements['id'].value;
+        if (!notesEl || !id) return;
+
+        if (!await customConfirm("לפתוח מחדש את הטופס ללקוח? הלקוח יוכל למלא ולאשר את הפרטים מחדש.")) return;
+
+        const cleaned = (notesEl.value || '')
+            .split('\n')
+            .filter(line => !line.includes('אישור לקוח') && !line.includes('הסכמת צילום'))
+            .join('\n')
+            .trim();
+
+        notesEl.value = cleaned;
+        window.saveEvent();
     }
 
     // --- Gallery & Lightbox ---
