@@ -6,6 +6,9 @@
     <title>אישור הזמנת אירוע | אביב ויצמן</title>
     <meta name="robots" content="noindex, nofollow">
     <link rel="icon" href="https://i.postimg.cc/CMcRF8Nm/Logo.gif" type="image/gif">
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#051c42">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&display=swap" rel="stylesheet">
@@ -201,7 +204,16 @@
                             locInput.placeholder = "הזן עיר, רחוב ושם אולם / בית כנסת...";
                         }
 
-                        // === לוגיקת החבילות (הקוד המעודכן לחבילה מותאמת אישית) ===
+                        // === לוגיקת החבילות (תוכן ומחיר לספקים חיצוניים נטענים מהגדרות המנהל, עם ברירת מחדל) ===
+                        const DEFAULT_PACKAGE_CONTENT = {
+                            'בסיס': { desc: 'ליווי תפילה ופיוטים\nחזנות מקצועית\nהגברה מקצועית\nקלידן', extPay: '1,200' },
+                            'חגיגית': { desc: 'ליווי תפילה ופיוטים\nחזנות ו/או הגברה\nקלידן\nזוג מתופפים\nחופה ושופרות', extPay: '2,500' },
+                            'הכל כלול': { desc: 'ליווי תפילה ופיוטים\nחזנות ו/או הגברה\nקלידן\nזוג מתופפים\nחופה ושופרות', extPay: '2,500' },
+                            'לימוד לבר מצווה': { desc: 'לימוד יסודי של קריאת התורה בטעמי המקרא\nליווי אישי צמוד', extPay: '0' }
+                        };
+                        let packageContentConfig = {};
+                        try { if (data.config && data.config.packageContentDB) packageContentConfig = JSON.parse(data.config.packageContentDB); } catch(e) {}
+
                         let rawPkgName = currentEvent.packageType || 'טרם הוגדר';
                         let pkgName = rawPkgName;
                         let extPay = '0';
@@ -217,21 +229,19 @@
                         let isStudent = currentEvent.isStudent === true || String(currentEvent.isStudent).toUpperCase() === 'TRUE';
                         let studentText = isStudent ? '\nלימוד הפרשה (במידת הצורך)' : '';
 
-                        if (pkgName.includes('בסיס')) { 
-                            extPay = '1,200'; 
-                            desc = 'ליווי תפילה ופיוטים\nחזנות מקצועית\nהגברה מקצועית\nקלידן' + studentText; 
+                        let matchedPkgKey = null;
+                        if (pkgName.includes('בסיס')) matchedPkgKey = 'בסיס';
+                        else if (pkgName.includes('חגיגית')) matchedPkgKey = 'חגיגית';
+                        else if (pkgName.includes('הכל כלול') || pkgName.includes('VIP')) matchedPkgKey = 'הכל כלול';
+                        else if (pkgName.includes('לימוד')) matchedPkgKey = 'לימוד לבר מצווה';
+
+                        if (matchedPkgKey) {
+                            const entry = packageContentConfig[matchedPkgKey] || DEFAULT_PACKAGE_CONTENT[matchedPkgKey];
+                            extPay = entry.extPay || '0';
+                            desc = (entry.desc || '') + studentText;
                         }
-                        else if (pkgName.includes('חגיגית') || pkgName.includes('הכל כלול') || pkgName.includes('VIP')) { 
-                            extPay = '2,500'; 
-                            desc = 'ליווי תפילה ופיוטים\nחזנות ו/או הגברה\nקלידן\nזוג מתופפים\nחופה ושופרות' + studentText; 
-                        }
-                        else if (pkgName.includes('לימוד')) { 
-                            extPay = '0'; 
-                            desc = 'לימוד יסודי של קריאת התורה בטעמי המקרא\nליווי אישי צמוד'; 
-                        }
-                        else if (pkgName.includes('מותאמת אישית')) {
-                            extPay = '0'; // התשלומים מגולמים במחיר הסופי
-                            if(isStudent) desc += (desc ? '\n' : '') + studentText.trim();
+                        else if (rawPkgName.includes('|') && isStudent) {
+                            desc += (desc ? '\n' : '') + studentText.trim();
                         }
 
                         document.getElementById('lblPackage').innerText = pkgName;
@@ -248,12 +258,14 @@
 
                         // תנאי תשלום
                         let termsHtml = '';
-                        if (extPay !== '0' && isBarMitzvah) {
+                        const hasExtPay = extPay !== '0' && isBarMitzvah;
+                        if (hasExtPay) {
                             termsHtml += `<div><strong>תשלום לספקים חיצוניים (מתופפים, קלידן וכו'):</strong> <span class="bg-slate-800 px-2 py-1 rounded text-white">${extPay} ₪</span> ישולמו במזומן ביום האירוע עצמו.</div>`;
                         }
                         const showPaymentMethods = currentEvent.showPaymentMethods !== false;
                         if (showPaymentMethods) {
-                            termsHtml += `<div>ניתן לשלם באמצעות מזומן, ביט, פייבוקס, העברה בנקאית או צ'ק.</div>`;
+                            const amountPhrase = hasExtPay ? 'את שאר הסכום' : 'את מלוא הסכום';
+                            termsHtml += `<div>${amountPhrase} ניתן לשלם באמצעות מזומן, ביט, פייבוקס, העברה בנקאית או צ'ק.</div>`;
                         }
                         document.getElementById('paymentTermsText').innerHTML = termsHtml;
 
