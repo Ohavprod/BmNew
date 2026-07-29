@@ -8,6 +8,14 @@
     <meta name="description" content="אביב ויצמן - הפקה מוזיקלית לבר מצווה: שופרות, תופים, קלידן ופיוטים, ליווי מרגש ומקצועי לעלייה לתורה. בדקו זמינות לתאריך שלכם עוד היום.">
     <link rel="canonical" href="https://barmitzvah2.netlify.app/">
     <link rel="icon" href="https://i.postimg.cc/CMcRF8Nm/Logo.gif" type="image/gif">
+    <link rel="icon" href="icons/favicon-32.png" sizes="32x32" type="image/png">
+    <link rel="icon" href="icons/favicon-16.png" sizes="16x16" type="image/png">
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#051c42">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="אביב ויצמן">
     <meta property="og:title" content="אביב ויצמן | הפקה מוזיקלית לבר מצווה">
     <meta property="og:description" content="אביב ויצמן בהפקה מוזיקלית לעלייה לתורה: שופרות, תופים, פיוטים וליווי מרגש לחתן בר המצווה.">
     <meta property="og:image" content="https://i.postimg.cc/8PFH5RRC/BIMG_2271A_(103).jpg">
@@ -649,6 +657,17 @@
         </div>
     </div>
 
+    <div id="packageContentModal" class="modal-overlay">
+        <div class="modal-content !max-w-2xl bg-slate-900 border border-teal-500/50">
+            <div class="modal-header">
+                <h3 class="text-2xl font-bold text-white">ניהול תוכן חבילות</h3>
+                <button onclick="closeModal('packageContentModal')" class="text-white text-2xl hover:text-teal-400"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body" id="packageContentBody">
+                </div>
+        </div>
+    </div>
+
     <div id="proposalSetupModal" class="modal-overlay">
         <div class="modal-content !w-[600px] text-center bg-white text-black p-0 overflow-hidden">
             <div class="modal-header"><h3 class="text-2xl font-bold text-white">הפקת הצעת מחיר</h3><button onclick="closeModal('proposalSetupModal')" class="text-white"><i class="fas fa-times"></i></button></div>
@@ -770,9 +789,12 @@
                     <div class="input-group col-span-1 md:col-span-2"><label>לינק למדיה</label><input type="text" name="mediaLink"></div>
                     <div class="input-group col-span-1 md:col-span-2"><label>הערות לצוות (גלוי למנהלים בלבד)</label><textarea name="notes" class="h-32 notes-area" style="white-space: pre-wrap;"></textarea></div>
                 </form>
-                <div class="mt-8 flex justify-between items-center border-t border-slate-700 pt-6">
-                    <button type="button" onclick="deleteEvent()" id="deleteEventBtn" class="text-red-500 font-bold px-4">מחק אירוע</button>
-                    <button type="button" onclick="saveEvent()" class="bg-green-600 hover:bg-green-500 text-white font-bold py-3 px-10 rounded-xl text-lg shadow-lg">שמור</button>
+                <div class="mt-8 flex flex-col md:flex-row justify-between items-stretch md:items-center gap-3 border-t border-slate-700 pt-6">
+                    <div class="flex flex-wrap gap-3 items-center justify-center md:justify-start order-2 md:order-1">
+                        <button type="button" onclick="deleteEvent()" id="deleteEventBtn" class="text-red-500 font-bold px-4 py-2">מחק אירוע</button>
+                        <button type="button" onclick="reopenClientForm()" id="reopenFormBtn" class="superadmin-only text-amber-400 font-bold px-4 py-2 items-center gap-2"><i class="fas fa-lock-open"></i> פתח טופס מחדש</button>
+                    </div>
+                    <button type="button" onclick="saveEvent()" class="order-1 md:order-2 bg-green-600 hover:bg-green-500 text-white font-bold py-3 px-10 rounded-xl text-lg shadow-lg w-full md:w-auto">שמור</button>
                 </div>
             </div>
         </div>
@@ -780,5 +802,12 @@
     <script src="js/payments.js"></script>
     <script src="js/app.js"></script>
     <script src="https://negishot.co.il/cdn/widget.php?code=NGS_73DEE19DAFFE"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js').catch(() => {});
+            });
+        }
+    </script>
 </body>
 </html>
