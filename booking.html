@@ -9,6 +9,18 @@
     <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#051c42">
+    <meta property="og:title" content="אישור הזמנת אירוע | אביב ויצמן">
+    <meta property="og:description" content="טופס לסיכום פרטי הזמנת האירוע - תאריך, מקום, תשלום ותנאים.">
+    <meta property="og:image" content="https://i.postimg.cc/8PFH5RRC/BIMG_2271A_(103).jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://barmitzvah2.netlify.app/booking.html">
+    <meta property="og:locale" content="he_IL">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="אישור הזמנת אירוע | אביב ויצמן">
+    <meta name="twitter:description" content="טופס לסיכום פרטי הזמנת האירוע - תאריך, מקום, תשלום ותנאים.">
+    <meta name="twitter:image" content="https://i.postimg.cc/8PFH5RRC/BIMG_2271A_(103).jpg">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&display=swap" rel="stylesheet">
@@ -260,7 +272,7 @@
                         let termsHtml = '';
                         const hasExtPay = extPay !== '0' && isBarMitzvah;
                         if (hasExtPay) {
-                            termsHtml += `<div><strong>תשלום לספקים חיצוניים (מתופפים, קלידן וכו'):</strong> <span class="bg-slate-800 px-2 py-1 rounded text-white">${extPay} ₪</span> ישולמו במזומן ביום האירוע עצמו.</div>`;
+                            termsHtml += `<div><strong>תשלום לספקים חיצוניים (מתופפים, קלידן וכו'):</strong> <span class="bg-amber-400/10 border border-amber-400/40 px-2 py-1 rounded text-amber-300 font-bold">${extPay} ₪</span> ישולמו במזומן ביום האירוע עצמו.</div>`;
                         }
                         const showPaymentMethods = currentEvent.showPaymentMethods !== false;
                         if (showPaymentMethods) {
