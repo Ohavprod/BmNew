@@ -1413,7 +1413,7 @@ document.addEventListener('DOMContentLoaded', function() {
         let baseUrl = window.location.origin + window.location.pathname.replace(/index\.html$/, '');
         if (!baseUrl.endsWith('/')) baseUrl += '/';
         const formLink = `${baseUrl}booking.html?id=${eventId}`;
-        const eventPhrase = (eventTypeLabel && eventTypeLabel !== 'בר מצווה') ? `לקראת ${eventTypeLabel}` : 'לקראת הבר מצווה';
+        const eventPhrase = (eventTypeLabel && eventTypeLabel !== 'בר מצווה') ? `לקראת ${eventTypeLabel}` : 'לקראת בר המצווה';
 
         const msg = `היי! שמחים ומתרגשים ${eventPhrase} 💫\n\nכדי שנוכל לסגור את כל הקצוות בצורה מסודרת, הכנו עבורך טופס אישור פרטים קצר. אנא היכנס/י ללינק, ודא/י שהפרטים נכונים, השלם/י את החסר ואשר/י בתחתית העמוד:\n\n${formLink}\n\nנתראה בשמחות,\nצוות אביב ויצמן`;
         window.open(`https://wa.me/972${phone.replace(/-/g,'').substring(1)}?text=${encodeURIComponent(msg)}`, '_blank');
