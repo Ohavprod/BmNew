@@ -75,6 +75,12 @@
         .word-btn { transition: transform 0.1s, box-shadow 0.2s; }
         .word-btn:active { transform: scale(0.95); }
 
+        /* קורא קריוקי */
+        .karaoke-word { display: inline-block; padding: 0 4px; border-radius: 8px; cursor: pointer; color: #cbd5e1; transition: color 0.15s, background-color 0.15s; }
+        .karaoke-word:hover { background: rgba(255,255,255,0.08); }
+        .karaoke-word.karaoke-active { color: #0f172a; background: #fbbf24; font-weight: 900; }
+        .karaoke-word.karaoke-done { color: #64748b; }
+
         /* מודאל תמונה על מסך מלא וזום */
         #imageModal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 9999999; display: none; justify-content: center; align-items: center; padding: 15px; flex-direction: column; backdrop-filter: blur(5px); }
         #imageModal.active { display: flex; }
@@ -227,6 +233,9 @@
                 <button onclick="showLibraryEditor(); toggleAdminSidebar();" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white p-4 rounded-xl text-right font-bold transition flex items-center text-lg mt-4">
                     <i class="fas fa-headphones-alt w-8 text-amber-400 text-2xl"></i> ספריית הקלטות
                 </button>
+                <button onclick="window.openKaraokeReader(); toggleAdminSidebar();" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white p-4 rounded-xl text-right font-bold transition flex items-center text-lg mt-4">
+                    <i class="fas fa-microphone-alt w-8 text-teal-400 text-2xl"></i> קורא קריוקי (לשיעור בזום)
+                </button>
                 <button onclick="toggleCompletedStudents(); toggleAdminSidebar();" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white p-4 rounded-xl text-right font-bold transition flex items-center text-lg">
                     <i class="fas fa-history w-8 text-slate-400 text-2xl"></i> תלמידי עבר
                 </button>
@@ -283,6 +292,44 @@
                 <span class="bg-blue-900/50 text-blue-200 px-3 py-1 rounded-full font-bold text-sm border border-blue-800/50" id="lessonCountBadge">סה"כ שיעורים: 0</span>
             </div>
             <div id="lessonsList" class="space-y-3"></div>
+        </div>
+    </div>
+
+    <div id="karaokeModal" class="modal-overlay">
+        <div class="modal-content !max-w-5xl bg-slate-900 border border-teal-500/50" style="max-height:95vh;">
+            <div class="flex justify-between items-center mb-4 border-b border-slate-700 pb-4 sticky top-0 bg-slate-900 z-10">
+                <h3 class="text-xl md:text-2xl font-bold text-white"><i class="fas fa-microphone-alt text-teal-400 ml-2"></i> קורא קריוקי לתרגול קריאה</h3>
+                <button onclick="window.closeKaraokeReader()" class="text-slate-400 hover:text-white text-3xl"><i class="fas fa-times"></i></button>
+            </div>
+
+            <!-- שלב הזנת טקסט -->
+            <div id="karaokeSetup">
+                <p class="text-slate-400 mb-3 text-base">הדבק כאן את הטקסט שברצונך להקריא לתלמיד בשיתוף מסך, ואז לחץ "התחל תצוגה".</p>
+                <textarea id="karaokeTextInput" dir="rtl" placeholder="הדבק כאן את הפסוקים לתרגול..." class="form-input w-full p-4 rounded-xl text-xl leading-loose h-48 mb-4"></textarea>
+                <button onclick="window.startKaraokeDisplay()" class="btn-primary w-full py-4 rounded-xl text-xl font-bold shadow-lg hover:scale-105 transition-transform">
+                    <i class="fas fa-play ml-2"></i> התחל תצוגה
+                </button>
+            </div>
+
+            <!-- שלב התצוגה/קריאה -->
+            <div id="karaokeStage" class="hidden">
+                <div id="karaokeDisplay" dir="rtl" class="bg-black/40 border border-teal-500/30 rounded-xl p-6 md:p-10 mb-5 text-3xl md:text-5xl leading-[2.4] text-center select-none custom-scrollbar" style="max-height:55vh; overflow-y:auto;"></div>
+
+                <div class="flex flex-wrap items-center justify-center gap-3 mb-4">
+                    <button id="karaokePlayPauseBtn" onclick="window.toggleKaraokePlay()" class="bg-teal-600 hover:bg-teal-500 text-white w-16 h-16 rounded-full text-2xl shadow-lg transition flex items-center justify-center">
+                        <i class="fas fa-play"></i>
+                    </button>
+                    <button onclick="window.stepKaraokeWord(-1)" class="audio-ctrl-btn text-lg px-4 py-3"><i class="fas fa-step-backward"></i></button>
+                    <button onclick="window.stepKaraokeWord(1)" class="audio-ctrl-btn text-lg px-4 py-3"><i class="fas fa-step-forward"></i></button>
+                    <button onclick="window.resetKaraokeWord()" class="audio-ctrl-btn text-lg px-4 py-3"><i class="fas fa-undo"></i> מהתחלה</button>
+                    <button onclick="window.editKaraokeText()" class="audio-ctrl-btn text-lg px-4 py-3"><i class="fas fa-edit"></i> ערוך טקסט</button>
+                </div>
+
+                <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
+                    <label class="block text-slate-400 text-sm mb-2"><i class="fas fa-tachometer-alt ml-1"></i> קצב קריאה: <span id="karaokeSpeedLabel" class="text-teal-400 font-bold"></span></label>
+                    <input type="range" id="karaokeSpeedSlider" min="60" max="300" step="10" value="140" oninput="window.updateKaraokeSpeed(this.value)" class="w-full">
+                </div>
+            </div>
         </div>
     </div>
 
@@ -2027,6 +2074,113 @@
             if(targetAudioId && document.getElementById(targetAudioId)) document.getElementById(targetAudioId).value = recording.audio || '';
             if(targetTitleId && document.getElementById(targetTitleId)) document.getElementById(targetTitleId).value = `${selection}`;
         }
+
+        // ===== קורא קריוקי לתרגול קריאה בזום =====
+        const karaokeState = { words: [], index: -1, timer: null, playing: false, wpm: 140 };
+
+        window.openKaraokeReader = () => {
+            const saved = localStorage.getItem('karaokeLastText') || '';
+            document.getElementById('karaokeTextInput').value = saved;
+            document.getElementById('karaokeSetup').classList.remove('hidden');
+            document.getElementById('karaokeStage').classList.add('hidden');
+            window.openModal('karaokeModal');
+        };
+
+        window.closeKaraokeReader = () => {
+            window.pauseKaraoke();
+            window.closeModal('karaokeModal');
+        };
+
+        window.startKaraokeDisplay = () => {
+            const raw = document.getElementById('karaokeTextInput').value.trim();
+            if (!raw) { window.customAlert('יש להדביק טקסט לפני שמתחילים', true); return; }
+            localStorage.setItem('karaokeLastText', raw);
+            karaokeState.words = raw.split(/\s+/).filter(w => w.length > 0);
+            karaokeState.index = -1;
+            karaokeState.playing = false;
+
+            const display = document.getElementById('karaokeDisplay');
+            display.innerHTML = karaokeState.words.map((w, i) =>
+                `<span id="kw-${i}" class="karaoke-word" onclick="window.jumpToKaraokeWord(${i})">${w}</span>`
+            ).join(' ');
+
+            document.getElementById('karaokeSetup').classList.add('hidden');
+            document.getElementById('karaokeStage').classList.remove('hidden');
+            document.getElementById('karaokePlayPauseBtn').innerHTML = '<i class="fas fa-play"></i>';
+            window.updateKaraokeSpeed(document.getElementById('karaokeSpeedSlider').value);
+        };
+
+        window.editKaraokeText = () => {
+            window.pauseKaraoke();
+            document.getElementById('karaokeSetup').classList.remove('hidden');
+            document.getElementById('karaokeStage').classList.add('hidden');
+        };
+
+        function highlightKaraokeWord() {
+            karaokeState.words.forEach((_, i) => {
+                const el = document.getElementById(`kw-${i}`);
+                if (!el) return;
+                el.classList.remove('karaoke-active', 'karaoke-done');
+                if (i < karaokeState.index) el.classList.add('karaoke-done');
+                if (i === karaokeState.index) {
+                    el.classList.add('karaoke-active');
+                    el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+                }
+            });
+        }
+
+        function advanceKaraoke() {
+            if (karaokeState.index >= karaokeState.words.length - 1) { window.pauseKaraoke(); return; }
+            karaokeState.index++;
+            highlightKaraokeWord();
+        }
+
+        window.toggleKaraokePlay = () => {
+            if (karaokeState.playing) { window.pauseKaraoke(); } else { window.playKaraoke(); }
+        };
+
+        window.playKaraoke = () => {
+            if (!karaokeState.words.length) return;
+            karaokeState.playing = true;
+            document.getElementById('karaokePlayPauseBtn').innerHTML = '<i class="fas fa-pause"></i>';
+            advanceKaraoke();
+            const intervalMs = Math.round(60000 / karaokeState.wpm);
+            karaokeState.timer = setInterval(advanceKaraoke, intervalMs);
+        };
+
+        window.pauseKaraoke = () => {
+            karaokeState.playing = false;
+            if (karaokeState.timer) { clearInterval(karaokeState.timer); karaokeState.timer = null; }
+            const btn = document.getElementById('karaokePlayPauseBtn');
+            if (btn) btn.innerHTML = '<i class="fas fa-play"></i>';
+        };
+
+        window.stepKaraokeWord = (dir) => {
+            window.pauseKaraoke();
+            karaokeState.index = Math.max(0, Math.min(karaokeState.words.length - 1, karaokeState.index + dir));
+            highlightKaraokeWord();
+        };
+
+        window.jumpToKaraokeWord = (i) => {
+            karaokeState.index = i;
+            highlightKaraokeWord();
+        };
+
+        window.resetKaraokeWord = () => {
+            window.pauseKaraoke();
+            karaokeState.index = -1;
+            highlightKaraokeWord();
+        };
+
+        window.updateKaraokeSpeed = (val) => {
+            karaokeState.wpm = parseInt(val, 10);
+            document.getElementById('karaokeSpeedLabel').textContent = `${karaokeState.wpm} מילים לדקה`;
+            if (karaokeState.playing) {
+                clearInterval(karaokeState.timer);
+                const intervalMs = Math.round(60000 / karaokeState.wpm);
+                karaokeState.timer = setInterval(advanceKaraoke, intervalMs);
+            }
+        };
 
         window.addEventListener('load', () => {
             window.loadFromGoogleSheets();
