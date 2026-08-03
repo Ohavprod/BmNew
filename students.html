@@ -311,7 +311,16 @@
                     <label class="block text-slate-400 text-sm mb-1">שיוך לתלמיד (הטקסט יישמר בכרטיס שלו):</label>
                     <select id="karaokeStudentSelect" class="form-input w-full p-3 rounded-xl text-lg"></select>
                 </div>
-                <textarea id="karaokeTextInput" dir="rtl" placeholder="הדבק כאן את הפסוקים לתרגול..." class="form-input w-full p-4 rounded-xl text-xl leading-loose h-48 mb-4"></textarea>
+                <textarea id="karaokeTextInput" dir="rtl" placeholder="הדבק כאן את הפסוקים לתרגול..." class="form-input w-full p-4 rounded-xl text-xl leading-loose h-48 mb-2"></textarea>
+                <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+                    <label class="flex items-center gap-2 text-slate-300 text-base cursor-pointer">
+                        <input type="checkbox" id="karaokeStripNikud" class="w-5 h-5">
+                        הצג ללא ניקוד/טעמים (אם הפונט נראה לא אחיד)
+                    </label>
+                    <button type="button" onclick="window.cleanKaraokeText()" class="audio-ctrl-btn text-base px-4 py-2">
+                        <i class="fas fa-broom ml-1"></i> נקה עיצוב מהטקסט המודבק
+                    </button>
+                </div>
                 <button onclick="window.startKaraokeDisplay()" class="btn-primary w-full py-4 rounded-xl text-xl font-bold shadow-lg hover:scale-105 transition-transform">
                     <i class="fas fa-play ml-2"></i> התחל תצוגה ושמור
                 </button>
@@ -330,6 +339,10 @@
                     <button onclick="window.resetKaraokeWord()" class="audio-ctrl-btn text-lg px-4 py-3"><i class="fas fa-undo"></i> מהתחלה</button>
                     <button onclick="window.editKaraokeText()" class="audio-ctrl-btn text-lg px-4 py-3"><i class="fas fa-edit"></i> ערוך טקסט</button>
                 </div>
+                <label class="flex items-center justify-center gap-2 text-slate-300 text-base cursor-pointer mb-4">
+                    <input type="checkbox" id="karaokeStripNikudStage" class="w-5 h-5" onchange="document.getElementById('karaokeStripNikud').checked = this.checked; window.onKaraokeStripToggle();">
+                    הצג ללא ניקוד/טעמים (אם הפונט נראה לא אחיד)
+                </label>
 
                 <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
                     <label class="block text-slate-400 text-sm mb-2"><i class="fas fa-tachometer-alt ml-1"></i> קצב קריאה: <span id="karaokeSpeedLabel" class="text-teal-400 font-bold"></span></label>
@@ -2091,6 +2104,30 @@
             return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
         }
 
+        // מנקה תווים נסתרים/בעייתיים שנדבקים לפעמים יחד עם טקסט מועתק (Word, וואטסאפ, אתרים)
+        // - תווי כיווניות (LRM/RLM/ALM), רווחים ברוחב אפס, מפרידי פסקאות/שורות מיוחדים, BOM
+        // - מנרמל רווחים כפולים ושורות ריקות מיותרות
+        function cleanPastedText(raw) {
+            return raw
+                .normalize('NFC')
+                .replace(/[\u200B-\u200F\u202A-\u202E\u2060\uFEFF]/g, '')
+                .replace(/[\u2028\u2029]/g, '\n')
+                .replace(/[ \t]+/g, ' ')
+                .replace(/\n{3,}/g, '\n\n')
+                .trim();
+        }
+
+        // מסיר ניקוד וטעמי מקרא (משאיר אותיות, מקף, פסיק/סוף פסוק) - שימושי כשהפונט לא מרנדר טוב שילוב של אותיות+ניקוד
+        function stripNikudTeamim(text) {
+            return text.replace(/[\u0591-\u05BD\u05BF\u05C1\u05C2\u05C4\u05C5\u05C7]/g, '');
+        }
+
+        window.cleanKaraokeText = () => {
+            const el = document.getElementById('karaokeTextInput');
+            el.value = cleanPastedText(el.value);
+            window.customAlert('הטקסט נוקה מתווים נסתרים ועיצוב מיותר');
+        };
+
         window.populateKaraokeStudentSelect = (preselectId) => {
             const sel = document.getElementById('karaokeStudentSelect');
             const opts = ['<option value="">— טקסט כללי (לא משויך לתלמיד) —</option>']
@@ -2147,7 +2184,11 @@
         };
 
         function renderKaraokeStage(raw) {
-            karaokeState.words = raw.split(/\s+/).filter(w => w.length > 0);
+            const cleaned = cleanPastedText(raw);
+            karaokeState.rawText = cleaned;
+            let text = cleaned;
+            if (document.getElementById('karaokeStripNikud').checked) text = stripNikudTeamim(text);
+            karaokeState.words = text.split(/\s+/).filter(w => w.length > 0);
             karaokeState.index = -1;
             karaokeState.playing = false;
 
@@ -2158,13 +2199,23 @@
 
             document.getElementById('karaokeSetup').classList.add('hidden');
             document.getElementById('karaokeStage').classList.remove('hidden');
+            document.getElementById('karaokeStripNikudStage').checked = document.getElementById('karaokeStripNikud').checked;
             document.getElementById('karaokePlayPauseBtn').innerHTML = '<i class="fas fa-play"></i>';
             window.updateKaraokeSpeed(document.getElementById('karaokeSpeedSlider').value);
         }
 
+        // מפעילים מחדש את התצוגה כשמסמנים/מבטלים "ללא ניקוד וטעמים" תוך כדי קריאה
+        window.onKaraokeStripToggle = () => {
+            if (karaokeState.rawText) {
+                window.pauseKaraoke();
+                renderKaraokeStage(karaokeState.rawText);
+            }
+        };
+
         window.startKaraokeDisplay = () => {
-            const raw = document.getElementById('karaokeTextInput').value.trim();
+            const raw = cleanPastedText(document.getElementById('karaokeTextInput').value);
             if (!raw) { window.customAlert('יש להדביק טקסט לפני שמתחילים', true); return; }
+            document.getElementById('karaokeTextInput').value = raw;
             localStorage.setItem('karaokeLastText', raw);
             window.saveKaraokeTextToStudent(raw);
             renderKaraokeStage(raw);
