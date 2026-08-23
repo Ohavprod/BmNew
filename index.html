@@ -235,6 +235,7 @@
                 <select id="filterTime" onchange="filterEvents()" class="bg-slate-800 text-white p-3 rounded-full text-lg font-bold border border-slate-600 focus:border-amber-400 outline-none"><option value="future">אירועים עתידיים</option><option value="past">אירועים שהסתיימו</option><option value="all">כל הזמנים</option></select>
                 <select id="filterType" onchange="filterEvents()" class="bg-slate-800 text-white p-3 rounded-full text-lg font-bold border border-slate-600 focus:border-amber-400 outline-none"><option value="all">כל ההרכבים</option><option value="keyboard">אירועים עם קלידן</option><option value="drummers">אירועים עם מתופפים</option></select>
                 <select id="filterStatus" onchange="filterEvents()" class="bg-slate-800 text-white p-3 rounded-full text-lg font-bold border border-slate-600 focus:border-amber-400 outline-none hidden"><option value="all">כל הסטטוסים</option><option value="סגור">אירועים סגורים</option><option value="תהליך">בתהליך סגירה</option></select>
+                <select id="sortEvents" onchange="filterEvents()" class="bg-slate-800 text-white p-3 rounded-full text-lg font-bold border border-slate-600 focus:border-amber-400 outline-none"><option value="dateAsc">מיון: תאריך (מהקרוב לרחוק)</option><option value="dateDesc">מיון: תאריך (מהרחוק לקרוב)</option><option value="nameAsc">מיון: שם אירוע (א-ת)</option></select>
             </div>
             <div id="eventsBoard" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10"></div>
         </div>
@@ -786,6 +787,7 @@
                         <label class="flex items-center gap-2 text-white font-bold"><input type="checkbox" name="hasDrummers"> כולל מתופפים</label>
                         <label class="flex items-center gap-2 text-white font-bold text-pink-400" id="isStudentContainer"><input type="checkbox" name="isStudent"> תלמיד</label>
                         <label class="flex items-center gap-2 text-white font-bold text-amber-400"><input type="checkbox" name="showPaymentMethods" checked> הצג ללקוח את אמצעי התשלום (מזומן/ביט/פייבוקס/העברה/צ'ק)</label>
+                        <label class="flex items-center gap-2 text-white font-bold text-blue-400"><input type="checkbox" name="showAsBooked" checked> סמן כתאריך תפוס בלוח בדיקת הזמינות</label>
                     </div>
                     
                     <div class="input-group col-span-1 md:col-span-2"><label>לינק למדיה</label><input type="text" name="mediaLink"></div>
