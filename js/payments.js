@@ -171,6 +171,7 @@ window.openPaymentModal = (eventId) => {
             { key: 'drummer', label: 'מתופפים' }, 
             { key: 'sound', label: 'סאונד' }, 
             { key: 'manager', label: 'מנהלת אירועים' },
+            { key: 'photographer', label: 'צלם' },
             { key: 'aviv', label: 'אביב' } 
         ];
         
@@ -207,6 +208,10 @@ window.openPaymentModal = (eventId) => {
                         </select>
                         <input type="text" placeholder="פירוט הערה..." class="bg-slate-900 text-white p-2 rounded-lg border border-slate-600 outline-none focus:border-blue-400 col-span-2 md:col-span-1 ${showNotes}" id="pay_${role.key}_notes" value="${data.notes || ''}">
                     </div>
+                    <div class="mt-3">
+                        <label class="block text-sm text-gray-400 mb-1">הערה לעובד (תוצג לו בעמוד האישי שלו)</label>
+                        <textarea class="w-full bg-slate-900 text-white p-2 rounded-lg border border-slate-600 outline-none focus:border-blue-400 text-sm" rows="2" placeholder="הערה שתופיע אצל בעל התפקיד בעמוד האישי..." id="pay_${role.key}_staffnote">${data.staffNote || ''}</textarea>
+                    </div>
                 </div>
             `;
         });
@@ -237,7 +242,7 @@ window.savePaymentData = () => {
     
     if(evt.status === 'הסתיים') {
         evt.payments.client.fullPayment = document.getElementById('payClientFull').checked;
-        const roles = ['drummer', 'keyboard', 'sound', 'manager', 'aviv'];
+        const roles = ['drummer', 'keyboard', 'sound', 'manager', 'photographer', 'aviv'];
         roles.forEach(role => {
             evt.payments.staff[role] = {
                 attended: document.getElementById(`pay_${role}_attended`).checked,
@@ -245,7 +250,8 @@ window.savePaymentData = () => {
                 amount: document.getElementById(`pay_${role}_amount`).value,
                 date: document.getElementById(`pay_${role}_date`).value,
                 method: document.getElementById(`pay_${role}_method`).value,
-                notes: document.getElementById(`pay_${role}_notes`).value
+                notes: document.getElementById(`pay_${role}_notes`).value,
+                staffNote: document.getElementById(`pay_${role}_staffnote`).value
             };
         });
     }
@@ -269,6 +275,7 @@ window.openMyPayments = () => {
         else if(currentUser.job.includes('מתופף')) jobKey = 'drummer';
         else if(currentUser.job.includes('סאונד')) jobKey = 'sound';
         else if(currentUser.job.includes('מנהלת')) jobKey = 'manager';
+        else if(currentUser.job.includes('צלם')) jobKey = 'photographer';
     }
     
     if(!jobKey) {
@@ -289,7 +296,8 @@ window.openMyPayments = () => {
                     eventName: evt.eventName || evt.location,
                     date: p.date || evt.date,
                     amount: Number(p.amount),
-                    method: p.method || 'לא צוין'
+                    method: p.method || 'לא צוין',
+                    staffNote: p.staffNote || ''
                 });
             }
         }
@@ -307,6 +315,7 @@ window.openMyPayments = () => {
                     <div>
                         <div class="text-white font-bold text-lg mb-1">${p.eventName}</div>
                         <div class="text-slate-400 text-base"><i class="far fa-calendar-alt ml-1"></i> ${p.date} &nbsp;•&nbsp; <i class="fas fa-money-check-alt ml-1"></i> ${p.method}</div>
+                        ${p.staffNote ? `<div class="text-amber-300 text-sm mt-2 italic">"${p.staffNote}"</div>` : ''}
                     </div>
                     <div class="text-green-400 font-black text-2xl">${p.amount} ₪</div>
                 </div>
