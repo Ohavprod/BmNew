@@ -205,7 +205,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     const evtDateObj = new Date(evt.date);
                     evtDateObj.setHours(0,0,0,0);
                     
-                    if (evtDateObj < todayDate && evt.status === 'סגור') {
+                    if (evtDateObj <= todayDate && evt.status === 'סגור') {
                         evt.status = 'הסתיים';
                     }
                 });
@@ -242,7 +242,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (data.gallery) galleryImages = data.gallery;
             if (data.users) users = data.users;
             
-            bookedDates = events.map(e => e.date);
+            bookedDates = events.filter(e => e.showAsBooked !== false).map(e => e.date);
             hideLoader(); 
 
         } catch (error) {
@@ -415,7 +415,8 @@ document.addEventListener('DOMContentLoaded', function() {
             hasKeyboard: form.elements['hasKeyboard'].checked,
             hasDrummers: form.elements['hasDrummers'].checked,
             isStudent: form.elements['isStudent'].checked,
-            showPaymentMethods: form.elements['showPaymentMethods'].checked
+            showPaymentMethods: form.elements['showPaymentMethods'].checked,
+            showAsBooked: form.elements['showAsBooked'].checked
         };
 
         if (id && id !== "") {
@@ -513,15 +514,41 @@ document.addEventListener('DOMContentLoaded', function() {
          return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(evt.eventName || evt.location || 'אירוע')}&dates=${cleanDate}T120000/${cleanDate}T140000/`;
     }
 
+    window.toggleEventDetails = (id, btn) => {
+        const details = document.getElementById(`cardDetails-${id}`);
+        if(!details) return;
+        const isOpen = details.classList.toggle('open');
+        const toggleBtn = btn || document.querySelector(`.card-toggle-btn[data-id="${id}"]`);
+        if(toggleBtn) {
+            toggleBtn.classList.toggle('open', isOpen);
+            toggleBtn.querySelector('span').innerText = isOpen ? 'הצג פחות' : 'עוד פרטים';
+        }
+    }
+
+    window.requestRecommendationForEvent = (phone, eventName) => {
+        if(!phone) { customAlert("לא הוזן מספר טלפון לאירוע זה."); return; }
+        const link = siteConfig.googleReviewLink || 'https://g.page/r/your-link';
+        const msg = `היי! שמחנו לקחת חלק ב${eventName || 'אירוע'} 💫\n\nנשמח מאוד אם תוכלו להקדיש דקה לכתוב לנו המלצה חמה בגוגל דרך הקישור הבא:\n${link}\n\nתודה רבה מראש,\nצוות אביב ויצמן`;
+        window.open(`https://wa.me/972${phone.replace(/-/g,'').substring(1)}?text=${encodeURIComponent(msg)}`, '_blank');
+    }
+
     function renderEventsBoard(dataToRender) {
         const board = document.getElementById('eventsBoard');
         if(!board) return;
         board.innerHTML = '';
         const list = dataToRender || events;
-        const sortedList = [...list].sort((a,b) => new Date(a.date) - new Date(b.date));
+
         const todayTime = new Date().setHours(0,0,0,0);
+        const chronological = [...list].sort((a,b) => new Date(a.date) - new Date(b.date));
         let nextEventId = null;
-        for(let e of sortedList) { if(new Date(e.date).getTime() >= todayTime) { nextEventId = e.id; break; } }
+        for(let e of chronological) { if(new Date(e.date).getTime() >= todayTime) { nextEventId = e.id; break; } }
+
+        const sortSelect = document.getElementById('sortEvents');
+        const sortMode = sortSelect ? sortSelect.value : 'dateAsc';
+        let sortedList = [...list];
+        if (sortMode === 'dateDesc') sortedList.sort((a,b) => new Date(b.date) - new Date(a.date));
+        else if (sortMode === 'nameAsc') sortedList.sort((a,b) => (a.eventName || a.location || '').localeCompare(b.eventName || b.location || '', 'he'));
+        else sortedList.sort((a,b) => new Date(a.date) - new Date(b.date));
 
         sortedList.forEach(evt => {
              const dateObj = new Date(evt.date);
@@ -556,7 +583,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div class="location-title">${evt.eventName || evt.location}</div>
                         <div class="info-bubble"><i class="fas fa-map-marker-alt"></i> ${evt.location}</div>
                         <div class="info-bubble"><i class="far fa-clock"></i> ${evt.startTime || '--:--'} <span style="color:#94a3b8; font-size:0.9em; margin-right:5px;">(הגעה: ${evt.guestTime || '--:--'})</span></div>
+                        ${isAdmin ? `<div class="info-bubble" style="border-color: rgba(251, 191, 36, 0.4);"><i class="fas fa-tag"></i> ${evt.packageType} | ${evt.price} ₪</div>` : ''}
                         <div class="comp-badges">${compBadges}</div>
+                    </div>
             `;
             
             if (isAdmin) {
@@ -570,22 +599,27 @@ document.addEventListener('DOMContentLoaded', function() {
                        </button>`;
 
                 cardHtml += `
+                    <button type="button" class="card-toggle-btn" data-id="${evt.id}" onclick="toggleEventDetails('${evt.id}', this)">
+                        <span>עוד פרטים</span> <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="card-details" id="cardDetails-${evt.id}">
                         <div class="info-bubble"><i class="fas fa-user"></i> ${evt.clientName}</div>
                         ${evt.childName ? `<div class="info-bubble"><i class="fas fa-child"></i> ${(!evt.eventType || evt.eventType === 'בר מצווה') ? 'חתן' : (evt.customEventTypeName || 'איש קשר')}: ${evt.childName}</div>` : ''}
                         <div class="info-bubble"><i class="fas fa-phone"></i> <a href="tel:${evt.phone}">${evt.phone}</a></div>
-                        <div class="info-bubble" style="border-color: rgba(251, 191, 36, 0.4);"><i class="fas fa-tag"></i> ${evt.packageType} | ${evt.price} ₪</div>
                         ${evt.notes ? `<div class="mt-4 p-4 rounded-xl text-lg italic notes-area" style="white-space: pre-wrap;">"${evt.notes}"</div>` : ''}
+                        <div class="card-actions">
+                            ${formBtnHtml}
+                        </div>
                     </div>
                     <div class="card-actions">
                         <button onclick="openEventEditor('${evt.id}')" class="action-btn btn-edit"><i class="fas fa-edit"></i> ערוך</button>
                         <button onclick="sendWaToClient('${evt.phone}')" class="action-btn btn-wa-green"><i class="fab fa-whatsapp"></i> תקשורת</button>
-                        ${formBtnHtml}
+                        <button onclick="requestRecommendationForEvent('${evt.phone}', '${(evt.eventName || evt.location || 'האירוע').replace(/'/g, "\\'")}')" class="action-btn" style="background: linear-gradient(135deg, #8b5cf6, #6d28d9); color: white; grid-column: span 2;"><i class="fas fa-star"></i> בקש המלצה</button>
                     </div>
                 `;
             } 
             else {
                 cardHtml += `
-                    </div>
                     <div class="card-actions">
                         <a href="${evt.wazeLink || '#'}" target="_blank" class="action-btn btn-waze"><i class="fab fa-waze"></i> נווט</a>
                         <a href="${window.generateCalendarLink(evt)}" target="_blank" class="action-btn btn-cal"><i class="far fa-calendar-plus"></i> יומן</a>
