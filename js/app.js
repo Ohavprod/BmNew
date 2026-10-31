@@ -188,7 +188,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // --- Navigation ---
     window.scrollToEvents = () => { document.getElementById('eventsBoardSection').scrollIntoView({ behavior: 'smooth' }); window.closeSideMenu(); }
     window.scrollToPayments = () => { document.getElementById('paymentsSection').scrollIntoView({ behavior: 'smooth' }); window.closeSideMenu(); }
-    window.openStudentsManager = () => { window.closeSideMenu(); window.location.href = 'students.html'; }
+    window.openStudentsManager = () => { window.closeSideMenu(); window.location.href = 'students/'; }
 
     // --- Data Load ---
     async function loadData() {
