@@ -5,10 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ניהול תלמידי בר מצווה | אביב ויצמן</title>
     <meta name="robots" content="noindex, nofollow">
-    <link rel="icon" href="https://i.postimg.cc/CMcRF8Nm/Logo.gif" type="image/gif">
-    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-    <link rel="manifest" href="manifest.json">
+    <link rel="icon" href="icons/favicon-32.png" sizes="32x32" type="image/png">
+    <link rel="icon" href="icons/favicon-16.png" sizes="16x16" type="image/png">
+    <link rel="icon" href="icons/favicon-48.png" sizes="48x48" type="image/png">
+    <link rel="apple-touch-icon" href="icons/students-apple-touch-icon.png?v=2">
+    <link rel="manifest" href="students-manifest.json?v=2">
     <meta name="theme-color" content="#051c42">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="לימוד בר מצווה">
     <meta property="og:title" content="מערכת תלמידים | אביב ויצמן">
     <meta property="og:description" content="מערכת מתקדמת ללימוד קריאת התורה לבר המצווה.">
     <meta property="og:image" content="https://i.postimg.cc/8PFH5RRC/BIMG_2271A_(103).jpg">
@@ -106,7 +112,25 @@
             .close-img-btn { top: 10px; right: 10px; width: 35px; height: 35px; font-size: 1.2rem; }
         }
 
+
+        /* --- חלון התקנת האפליקציה --- */
+        #installPrompt { position: fixed; inset: 0; z-index: 9999998; display: none; align-items: flex-end; justify-content: center; background: rgba(2, 6, 23, 0.7); backdrop-filter: blur(4px); padding: 12px; }
+        #installPrompt.active { display: flex; animation: ipFade 0.25s ease; }
+        @media (min-width: 640px) { #installPrompt { align-items: center; } }
+        .ip-card { width: 100%; max-width: 420px; background: linear-gradient(180deg, #0f2a55 0%, #051c42 100%); border: 1px solid rgba(251, 191, 36, 0.45); border-radius: 1.5rem; padding: 26px 22px 20px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.6); animation: ipUp 0.35s cubic-bezier(.2,.9,.3,1.2); }
+        .ip-icon { width: 84px; height: 84px; border-radius: 22px; margin: -62px auto 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 3px solid #051c42; }
+        .ip-title { font-size: 1.4rem; font-weight: 900; color: #fff; margin-bottom: 6px; }
+        .ip-sub { color: #cbd5e1; font-size: 1rem; line-height: 1.5; margin-bottom: 16px; }
+        .ip-steps { text-align: right; background: rgba(2, 6, 23, 0.5); border: 1px solid #1e3a6b; border-radius: 1rem; padding: 12px 14px; margin-bottom: 16px; display: none; }
+        .ip-steps li { display: flex; align-items: center; gap: 10px; color: #e2e8f0; padding: 7px 0; font-size: 1rem; }
+        .ip-steps li + li { border-top: 1px solid rgba(255,255,255,0.06); }
+        .ip-step-num { flex: none; width: 26px; height: 26px; border-radius: 50%; background: #fbbf24; color: #0f172a; font-weight: 900; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; }
+        .ip-key { display: inline-flex; align-items: center; gap: 4px; background: #1e293b; border: 1px solid #334155; border-radius: 0.5rem; padding: 2px 8px; font-weight: 700; color: #fff; white-space: nowrap; }
+        .ip-later { margin-top: 10px; color: #94a3b8; font-size: 0.95rem; text-decoration: underline; }
+        @keyframes ipFade { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes ipUp { from { transform: translateY(40px); opacity: 0; } to { transform: none; opacity: 1; } }
         /* --- נוסח הקריאה מספריא --- */
+        .legacy-img-input { display: none !important; }
         .sf-box { border-radius: 1rem; overflow: hidden; border: 1px solid rgba(251, 191, 36, 0.35); box-shadow: 0 8px 24px rgba(0,0,0,0.35); background: #0b1d3d; }
         .sf-toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; padding: 10px 12px; background: linear-gradient(180deg, #0f2a55 0%, #0b1d3d 100%); border-bottom: 1px solid rgba(251, 191, 36, 0.25); }
         .sf-title { color: #fbbf24; font-weight: 700; font-size: 0.95rem; display: flex; align-items: center; gap: 6px; }
@@ -423,7 +447,7 @@
                 </div>
 
                 <div class="mt-4 text-sm text-slate-300 bg-amber-500/10 border border-amber-500/30 rounded-xl p-3 leading-relaxed">
-                    <i class="fas fa-scroll text-amber-400 ml-1"></i> <b class="text-amber-300">אין צורך בתמונה:</b> אם משאירים את שדה התמונה ריק, נוסח הקריאה יוצג אוטומטית מספריא לפי שם הפרשה. לקטע אחר אפשר להדביק בשדה התמונה לינק מאתר ספריא.
+                    <i class="fas fa-scroll text-amber-400 ml-1"></i> <b class="text-amber-300">אין צורך בתמונות:</b> נוסח הקריאה של כל עלייה, מפטיר והפטרה מוצג אוטומטית מספריא לפי שם הפרשה. מספיק להעלות הקלטה.
                 </div>
 
                 <div id="sectionRishon" class="bg-slate-800/50 p-4 md:p-5 rounded-xl border border-slate-700 mt-4 hidden">
@@ -438,7 +462,7 @@
                     <div id="rishonFullInputs">
                         <div id="lib-select-morning" class="mb-4 max-w-sm"></div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div><input type="url" id="morningImage" placeholder="לינק לתמונה (עליית ראשון)" class="form-input w-full p-3 rounded-lg"></div>
+                            <div><input type="url" id="morningImage" placeholder="לינק מספריא" class="legacy-img-input form-input w-full p-3 rounded-lg"></div>
                             <div><input type="url" id="morningAudio" placeholder="לינק להקלטה" class="form-input w-full p-3 rounded-lg"></div>
                         </div>
                     </div>
@@ -448,7 +472,7 @@
                             <h5 class="text-white font-bold mb-2">כהן</h5>
                             <div id="lib-select-kohen" class="mb-2"></div>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-                                <input type="url" id="kohenImage" placeholder="לינק לתמונה (כהן)" class="form-input w-full p-2 rounded-lg">
+                                <input type="url" id="kohenImage" placeholder="לינק מספריא" class="legacy-img-input form-input w-full p-2 rounded-lg">
                                 <input type="url" id="kohenAudio" placeholder="לינק להקלטה (כהן)" class="form-input w-full p-2 rounded-lg">
                             </div>
                         </div>
@@ -456,7 +480,7 @@
                             <h5 class="text-white font-bold mb-2">לוי</h5>
                             <div id="lib-select-levi" class="mb-2"></div>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-                                <input type="url" id="leviImage" placeholder="לינק לתמונה (לוי)" class="form-input w-full p-2 rounded-lg">
+                                <input type="url" id="leviImage" placeholder="לינק מספריא" class="legacy-img-input form-input w-full p-2 rounded-lg">
                                 <input type="url" id="leviAudio" placeholder="לינק להקלטה (לוי)" class="form-input w-full p-2 rounded-lg">
                             </div>
                         </div>
@@ -464,7 +488,7 @@
                             <h5 class="text-white font-bold mb-2">ישראל</h5>
                             <div id="lib-select-yisrael" class="mb-2"></div>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-                                <input type="url" id="yisraelImage" placeholder="לינק לתמונה (ישראל)" class="form-input w-full p-2 rounded-lg">
+                                <input type="url" id="yisraelImage" placeholder="לינק מספריא" class="legacy-img-input form-input w-full p-2 rounded-lg">
                                 <input type="url" id="yisraelAudio" placeholder="לינק להקלטה (ישראל)" class="form-input w-full p-2 rounded-lg">
                             </div>
                         </div>
@@ -474,12 +498,12 @@
                 <div id="sectionFullParsha" class="hidden bg-slate-800/50 p-4 md:p-5 rounded-xl border border-purple-900/50 mt-4">
                     <h4 class="text-purple-400 font-bold mb-4 text-lg"><i class="fas fa-scroll"></i> שאר עליות הפרשה</h4>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="border border-slate-700 p-3 rounded-lg"><h5 class="text-white font-bold mb-2">שני</h5><div id="lib-select-sheni" class="mb-2"></div><input type="url" id="sheniImage" placeholder="תמונה" class="form-input w-full p-2 rounded-lg mb-2"><input type="url" id="sheniAudio" placeholder="הקלטה" class="form-input w-full p-2 rounded-lg"></div>
-                        <div class="border border-slate-700 p-3 rounded-lg"><h5 class="text-white font-bold mb-2">שלישי</h5><div id="lib-select-shlishi" class="mb-2"></div><input type="url" id="shlishiImage" placeholder="תמונה" class="form-input w-full p-2 rounded-lg mb-2"><input type="url" id="shlishiAudio" placeholder="הקלטה" class="form-input w-full p-2 rounded-lg"></div>
-                        <div class="border border-slate-700 p-3 rounded-lg"><h5 class="text-white font-bold mb-2">רביעי</h5><div id="lib-select-revii" class="mb-2"></div><input type="url" id="reviiImage" placeholder="תמונה" class="form-input w-full p-2 rounded-lg mb-2"><input type="url" id="reviiAudio" placeholder="הקלטה" class="form-input w-full p-2 rounded-lg"></div>
-                        <div class="border border-slate-700 p-3 rounded-lg"><h5 class="text-white font-bold mb-2">חמישי</h5><div id="lib-select-chamishi" class="mb-2"></div><input type="url" id="chamishiImage" placeholder="תמונה" class="form-input w-full p-2 rounded-lg mb-2"><input type="url" id="chamishiAudio" placeholder="הקלטה" class="form-input w-full p-2 rounded-lg"></div>
-                        <div class="border border-slate-700 p-3 rounded-lg"><h5 class="text-white font-bold mb-2">שישי</h5><div id="lib-select-shishi" class="mb-2"></div><input type="url" id="shishiImage" placeholder="תמונה" class="form-input w-full p-2 rounded-lg mb-2"><input type="url" id="shishiAudio" placeholder="הקלטה" class="form-input w-full p-2 rounded-lg"></div>
-                        <div class="border border-slate-700 p-3 rounded-lg"><h5 class="text-white font-bold mb-2">שביעי</h5><div id="lib-select-shvii" class="mb-2"></div><input type="url" id="shviiImage" placeholder="תמונה" class="form-input w-full p-2 rounded-lg mb-2"><input type="url" id="shviiAudio" placeholder="הקלטה" class="form-input w-full p-2 rounded-lg"></div>
+                        <div class="border border-slate-700 p-3 rounded-lg"><h5 class="text-white font-bold mb-2">שני</h5><div id="lib-select-sheni" class="mb-2"></div><input type="url" id="sheniImage" placeholder="לינק מספריא" class="legacy-img-input form-input w-full p-2 rounded-lg mb-2"><input type="url" id="sheniAudio" placeholder="הקלטה" class="form-input w-full p-2 rounded-lg"></div>
+                        <div class="border border-slate-700 p-3 rounded-lg"><h5 class="text-white font-bold mb-2">שלישי</h5><div id="lib-select-shlishi" class="mb-2"></div><input type="url" id="shlishiImage" placeholder="לינק מספריא" class="legacy-img-input form-input w-full p-2 rounded-lg mb-2"><input type="url" id="shlishiAudio" placeholder="הקלטה" class="form-input w-full p-2 rounded-lg"></div>
+                        <div class="border border-slate-700 p-3 rounded-lg"><h5 class="text-white font-bold mb-2">רביעי</h5><div id="lib-select-revii" class="mb-2"></div><input type="url" id="reviiImage" placeholder="לינק מספריא" class="legacy-img-input form-input w-full p-2 rounded-lg mb-2"><input type="url" id="reviiAudio" placeholder="הקלטה" class="form-input w-full p-2 rounded-lg"></div>
+                        <div class="border border-slate-700 p-3 rounded-lg"><h5 class="text-white font-bold mb-2">חמישי</h5><div id="lib-select-chamishi" class="mb-2"></div><input type="url" id="chamishiImage" placeholder="לינק מספריא" class="legacy-img-input form-input w-full p-2 rounded-lg mb-2"><input type="url" id="chamishiAudio" placeholder="הקלטה" class="form-input w-full p-2 rounded-lg"></div>
+                        <div class="border border-slate-700 p-3 rounded-lg"><h5 class="text-white font-bold mb-2">שישי</h5><div id="lib-select-shishi" class="mb-2"></div><input type="url" id="shishiImage" placeholder="לינק מספריא" class="legacy-img-input form-input w-full p-2 rounded-lg mb-2"><input type="url" id="shishiAudio" placeholder="הקלטה" class="form-input w-full p-2 rounded-lg"></div>
+                        <div class="border border-slate-700 p-3 rounded-lg"><h5 class="text-white font-bold mb-2">שביעי</h5><div id="lib-select-shvii" class="mb-2"></div><input type="url" id="shviiImage" placeholder="לינק מספריא" class="legacy-img-input form-input w-full p-2 rounded-lg mb-2"><input type="url" id="shviiAudio" placeholder="הקלטה" class="form-input w-full p-2 rounded-lg"></div>
                     </div>
                 </div>
 
@@ -490,7 +514,7 @@
                     </select>
                     <div id="lib-select-other" class="mb-3 max-w-sm"></div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div><input type="url" id="otherSingleImage" placeholder="לינק לתמונה" class="form-input w-full p-3 rounded-lg mb-3"></div>
+                        <div><input type="url" id="otherSingleImage" placeholder="לינק לקטע באתר ספריא (למשל sefaria.org.il/Exodus.15.1-18)" class="form-input w-full p-3 rounded-lg mb-3"></div>
                         <div><input type="url" id="otherSingleAudio" placeholder="לינק להקלטה" class="form-input w-full p-3 rounded-lg mb-3"></div>
                     </div>
                 </div>
@@ -501,13 +525,13 @@
                         <div class="border border-slate-700 p-3 rounded-lg">
                             <h5 class="text-white font-bold mb-2">מפטיר</h5>
                             <div id="lib-select-maftir" class="mb-2"></div>
-                            <input type="url" id="maftirImage" placeholder="לינק לתמונה" class="form-input w-full p-2 rounded-lg mb-2">
+                            <input type="url" id="maftirImage" placeholder="לינק מספריא" class="legacy-img-input form-input w-full p-2 rounded-lg mb-2">
                             <input type="url" id="maftirAudio" placeholder="לינק להקלטה" class="form-input w-full p-2 rounded-lg">
                         </div>
                         <div class="border border-slate-700 p-3 rounded-lg">
                             <h5 class="text-white font-bold mb-2">הפטרה</h5>
                             <div id="lib-select-haftarah" class="mb-2"></div>
-                            <input type="url" id="shabbatImage" placeholder="לינק לתמונה" class="form-input w-full p-2 rounded-lg mb-2">
+                            <input type="url" id="shabbatImage" placeholder="לינק מספריא" class="legacy-img-input form-input w-full p-2 rounded-lg mb-2">
                             <input type="url" id="shabbatAudio" placeholder="לינק להקלטה" class="form-input w-full p-2 rounded-lg">
                         </div>
                     </div>
@@ -594,6 +618,27 @@
     </div>
 
 
+    <div id="installPrompt" onclick="if(event.target === this) window.dismissInstallPrompt()">
+        <div class="ip-card">
+            <img src="icons/students-icon-192.png" class="ip-icon" alt="">
+            <div class="ip-title">התקינו את אפליקציית הלימוד</div>
+            <div class="ip-sub">כל ההקלטות ונוסח הקריאה בלחיצה אחת ממסך הבית, בלי לחפש את הקישור.</div>
+            <ol class="ip-steps" id="ipStepsIos">
+                <li><span class="ip-step-num">1</span><span>לוחצים על <span class="ip-key"><i class="fas fa-arrow-up-from-bracket"></i> שיתוף</span> בתחתית המסך</span></li>
+                <li><span class="ip-step-num">2</span><span>גוללים ובוחרים <span class="ip-key"><i class="far fa-square-plus"></i> הוסף למסך הבית</span></span></li>
+                <li><span class="ip-step-num">3</span><span>לוחצים <span class="ip-key">הוסף</span> בפינה למעלה</span></li>
+            </ol>
+            <ol class="ip-steps" id="ipStepsAndroid">
+                <li><span class="ip-step-num">1</span><span>פותחים את הקישור בדפדפן <b>Chrome</b></span></li>
+                <li><span class="ip-step-num">2</span><span>לוחצים על <span class="ip-key"><i class="fas fa-ellipsis-vertical"></i> תפריט</span> למעלה</span></li>
+                <li><span class="ip-step-num">3</span><span>בוחרים <span class="ip-key">התקנת אפליקציה</span> או <span class="ip-key">הוספה למסך הבית</span></span></li>
+            </ol>
+            <button type="button" id="ipInstallBtn" onclick="window.installStudentsApp()" class="btn-primary w-full py-4 rounded-xl text-xl hidden"><i class="fas fa-download ml-2"></i> התקנה עכשיו</button>
+            <button type="button" id="ipGotItBtn" onclick="window.dismissInstallPrompt()" class="btn-primary w-full py-4 rounded-xl text-xl hidden">הבנתי</button>
+            <button type="button" onclick="window.dismissInstallPrompt()" class="ip-later">אולי אחר כך</button>
+        </div>
+    </div>
+
     <div id="sefariaModal" onclick="if(event.target === this) closeSefariaFullscreen()">
         <div class="sf-toolbar rounded-xl">
             <div class="sf-title"><i class="fas fa-scroll"></i> <span class="sf-modal-title"></span></div>
@@ -677,7 +722,7 @@
                 const id = input.id || '';
                 const isImage = /image/i.test(id);
                 const isAudio = /audio/i.test(id);
-                if (!isImage && !isAudio) return;
+                if (!isAudio) return; // אין יותר העלאת תמונות - הטקסט מגיע מספריא
                 input.dataset.uploadEnhanced = '1';
 
                 const fileId = 'file-' + Math.random().toString(36).slice(2, 9);
@@ -883,6 +928,8 @@
             }
             
             window.renderStudents();
+            // לתלמידים: הצעה להתקין את האפליקציה (רק אם עוד לא מותקנת)
+            if (!isAdmin) setTimeout(() => window.maybeShowInstallPrompt && window.maybeShowInstallPrompt(), 1200);
         };
 
         window.logout = () => { location.reload(); };
@@ -1049,12 +1096,11 @@
         function buildInlineMaterial(imgSrc, audioSrc, audioTitle, elementIdPrefix, autoRef) {
             let html = '';
             const safeAudio = (audioSrc || '').replace(/'/g, "\\'");
-            const pastedSefariaRef = sefariaRefFromUrl(imgSrc);
-            if (pastedSefariaRef) {
-                html += buildSefariaTextBox(pastedSefariaRef, elementIdPrefix, audioSrc);
+            // טקסט מספריא קודם לתמונה. תמונה ישנה מוצגת רק אם אין דרך לדעת איזה קטע זה (למשל שם פרשה לא מזוהה)
+            const textRef = sefariaRefFromUrl(imgSrc) || autoRef;
+            if (textRef) {
+                html += buildSefariaTextBox(textRef, elementIdPrefix, audioSrc);
                 imgSrc = '';
-            } else if (!imgSrc && autoRef) {
-                html += buildSefariaTextBox(autoRef, elementIdPrefix, audioSrc);
             }
             if(imgSrc) {
                 html += `
@@ -1092,12 +1138,12 @@
         }
 
         // ===================================================================
-        // === נוסח הקריאה מספריא - מוצג אוטומטית כשאין תמונה לקטע ===
+        // === נוסח הקריאה מספריא - מוצג אוטומטית במקום תמונות ===
         // ===================================================================
         // סדר עדיפויות לכל קטע (עלייה / מפטיר / הפטרה):
-        // 1. יש לינק לתמונה רגיל → מוצגת התמונה (כמו קודם).
-        // 2. בשדה התמונה הודבק לינק מאתר ספריא (sefaria.org/...) → מוצג הטקסט של הלינק הזה.
-        // 3. שדה התמונה ריק → הטקסט נלקח אוטומטית לפי שם הפרשה והעלייה.
+        // 1. בשדה הקישור הודבק לינק מאתר ספריא (sefaria.org/...) → מוצג הטקסט של הלינק הזה.
+        // 2. אחרת → הטקסט נלקח אוטומטית לפי שם הפרשה והעלייה (גם אם שמורה תמונה ישנה).
+        // 3. רק אם הפרשה לא זוהתה ויש תמונה ישנה → מוצגת התמונה.
         // טבלת העליות (כולל כהן/לוי/ישראל של ראשון, מפטיר והפטרה אשכנזית/ספרדית) נבנתה מ-@hebcal/leyning.
         // מבנה כל שורה: [שם, [ראשון..שביעי, מפטיר], [כהן, לוי, ישראל], הפטרה אשכנז, הפטרה ספרד]  (';' = הפטרה שמורכבת מכמה קטעים)
         const PARSHA_LEYNING = [
@@ -2389,7 +2435,7 @@
                             </div>
                         </div>
                         <div class="text-base text-slate-400 space-y-1">
-                            <div class="truncate"><i class="fas fa-image text-blue-400 w-6"></i> ${data.image ? 'יש תמונה' : 'אין תמונה'} ${tabName === 'parshiot' ? '(ראשון מלא)' : ''}</div>
+                            <div class="truncate"><i class="fas fa-scroll text-amber-400 w-6"></i> ${tabName === 'special' ? (window.isSefariaUrl(data.image) ? 'טקסט מספריא' : 'ללא טקסט') : 'טקסט אוטומטי מספריא'}</div>
                             <div class="truncate"><i class="fas fa-music text-purple-400 w-6"></i> ${data.audio ? 'יש הקלטה' : 'אין הקלטה'} ${tabName === 'parshiot' ? '(ראשון מלא)' : ''}</div>
                             ${extraStatus}
                         </div>
@@ -2411,7 +2457,7 @@
                             ${PARSHIOT_SUBPARTS.map(p => `
                                 <div class="border border-slate-700 p-2 rounded-lg">
                                     <h6 class="text-slate-300 font-bold mb-2 text-sm">${p.label}</h6>
-                                    <input type="url" id="edit-${p.key}-image-${itemName}" value="${(item[p.key] && item[p.key].image) || ''}" class="form-input w-full p-2 mb-2 rounded-lg text-sm" placeholder="לינק לתמונה (${p.label})">
+                                    <input type="url" id="edit-${p.key}-image-${itemName}" value="${(item[p.key] && item[p.key].image) || ''}" class="form-input w-full p-2 mb-2 rounded-lg text-sm legacy-img-input" placeholder="לינק מספריא">
                                     <input type="url" id="edit-${p.key}-audio-${itemName}" value="${(item[p.key] && item[p.key].audio) || ''}" class="form-input w-full p-2 rounded-lg text-sm" placeholder="לינק להקלטה (${p.label})">
                                 </div>
                             `).join('')}
@@ -2423,7 +2469,7 @@
             div.innerHTML = `
                 <div class="bg-slate-900/80 -m-4 p-4 rounded-xl border border-amber-500/50">
                     <input type="text" id="edit-name-${itemName}" value="${itemName}" class="form-input w-full p-3 mb-2 rounded-lg text-base" placeholder="שם הפריט">
-                    <input type="url" id="edit-image-${itemName}" value="${item.image || ''}" class="form-input w-full p-3 mb-2 rounded-lg text-base" placeholder="${tabName === 'parshiot' ? 'לינק לתמונה (ראשון מלא)' : 'לינק לתמונה'}">
+                    <input type="url" id="edit-image-${itemName}" value="${item.image || ''}" class="form-input w-full p-3 mb-2 rounded-lg text-base ${tabName === 'special' ? '' : 'legacy-img-input'}" placeholder="לינק לקטע באתר ספריא (לא חובה)">
                     <input type="url" id="edit-audio-${itemName}" value="${item.audio || ''}" class="form-input w-full p-3 rounded-lg text-base" placeholder="${tabName === 'parshiot' ? 'לינק להקלטה (ראשון מלא)' : 'לינק להקלטה'}">
                     ${subPartsHtml}
                     <div class="flex gap-2 mt-4">
@@ -2764,6 +2810,80 @@
             window.loadFromGoogleSheets();
             window.enableCloudinaryUploads();
         });
+    </script>
+
+    <script>
+        // ===== התקנת אפליקציית התלמידים (PWA) =====
+        (function () {
+            const DISMISS_KEY = 'studentsInstallDismissedAt';
+            const DISMISS_DAYS = 3;
+            let deferredInstallPrompt = null;
+
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+            }
+
+            const isStandalone = () => window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+            const ua = navigator.userAgent || '';
+            const isIOS = /iphone|ipad|ipod/i.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+            const isAndroid = /android/i.test(ua);
+
+            function recentlyDismissed() {
+                try {
+                    const t = parseInt(localStorage.getItem(DISMISS_KEY), 10);
+                    return t && (Date.now() - t) < DISMISS_DAYS * 864e5;
+                } catch (e) { return false; }
+            }
+
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredInstallPrompt = e;
+                // אם החלון כבר פתוח עם הוראות ידניות - מחליפים לכפתור התקנה ישיר
+                if (document.getElementById('installPrompt').classList.contains('active')) renderInstallPrompt();
+            });
+
+            window.addEventListener('appinstalled', () => {
+                deferredInstallPrompt = null;
+                document.getElementById('installPrompt').classList.remove('active');
+                if (window.customAlert) window.customAlert('האפליקציה הותקנה! אפשר לפתוח אותה ממסך הבית 🎉');
+            });
+
+            function renderInstallPrompt() {
+                const show = (id, on) => document.getElementById(id).classList.toggle('hidden', !on);
+                const steps = (id, on) => document.getElementById(id).style.display = on ? 'block' : 'none';
+                const direct = !!deferredInstallPrompt;
+                show('ipInstallBtn', direct);
+                show('ipGotItBtn', !direct);
+                steps('ipStepsIos', !direct && isIOS);
+                steps('ipStepsAndroid', !direct && !isIOS);
+            }
+
+            // נקרא אחרי שתלמיד נכנס למערכת
+            window.maybeShowInstallPrompt = (force) => {
+                if (isStandalone()) return;
+                if (!force && recentlyDismissed()) return;
+                // במחשב מציגים רק כשהדפדפן תומך בהתקנה ישירה
+                if (!isIOS && !isAndroid && !deferredInstallPrompt) return;
+                renderInstallPrompt();
+                document.getElementById('installPrompt').classList.add('active');
+            };
+
+            window.dismissInstallPrompt = () => {
+                try { localStorage.setItem(DISMISS_KEY, String(Date.now())); } catch (e) {}
+                document.getElementById('installPrompt').classList.remove('active');
+            };
+
+            window.installStudentsApp = async () => {
+                if (!deferredInstallPrompt) return renderInstallPrompt();
+                deferredInstallPrompt.prompt();
+                const choice = await deferredInstallPrompt.userChoice.catch(() => null);
+                deferredInstallPrompt = null;
+                document.getElementById('installPrompt').classList.remove('active');
+                if (!choice || choice.outcome !== 'accepted') {
+                    try { localStorage.setItem(DISMISS_KEY, String(Date.now())); } catch (e) {}
+                }
+            };
+        })();
     </script>
 </body>
 </html>
