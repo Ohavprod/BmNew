@@ -1,4 +1,9 @@
-# אפליקציית התלמידים עברה לתיקייה נפרדת
-/students.html   /students/     301
-# האפליקציה הכללית חיה בכתובת index.html (התחום שלה לא כולל את /students/)
-/                /index.html    301!
+# האתר עבר ל-avivwaiz.com — כל הכתובות כאן מפנות לשם (301) כדי שגוגל יאחד הכל לאתר אחד.
+# קובץ אימות של גוגל ו-service workers נשארים זמינים: ה-sw החדשים מוחקים את המטמון הישן ומעבירים את המשתמש.
+/googlea1e8f7c48c423b65.html  /googlea1e8f7c48c423b65.html  200
+/sw.js                        /sw.js                        200
+/students/sw.js               /students/sw.js               200
+/students/*     https://avivwaiz.com/barmitzvah/students/:splat   301!
+/students.html  https://avivwaiz.com/barmitzvah/students/         301!
+/booking.html   https://avivwaiz.com/barmitzvah/booking.html      301!
+/*              https://avivwaiz.com/barmitzvah/index.html        301!

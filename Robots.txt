@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://barmitzvah2.netlify.app/sitemap.xml
+Sitemap: https://avivwaiz.com/sitemap.xml

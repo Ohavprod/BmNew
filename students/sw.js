@@ -1,13 +1,11 @@
-// Service Worker מינימלי - מטרתו היחידה היא לאפשר "הוספה למסך הבית".
-// הוא לא שומר קבצים במטמון, כדי שכל עדכון באתר יופיע ללקוחות מיד.
-self.addEventListener('install', () => {
-    self.skipWaiting();
-});
-
-self.addEventListener('activate', (event) => {
-    event.waitUntil(self.clients.claim());
-});
-
-self.addEventListener('fetch', () => {
-    // ללא טיפול מיוחד - הדפדפן ימשיך לטעון ישירות מהרשת כרגיל.
+// האתר עבר ל-avivwaiz.com — ה-service worker הזה מוחק את המטמון הישן, מבטל את עצמו ומעביר את המשתמש לכתובת החדשה.
+self.addEventListener("install", () => self.skipWaiting());
+self.addEventListener("activate", (e) => {
+  e.waitUntil((async () => {
+    const keys = await caches.keys();
+    await Promise.all(keys.map((k) => caches.delete(k)));
+    await self.registration.unregister();
+    const list = await self.clients.matchAll({ type: "window" });
+    list.forEach((c) => c.navigate("https://avivwaiz.com/barmitzvah/students/"));
+  })());
 });
