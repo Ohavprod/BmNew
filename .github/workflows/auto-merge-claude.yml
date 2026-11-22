@@ -1,0 +1,88 @@
+# מיזוג אוטומטי של PR מענף claude/* ל-main — כדי שלא צריך ללחוץ Merge בכל שינוי.
+# מיזוג שנעשה ע"י GitHub Actions לא מפעיל workflows של push ל-main, ולכן אחרי המיזוג
+# מופעלים כאן ישירות כל ה-workflows שהיו רצים על push ל-main (לפי הקבצים שהשתנו).
+name: Auto-merge Claude PRs
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, ready_for_review]
+    branches: [main]
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: write
+
+concurrency:
+  group: auto-merge-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  merge:
+    if: startsWith(github.head_ref, 'claude/') && github.event.pull_request.draft == false && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      REPO: ${{ github.repository }}
+      PR: ${{ github.event.pull_request.number }}
+    steps:
+      - name: Collect changed files
+        run: |
+          gh api "repos/$REPO/pulls/$PR/files" --paginate --jq '.[].filename' > "$RUNNER_TEMP/files.txt"
+          echo "קבצים שהשתנו:"; cat "$RUNNER_TEMP/files.txt"
+
+      - name: Merge
+        run: |
+          for i in 1 2 3 4 5; do
+            if gh pr merge "$PR" --repo "$REPO" --merge; then exit 0; fi
+            echo "המיזוג נכשל — ניסיון נוסף בעוד 10 שניות"; sleep 10
+          done
+          echo "::error::לא הצלחתי למזג (אולי יש התנגשות עם main)"; exit 1
+
+      - uses: actions/checkout@v5
+        with:
+          ref: main
+
+      - name: Trigger push-to-main workflows
+        run: |
+          python3 -c "import yaml" 2>/dev/null || pip install --quiet pyyaml
+          python3 - <<'PY'
+          import os, re, glob, subprocess, yaml
+          files = [l.strip() for l in open(os.environ['RUNNER_TEMP'] + '/files.txt', encoding='utf-8') if l.strip()]
+          def rx(p):
+              out, i = '', 0
+              while i < len(p):
+                  if p.startswith('**', i): out += '.*'; i += 2
+                  elif p[i] == '*': out += '[^/]*'; i += 1
+                  elif p[i] == '?': out += '[^/]'; i += 1
+                  else: out += re.escape(p[i]); i += 1
+              return re.compile('^' + out + '$')
+          def hit(pats):
+              res = False
+              for f in files:
+                  ok = False
+                  for p in pats:
+                      neg = p.startswith('!')
+                      if rx(p[1:] if neg else p).match(f): ok = not neg
+                  res = res or ok
+              return res
+          for wf in sorted(glob.glob('.github/workflows/*.y*ml')):
+              name = os.path.basename(wf)
+              if name.startswith('auto-merge-claude'): continue
+              try: d = yaml.safe_load(open(wf, encoding='utf-8')) or {}
+              except Exception as e: print('דילוג על', name, e); continue
+              on = d.get('on', d.get(True))
+              if isinstance(on, str): on = {on: None}
+              if isinstance(on, list): on = {k: None for k in on}
+              if not isinstance(on, dict) or 'push' not in on: continue
+              push = on.get('push') or {}
+              br = push.get('branches')
+              if br is not None and not any(rx(b).match('main') for b in br): continue
+              if push.get('paths') and not hit(push['paths']): continue
+              if push.get('paths-ignore') and not hit(['**'] + ['!' + p for p in push['paths-ignore']]): continue
+              if 'workflow_dispatch' not in on:
+                  print('::warning::' + name + ' רץ על push ל-main אבל אין לו workflow_dispatch — לא הופעל'); continue
+              print('מפעיל', name)
+              r = subprocess.run(['gh', 'workflow', 'run', name, '--repo', os.environ['REPO'], '--ref', 'main'])
+              if r.returncode: print('::warning::לא הצלחתי להפעיל ' + name)
+          PY
